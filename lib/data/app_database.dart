@@ -4,12 +4,11 @@ import 'package:sqflite/sqflite.dart';
 class AppDatabase {
   AppDatabase({
     DatabaseFactory? factory,
-    String? overridePath,
-  })  : _factory = factory ?? databaseFactory,
-        _overridePath = overridePath;
+    this.overridePath,
+  }) : _factory = factory ?? databaseFactory;
 
   final DatabaseFactory _factory;
-  final String? _overridePath;
+  final String? overridePath;
   Database? _database;
 
   Future<Database> get database async {
@@ -17,7 +16,7 @@ class AppDatabase {
   }
 
   Future<Database> _open() async {
-    final path = _overridePath ??
+    final path = overridePath ??
         p.join(await _factory.getDatabasesPath(), 'dataquest_v2.db');
 
     return _factory.openDatabase(
