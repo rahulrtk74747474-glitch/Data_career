@@ -11,6 +11,7 @@ void main() {
     _task('s-advanced', 'Advanced', 'saas', 3),
     _task('b-advanced', 'Advanced', 'bank', 4),
     _task('h-advanced', 'Advanced', 'hospital', 5),
+    _task('l-advanced', 'Advanced', 'logistics', 5),
   ];
 
   test('intern sees only beginner ecommerce tickets', () {
@@ -56,6 +57,15 @@ void main() {
     );
 
     expect(visible.map((task) => task.id).toList(), ['h-advanced']);
+  });
+
+  test('Head of Analytics can work logistics chapter independently', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 5, companyChapter: 4),
+      tasks: tasks,
+    );
+
+    expect(visible.map((task) => task.id).toList(), ['l-advanced']);
   });
 }
 
