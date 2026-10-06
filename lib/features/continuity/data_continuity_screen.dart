@@ -10,6 +10,7 @@ import '../../models/backup_snapshot.dart';
 import '../../models/reminder_settings.dart';
 import '../../services/cloud_sync_service.dart';
 import '../../services/release_diagnostics_service.dart';
+import 'release_diagnostics_screen.dart';
 import '../game/game_providers.dart';
 
 class DataContinuityScreen extends ConsumerStatefulWidget {
@@ -232,6 +233,16 @@ class _DataContinuityScreenState
                 'Diagnostics unavailable: $error',
               ),
               data: _DiagnosticsCard.new,
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const ReleaseDiagnosticsScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.health_and_safety_outlined),
+              label: const Text('Open full diagnostics'),
             ),
           ],
         ),
