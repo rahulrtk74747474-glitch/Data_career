@@ -251,6 +251,9 @@ class _DataContinuityScreenState
   }
 
   Future<void> _createAndShareBackup(BuildContext buttonContext) async {
+    final box = buttonContext.findRenderObject() as RenderBox?;
+    final origin =
+        box == null ? null : box.localToGlobal(Offset.zero) & box.size;
     await _runBusy(() async {
       final reminders =
           await ref.read(reminderSettingsRepositoryProvider).load();
@@ -260,10 +263,6 @@ class _DataContinuityScreenState
           );
       final exported =
           await ref.read(backupServiceProvider).exportToFile(snapshot);
-      final box = buttonContext.findRenderObject() as RenderBox?;
-      final origin = box == null
-          ? null
-          : box.localToGlobal(Offset.zero) & box.size;
       final share = await ref.read(portfolioDeliveryServiceProvider).share(
             exported.path,
             sharePositionOrigin: origin,
