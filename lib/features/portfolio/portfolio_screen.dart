@@ -115,6 +115,11 @@ class PortfolioScreen extends ConsumerWidget {
                       onPressed: () async {
                         final skillData =
                             skills.valueOrNull ?? const <SkillMastery>[];
+                        final box =
+                            buttonContext.findRenderObject() as RenderBox?;
+                        final origin = box == null
+                            ? null
+                            : box.localToGlobal(Offset.zero) & box.size;
                         try {
                           final exportResult = await ref
                               .read(portfolioExportServiceProvider)
@@ -125,11 +130,6 @@ class PortfolioScreen extends ConsumerWidget {
                                 xp: progress.xp,
                                 skills: skillData,
                               );
-                          final box = buttonContext.findRenderObject()
-                              as RenderBox?;
-                          final origin = box == null
-                              ? null
-                              : box.localToGlobal(Offset.zero) & box.size;
                           final shareResult = await ref
                               .read(portfolioDeliveryServiceProvider)
                               .share(
