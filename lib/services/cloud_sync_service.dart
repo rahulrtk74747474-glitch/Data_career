@@ -89,11 +89,13 @@ class LeaderboardEntry {
 abstract interface class CloudSyncGateway {
   CloudRuntimeConfig get config;
 
+  @override
   Future<CloudSession> signIn({
     required String email,
     required String password,
   });
 
+  @override
   Future<CloudSignUpResult> signUp({
     required String email,
     required String password,
@@ -101,16 +103,19 @@ abstract interface class CloudSyncGateway {
 
   Future<BackupSnapshot?> loadBackup(CloudSession session);
 
+  @override
   Future<void> saveBackup(
     CloudSession session,
     BackupSnapshot snapshot,
   );
 
+  @override
   Future<CloudSyncResult> sync({
     required CloudSession session,
     required BackupSnapshot local,
   });
 
+  @override
   Future<void> publishLeaderboard({
     required CloudSession session,
     required String alias,
@@ -118,6 +123,7 @@ abstract interface class CloudSyncGateway {
     required bool graduated,
   });
 
+  @override
   Future<List<LeaderboardEntry>> loadLeaderboard({
     required CloudSession session,
     int limit = 25,
@@ -133,6 +139,7 @@ class SupabaseCloudService implements CloudSyncGateway {
   })  : config = config ?? CloudRuntimeConfig.fromEnvironment(),
         _client = client ?? http.Client();
 
+  @override
   final CloudRuntimeConfig config;
   final http.Client _client;
 
@@ -215,6 +222,7 @@ class SupabaseCloudService implements CloudSyncGateway {
     );
   }
 
+  @override
   Future<BackupSnapshot?> loadBackup(CloudSession session) async {
     _requireCloud();
     final uri = Uri.parse(
@@ -354,6 +362,7 @@ class SupabaseCloudService implements CloudSyncGateway {
     ];
   }
 
+  @override
   void close() => _client.close();
 
   Map<String, String> _authHeaders(CloudSession session) => {
