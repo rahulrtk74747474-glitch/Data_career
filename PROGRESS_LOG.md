@@ -256,24 +256,85 @@ Implemented:
 - Progress is still device-local unless the user manually preserves the app data; cloud continuity is not implemented yet.
 - Weekly online cases and leaderboards remain optional future capabilities.
 
-## Exact next step — Phase 10
+## Phase 10 — Production hardening, portable backups and optional cloud continuity
 
-**Production hardening, portable backups and optional cloud continuity.**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #257)**
 
-Phase 10 should:
-1. Add a versioned local **Backup & Restore** format that exports career progress, mastery, task performance, interviews, Boss Cases, capstone summaries, immutable evidence and reminder preferences without requiring a cloud account.
-2. Validate imported backups before applying them, reject unsupported/newer schemas safely, and preserve atomic restore behavior so a bad import cannot partially overwrite progress.
-3. Add an offline-first sync abstraction so cloud save can remain optional rather than becoming a dependency of the core game.
-4. Implement an optional cloud-save path using a supported backend with explicit sign-in/opt-in and deterministic conflict resolution between local and cloud progress.
-5. Add cached, versioned weekly online case delivery with offline fallback to the last valid pack and schema validation before content becomes playable.
-6. Add an optional privacy-conscious leaderboard using a player-chosen display alias rather than exposing personal evidence details.
-7. Add a Release/Diagnostics screen showing app version, database/content schema versions, backup status and safe troubleshooting information.
-8. Expand Android release hardening: production AAB build verification, accessibility checks, low-memory/performance checks, and APK/AAB size monitoring in CI.
-9. Add automated tests for backup round-trips, invalid-import rollback, sync conflict resolution, cached-content fallback and leaderboard privacy fields.
-10. Preserve the fully offline learning path even when all online features are disabled or unavailable.
+Implemented:
+1. Bumped the application to **DataQuest v1.0.0+10**.
+2. Added a versioned portable DataQuest backup format with explicit format identifier, schema version, creation timestamp and source app version.
+3. Portable backups include career progress, reminder settings, skill mastery, placement results, Boss Case summaries, task performance, interview results, capstone summaries and immutable evidence attempts.
+4. Synthetic curriculum/dataset tables are deliberately excluded from backups because the application can recreate them from the checked-in curriculum.
+5. Added strict backup validation before restore.
+6. Backups from unsupported newer schemas are rejected before any mutation.
+7. SQLite player-state restoration is executed inside one transaction.
+8. Added a safety-snapshot rollback layer across SQLite plus SharedPreferences-backed progress/reminders so a failure after database restore cannot leave partially restored player state.
+9. Added Data & Cloud UI for creating/sharing backups and selecting/restoring JSON backup files.
+10. Added an explicit offline-first `CloudSyncGateway` abstraction so the core app has no cloud dependency.
+11. Added an optional Supabase REST gateway configured only through compile-time `--dart-define` values; no project URL, public key, password or access token is committed.
+12. Added explicit session-only cloud sign-in and account creation. DataQuest does not persist the email password or access token.
+13. Added checked-in optional Supabase RLS/database setup in `docs/supabase_phase10.sql`.
+14. Added deterministic local/cloud conflict resolution instead of a last-write-wins overwrite.
+15. Merge rules preserve the more advanced career/company state, union completed task/day sets, select stronger/newer summary evidence and deduplicate immutable evidence attempts.
+16. Added optional cloud backup download → deterministic merge → upload flow.
+17. Added an optional privacy-conscious leaderboard.
+18. Leaderboard publication accepts a player-chosen 3–20 character alias and publishes only user ID, alias, Job Readiness Score, graduation flag and update timestamp.
+19. Leaderboard payloads explicitly exclude email, evidence contents and company-history fields.
+20. Added versioned remote Weekly Analyst Case delivery.
+21. Remote weekly packs are schema-validated before becoming playable.
+22. Valid online weekly packs are cached locally.
+23. Remote outage or invalid/newer schema falls back first to the last valid cache and then to a bundled offline weekly case.
+24. Added a Weekly Analyst Case screen with source status and manual refresh.
+25. Added a dedicated Release Diagnostics screen showing app version, SQLite schema, backup schema, content-schema summary, weekly schema, cloud/feed configuration state and last backup/restore timestamp.
+26. Diagnostics never display cloud keys, passwords, access tokens or evidence contents.
+27. Added Internet permission to the generated Android main manifest so optional cloud/weekly features work in release mode while the core remains offline-first.
+28. Added accessibility regression coverage using Android tap-target and labeled-tap-target guidelines.
+29. Added a source content-asset budget capped at 5 MB; the verified v1.0 curriculum is only **0.12 MB**.
+30. Expanded CI to build and verify both the debug APK and production-mode Android App Bundle.
+31. Added per-ABI release APK builds for ARM32, ARM64 and x86_64 so direct-install size is measured rather than inferred from the all-architecture debug APK.
+32. Added CI artifact-size budgets and build-summary reporting.
+33. Verified sizes in run #257: debug APK **162.10 MB** (development artifact), release AAB **53.24 MB**, ARM32 release APK **16.98 MB**, ARM64 release APK **19.34 MB**, x86_64 release APK **20.76 MB**, content assets **0.12 MB**.
+34. Added automated coverage for backup round-trips, newer-schema rejection, mid-restore rollback, deterministic conflict merging, mocked network cloud sync, weekly-case online/cache/schema fallback, leaderboard privacy, alias validation, accessibility and low-memory content budgets.
+35. CI run #257 passed dependency resolution, Android wrapper generation/configuration, static analysis, all **107 tests**, debug APK build, release AAB build, all three split release APK builds, release-size budgets and all artifact uploads.
 
-Do not start Phase 11 until Phase 10 is explicitly requested or Phase 10 is complete and the user asks to continue.
+### Phase 10 technical notes
+
+- Flutter's official Android guidance recommends app bundles for Play delivery and split-per-ABI APKs for direct APK distribution; the CI now verifies both production formats.
+- The all-architecture debug APK is intentionally treated as a development artifact and has a separate budget because it is not representative of an end-user release download.
+- DataQuest remains fully usable when Supabase and the remote weekly-case URL are absent.
+- Cloud configuration uses `DATAQUEST_SUPABASE_URL`, `DATAQUEST_SUPABASE_ANON_KEY` and optional `DATAQUEST_WEEKLY_CASE_URL` compile-time defines.
+- Cloud merge is deterministic and designed to avoid silently replacing a more advanced career state with a less advanced copy.
+- Reminder settings remain local-preferred during a cloud merge; a portable explicit backup/restore can transfer reminder preferences.
+- Cloud authentication is session-only; users sign in again after an app restart instead of storing a long-lived credential in Phase 10.
+- Weekly content never replaces the cached pack unless it parses against the supported schema.
+- Release diagnostics are intentionally safe for screenshots/support and omit secrets.
+- The CI release AAB/APKs verify compilation and size. A real Play Store publication must still use the owner's production signing keystore and normal Play Console release process.
+
+## Known v1.0 operational limitations
+
+- Optional cloud save and leaderboard require the owner to provision/configure a Supabase project and run the checked-in RLS schema.
+- Supabase email-confirmation behavior depends on the selected project's Auth configuration.
+- No cloud configuration is shipped by default; this is intentional so the repository contains no backend identifiers/credentials and offline use remains the default.
+- The remote Weekly Case feed requires the owner to host a JSON endpoint; bundled/cache fallback works without it.
+- Free-text interview scoring remains deterministic local rubric/keyword grading rather than semantic LLM grading.
+- Portfolio/certificate PDF conversion still uses the device/browser Print → Save as PDF workflow.
+- CI checks accessibility semantics and content/release size budgets, but it does not replace hands-on testing on representative physical 2 GB RAM Android hardware.
+- Store production signing, Play Console privacy declarations, screenshots/listing copy and staged rollout are release-operations tasks rather than game-development phases.
+
+## Roadmap status — v1.0 complete
+
+**All defined development phases (Phase 1 through Phase 10) are implemented.**
+
+There is no defined Phase 11 in the current roadmap. Future work is maintenance/product expansion rather than an incomplete phase. Appropriate post-v1.0 backlog items include physical-device QA, production signing/Play internal testing, additional content packs, more industries, richer semantic interview feedback, or a managed weekly-content publishing workflow.
+
+Future maintenance must continue to preserve:
+- offline-first core gameplay
+- migration-safe player progress
+- immutable evidence integrity
+- explicit opt-in for online features
+- privacy-safe leaderboard fields
+- low-end Android performance budgets
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 9: Added the final cross-company capstone, transparent evidence-based Job Readiness Score, timed Interview Gauntlet, evidence-backed resume/project artifacts, and graduation certificate gates/delivery.`
+`2026-10-06 — Phase 10 / v1.0: Added rollback-safe portable backups, optional deterministic Supabase cloud continuity, cached weekly cases, alias-only leaderboard, release diagnostics, accessibility/low-memory gates, and verified AAB + per-ABI release artifacts.`
