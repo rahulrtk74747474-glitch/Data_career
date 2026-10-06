@@ -1,3 +1,5 @@
+import 'package:sqflite/sqflite.dart';
+
 import '../data/app_database.dart';
 import '../models/capstone_result.dart';
 import '../services/capstone_scoring_service.dart';
