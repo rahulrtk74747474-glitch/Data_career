@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 4,
+  "tasks": [{
+    "id": "saas-mrr-sql-001",
+    "title": "Calculate Active MRR by Segment",
+    "department": "Finance",
+    "skill": "SQL",
+    "skillKey": "sql",
+    "difficulty": "Intermediate",
+    "companyKey": "saas",
+    "minCareerLevel": 2,
+    "context": "Completed orders act as a subscription-billing proxy in this learning dataset.",
+    "goal": "Join customers to completed orders and aggregate revenue by segment.",
+    "deliverable": "Return segment and mrr_proxy.",
+    "answerType": "sql_result",
+    "prompt": "Write the SQL query using customers and orders.",
+    "expectedAnswer": "",
+    "requiredTokens": [],
+    "expectedRows": [
+      {"segment": "Consumer", "mrr_proxy": 3100},
+      {"segment": "Enterprise", "mrr_proxy": 8000},
+      {"segment": "SMB", "mrr_proxy": 2300}
+    ],
+    "expectedSelections": [],
+    "hints": ["Join on customer_id.", "Filter to completed orders.", "Group by segment and sum revenue."],
+    "explanation": "This practices joining account attributes to billing facts at the correct business grain.",
+    "xp": 150,
+    "datasetName": "customers + orders",
+    "rows": [],
+    "options": []
+  }]
+}
