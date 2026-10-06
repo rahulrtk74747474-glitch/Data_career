@@ -1,0 +1,48 @@
+import '../data/app_database.dart';
+import '../models/backup_snapshot.dart';
+import '../models/weekly_case.dart';
+import 'backup_service.dart';
+import 'cloud_sync_service.dart';
+
+class ReleaseDiagnostics {
+  const ReleaseDiagnostics({
+    required this.appVersion,
+    required this.databaseSchema,
+    required this.backupSchema,
+    required this.weeklyCaseSchema,
+    required this.cloudConfigured,
+    required this.weeklyCasesConfigured,
+    required this.lastBackupAt,
+  });
+
+  final String appVersion;
+  final int databaseSchema;
+  final int backupSchema;
+  final int weeklyCaseSchema;
+  final bool cloudConfigured;
+  final bool weeklyCasesConfigured;
+  final DateTime? lastBackupAt;
+}
+
+class ReleaseDiagnosticsService {
+  const ReleaseDiagnosticsService({
+    required BackupService backupService,
+    required CloudRuntimeConfig cloudConfig,
+  })  : _backupService = backupService,
+        _cloudConfig = cloudConfig;
+
+  final BackupService _backupService;
+  final CloudRuntimeConfig _cloudConfig;
+
+  Future<ReleaseDiagnostics> load() async {
+    return ReleaseDiagnostics(
+      appVersion: BackupService.appVersion,
+      databaseSchema: AppDatabase.schemaVersion,
+      backupSchema: BackupSnapshot.currentSchemaVersion,
+      weeklyCaseSchema: WeeklyCasePack.supportedSchemaVersion,
+      cloudConfigured: _cloudConfig.cloudConfigured,
+      weeklyCasesConfigured: _cloudConfig.weeklyCasesConfigured,
+      lastBackupAt: await _backupService.lastBackupAt(),
+    );
+  }
+}
