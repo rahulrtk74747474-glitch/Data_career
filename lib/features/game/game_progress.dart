@@ -353,6 +353,11 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
     await _save();
   }
 
+  Future<void> restoreFromBackup(GameProgress progress) async {
+    state = progress;
+    await _save();
+  }
+
   Future<void> reset() async {
     state = GameProgress.initial();
     final prefs = await SharedPreferences.getInstance();
