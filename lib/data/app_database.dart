@@ -444,6 +444,46 @@ class AppDatabase {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS saas_account_monthly (
+        account_id TEXT NOT NULL,
+        month TEXT NOT NULL,
+        segment TEXT NOT NULL,
+        mrr REAL NOT NULL,
+        active INTEGER NOT NULL,
+        seats INTEGER NOT NULL,
+        support_tickets INTEGER NOT NULL,
+        PRIMARY KEY (account_id, month)
+      )
+    ''');
+
+    final saasRows = <Map<String, Object?>>[
+      {'account_id': 'S001', 'month': '2026-07', 'segment': 'SMB', 'mrr': 1000, 'active': 1, 'seats': 10, 'support_tickets': 2},
+      {'account_id': 'S001', 'month': '2026-08', 'segment': 'SMB', 'mrr': 1100, 'active': 1, 'seats': 11, 'support_tickets': 1},
+      {'account_id': 'S001', 'month': '2026-09', 'segment': 'SMB', 'mrr': 1200, 'active': 1, 'seats': 12, 'support_tickets': 1},
+      {'account_id': 'S002', 'month': '2026-07', 'segment': 'Enterprise', 'mrr': 5000, 'active': 1, 'seats': 50, 'support_tickets': 6},
+      {'account_id': 'S002', 'month': '2026-08', 'segment': 'Enterprise', 'mrr': 5200, 'active': 1, 'seats': 52, 'support_tickets': 5},
+      {'account_id': 'S002', 'month': '2026-09', 'segment': 'Enterprise', 'mrr': 5300, 'active': 1, 'seats': 53, 'support_tickets': 4},
+      {'account_id': 'S003', 'month': '2026-07', 'segment': 'SMB', 'mrr': 800, 'active': 1, 'seats': 8, 'support_tickets': 4},
+      {'account_id': 'S003', 'month': '2026-08', 'segment': 'SMB', 'mrr': 800, 'active': 1, 'seats': 8, 'support_tickets': 5},
+      {'account_id': 'S003', 'month': '2026-09', 'segment': 'SMB', 'mrr': 0, 'active': 0, 'seats': 0, 'support_tickets': 0},
+      {'account_id': 'S004', 'month': '2026-07', 'segment': 'MidMarket', 'mrr': 2500, 'active': 1, 'seats': 25, 'support_tickets': 3},
+      {'account_id': 'S004', 'month': '2026-08', 'segment': 'MidMarket', 'mrr': 2600, 'active': 1, 'seats': 26, 'support_tickets': 2},
+      {'account_id': 'S004', 'month': '2026-09', 'segment': 'MidMarket', 'mrr': 2800, 'active': 1, 'seats': 28, 'support_tickets': 2},
+      {'account_id': 'S005', 'month': '2026-07', 'segment': 'Enterprise', 'mrr': 4000, 'active': 1, 'seats': 40, 'support_tickets': 5},
+      {'account_id': 'S005', 'month': '2026-08', 'segment': 'Enterprise', 'mrr': 4200, 'active': 1, 'seats': 42, 'support_tickets': 4},
+      {'account_id': 'S005', 'month': '2026-09', 'segment': 'Enterprise', 'mrr': 4500, 'active': 1, 'seats': 45, 'support_tickets': 3}
+    ];
+    final saasBatch = db.batch();
+    for (final row in saasRows) {
+      saasBatch.insert(
+        'saas_account_monthly',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await saasBatch.commit(noResult: true);
+
     final now = DateTime.now().toUtc().toIso8601String();
     await db.insert(
       'users',
