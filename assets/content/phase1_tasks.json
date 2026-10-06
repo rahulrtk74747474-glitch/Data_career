@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "packId": "career-ecommerce-week1-v1",
+  "tasks": [
+    {
+      "id": "sales-net-revenue-001",
+      "title": "Fix the Sales Revenue Sheet",
+      "department": "Sales",
+      "skill": "Spreadsheets",
+      "context": "The Sales Manager says the dashboard is overstating revenue because discounts are ignored. You receive a small extract from the order sheet.",
+      "goal": "Calculate net revenue for row 2 after the discount.",
+      "deliverable": "Write the spreadsheet formula for cell E2 using Quantity (B2), Unit Price (C2), and Discount Rate (D2).",
+      "answerType": "formula",
+      "prompt": "What formula should go in E2?",
+      "expectedAnswer": "=B2*C2*(1-D2)",
+      "requiredTokens": [],
+      "hints": [
+        "Start with gross revenue: quantity × unit price.",
+        "A 10% discount means the company keeps 90%, which is 1 - discount rate.",
+        "Combine both pieces: gross revenue × (1 - D2)."
+      ],
+      "explanation": "B2*C2 calculates gross revenue. Multiplying by (1-D2) keeps the non-discounted share. For row 2 that is 3 × 1200 × 0.90 = 3240.",
+      "xp": 80,
+      "datasetName": "orders_preview.csv",
+      "rows": [
+        {"Order": "A1021", "Quantity": 3, "Unit Price": 1200, "Discount Rate": 0.10, "Net Revenue": "?"},
+        {"Order": "A1022", "Quantity": 1, "Unit Price": 2500, "Discount Rate": 0.00, "Net Revenue": 2500},
+        {"Order": "A1023", "Quantity": 5, "Unit Price": 500, "Discount Rate": 0.05, "Net Revenue": 2375}
+      ],
+      "options": []
+    },
+    {
+      "id": "marketing-channel-sql-001",
+      "title": "Which Marketing Channel Converts?",
+      "department": "Marketing",
+      "skill": "SQL",
+      "context": "Marketing has campaign rows split across multiple dates. The manager wants total conversions per channel before tomorrow's budget meeting.",
+      "goal": "Aggregate conversions by marketing channel.",
+      "deliverable": "Write a SQL query returning channel and the sum of conversions from campaign_performance, grouped by channel.",
+      "answerType": "sql_tokens",
+      "prompt": "Write the SQL query.",
+      "expectedAnswer": "",
+      "requiredTokens": [
+        "select",
+        "channel",
+        "sum(conversions)",
+        "from campaign_performance",
+        "group by channel"
+      ],
+      "hints": [
+        "You need one output row per channel, so this is an aggregation problem.",
+        "Use SUM() on conversions and GROUP BY the non-aggregated channel column.",
+        "The structure is SELECT channel, SUM(conversions) FROM campaign_performance GROUP BY channel."
+      ],
+      "explanation": "GROUP BY collapses many campaign rows into one row per channel. SUM(conversions) then gives the total conversions for each channel, which is the correct level for a channel budget comparison.",
+      "xp": 100,
+      "datasetName": "campaign_performance",
+      "rows": [
+        {"date": "2026-09-28", "channel": "Search", "spend": 12000, "conversions": 84},
+        {"date": "2026-09-28", "channel": "Social", "spend": 9000, "conversions": 45},
+        {"date": "2026-09-29", "channel": "Search", "spend": 11500, "conversions": 79},
+        {"date": "2026-09-29", "channel": "Social", "spend": 9500, "conversions": 48}
+      ],
+      "options": []
+    },
+    {
+      "id": "ceo-correlation-001",
+      "title": "Stop a Bad Executive Conclusion",
+      "department": "CEO",
+      "skill": "Communication & Statistics",
+      "context": "The CEO notices that customers who use the mobile app more often also spend more money. He wants to tell the board that increasing app opens will cause revenue to rise.",
+      "goal": "Communicate what the data supports without confusing correlation with causation.",
+      "deliverable": "Choose the most defensible recommendation.",
+      "answerType": "choice",
+      "prompt": "What should you recommend to the CEO?",
+      "expectedAnswer": "Report the correlation, avoid claiming causation, and propose an experiment to test whether increasing app engagement changes spending.",
+      "requiredTokens": [],
+      "hints": [
+        "Two variables moving together does not prove that one causes the other.",
+        "High-value customers may simply be more likely to use the app often.",
+        "A controlled experiment is a stronger way to test whether changing engagement changes revenue."
+      ],
+      "explanation": "Correlation is useful evidence for a hypothesis, not proof of causation. A randomized or carefully designed experiment can test whether an intervention that increases engagement actually changes spending.",
+      "xp": 90,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Tell the board that more app opens definitely cause higher revenue.",
+        "Report the correlation, avoid claiming causation, and propose an experiment to test whether increasing app engagement changes spending.",
+        "Ignore the relationship because correlations are never useful."
+      ]
+    }
+  ]
+}
