@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "id": "logistics-network-review-001",
+  "title": "Network SLA and Capacity Review",
+  "company": "Logistics Network Co. • Final Boss Case",
+  "companyKey": "logistics",
+  "minCareerLevel": 5,
+  "context": "The executive operations team wants a synthetic network review that combines route SLA, warehouse pressure, forecast capacity and operating cost. Build a decision-ready answer without overstating causal claims.",
+  "datasetName": "logistics_shipments + logistics_inventory_flow + logistics_throughput_forecast",
+  "cleaningPrompt": "Which controls are required before presenting the network review? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm shipment_id uniqueness and route-label consistency.",
+    "Validate promised hours, actual hours, weight and cost are non-negative.",
+    "Document which shipment statuses belong in the SLA denominator.",
+    "Delete all late shipments because they distort SLA.",
+    "Treat every high-cost shipment as a data error."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm shipment_id uniqueness and route-label consistency.",
+    "Validate promised hours, actual hours, weight and cost are non-negative.",
+    "Document which shipment statuses belong in the SLA denominator."
+  ],
+  "sqlPrompt": "Using logistics_shipments, return route_code, COUNT(*) AS shipment_count and SUM(CASE WHEN actual_hours <= promised_hours THEN 1 ELSE 0 END) AS on_time_shipments grouped by route_code.",
+  "sqlExpectedRows": [
+    {"route_code": "NS-1", "shipment_count": 2, "on_time_shipments": 0},
+    {"route_code": "NW-1", "shipment_count": 3, "on_time_shipments": 2},
+    {"route_code": "SN-1", "shipment_count": 2, "on_time_shipments": 1},
+    {"route_code": "WE-1", "shipment_count": 3, "on_time_shipments": 1}
+  ],
+  "kpiPrompt": "4 of 10 observed shipments met promised delivery hours. What is the observed overall on-time percentage?",
+  "kpiExpected": 40.0,
+  "kpiTolerance": 0.1,
+  "chartPrompt": "Which visual best compares route-level SLA performance for executives?",
+  "chartOptions": [
+    "Bar chart with route on the axis and on-time percentage as bar length",
+    "Pie chart with each shipment as a slice",
+    "Line chart treating route codes as dates",
+    "Gauge chart for every individual shipment"
+  ],
+  "chartExpected": "Bar chart with route on the axis and on-time percentage as bar length",
+  "recommendationPrompt": "Which recommendation is most defensible?",
+  "recommendationOptions": [
+    "Prioritize NS-1 and WE-1 for deeper delay-driver review, validate results over more shipments, and test routing, staffing and throughput scenarios before changing the network.",
+    "Close NS-1 immediately because the route code proves the cause of delays.",
+    "Ignore warehouse utilization because only SLA matters.",
+    "Remove late shipments from future reports to improve performance."
+  ],
+  "recommendationExpected": "Prioritize NS-1 and WE-1 for deeper delay-driver review, validate results over more shipments, and test routing, staffing and throughput scenarios before changing the network.",
+  "rubric": {
+    "cleaning": 20,
+    "sql": 30,
+    "kpi": 20,
+    "chart": 10,
+    "recommendation": 20
+  }
+}
