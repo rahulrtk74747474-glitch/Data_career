@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation/app_routes.dart';
+import '../../services/notification_destination_service.dart';
 import '../game/game_providers.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -36,7 +37,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       }
       await ref.read(contentPackLoaderProvider).installBundledPacks();
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+
+      final payload = ref.read(pendingLaunchNotificationPayloadProvider);
+      ref
+          .read(pendingLaunchNotificationPayloadProvider.notifier)
+          .state = null;
+      final destination = NotificationDestinationService.resolve(payload);
+      final targetRoute = switch (destination) {
+        NotificationDestination.dailyChallenge => AppRoutes.daily,
+        NotificationDestination.reviewQueue => AppRoutes.review,
+        null => null,
+      };
+
+      final navigator = Navigator.of(context);
+      await navigator.pushReplacementNamed(AppRoutes.home);
+      if (targetRoute != null) {
+        await navigator.pushNamed(targetRoute);
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() {
