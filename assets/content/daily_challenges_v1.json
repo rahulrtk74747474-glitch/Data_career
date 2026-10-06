@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "packId": "daily-rotation-v1",
+  "challenges": [
+    {"id": "daily-ecom-sheet", "taskId": "sales-net-revenue-001", "bonusXp": 35, "companyKey": "ecommerce", "minCareerLevel": 0},
+    {"id": "daily-ecom-sql", "taskId": "marketing-channel-sql-001", "bonusXp": 45, "companyKey": "ecommerce", "minCareerLevel": 0},
+    {"id": "daily-ecom-stats", "taskId": "ceo-correlation-001", "bonusXp": 40, "companyKey": "ecommerce", "minCareerLevel": 0},
+    {"id": "daily-ecom-clean", "taskId": "operations-cleaning-001", "bonusXp": 45, "companyKey": "ecommerce", "minCareerLevel": 1},
+    {"id": "daily-ecom-join", "taskId": "sql-join-segment-revenue-001", "bonusXp": 55, "companyKey": "ecommerce", "minCareerLevel": 1},
+    {"id": "daily-saas-retention", "taskId": "saas-retention-definition-001", "bonusXp": 55, "companyKey": "saas", "minCareerLevel": 2},
+    {"id": "daily-saas-sql", "taskId": "saas-mrr-sql-001", "bonusXp": 60, "companyKey": "saas", "minCareerLevel": 2},
+    {"id": "daily-saas-causality", "taskId": "saas-churn-causality-001", "bonusXp": 55, "companyKey": "saas", "minCareerLevel": 2},
+    {"id": "daily-saas-nrr", "taskId": "saas-expansion-metric-001", "bonusXp": 70, "companyKey": "saas", "minCareerLevel": 3},
+    {"id": "daily-saas-cleaning", "taskId": "saas-cohort-cleaning-001", "bonusXp": 70, "companyKey": "saas", "minCareerLevel": 3}
+  ]
+}
