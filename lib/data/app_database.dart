@@ -2,7 +2,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const schemaVersion = 8;
+  static const schemaVersion = 9;
 
   AppDatabase({
     DatabaseFactory? factory,
@@ -41,6 +41,7 @@ class AppDatabase {
           await _seedPhaseEight(db);
           await _createPhaseNineSchema(db);
           await _seedPhaseNine(db);
+          await _createV11ContentSchema(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -69,6 +70,9 @@ class AppDatabase {
           if (oldVersion < 8) {
             await _createPhaseNineSchema(db);
             await _seedPhaseNine(db);
+          }
+          if (oldVersion < 9) {
+            await _createV11ContentSchema(db);
           }
         },
       ),
@@ -314,6 +318,150 @@ class AppDatabase {
         recommendation_score INTEGER NOT NULL
       )
     ''');
+  }
+
+  Future<void> _createV11ContentSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS users (
+        user_id TEXT PRIMARY KEY,
+        display_name TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS progress (
+        user_id TEXT PRIMARY KEY,
+        xp INTEGER NOT NULL DEFAULT 0,
+        career_level INTEGER NOT NULL DEFAULT 0,
+        company_chapter INTEGER NOT NULL DEFAULT 0,
+        daily_streak INTEGER NOT NULL DEFAULT 0,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS content_packs (
+        pack_id TEXT PRIMARY KEY,
+        schema_version INTEGER NOT NULL,
+        content_version INTEGER NOT NULL,
+        source_asset TEXT NOT NULL,
+        installed_at TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS tasks (
+        task_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        skill_key TEXT NOT NULL,
+        difficulty TEXT NOT NULL,
+        company_key TEXT NOT NULL,
+        answer_type TEXT NOT NULL,
+        content_version INTEGER NOT NULL,
+        json_payload TEXT NOT NULL,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS datasets (
+        dataset_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        content_version INTEGER NOT NULL,
+        json_payload TEXT NOT NULL,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS dialogues (
+        dialogue_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
+        trigger_key TEXT NOT NULL,
+        content_version INTEGER NOT NULL,
+        json_payload TEXT NOT NULL,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS rubrics (
+        rubric_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        content_version INTEGER NOT NULL,
+        json_payload TEXT NOT NULL,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS attempts (
+        attempt_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        task_id TEXT NOT NULL,
+        score INTEGER NOT NULL,
+        answer_json TEXT NOT NULL,
+        completed_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (task_id) REFERENCES tasks(task_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS events (
+        event_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        content_version INTEGER NOT NULL,
+        json_payload TEXT NOT NULL,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS achievements (
+        achievement_id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        rule_json TEXT NOT NULL,
+        content_version INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS user_achievements (
+        user_id TEXT NOT NULL,
+        achievement_id TEXT NOT NULL,
+        unlocked_at TEXT NOT NULL,
+        PRIMARY KEY (user_id, achievement_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+        FOREIGN KEY (achievement_id) REFERENCES achievements(achievement_id)
+      )
+    ''');
+
+    final now = DateTime.now().toUtc().toIso8601String();
+    await db.insert(
+      'users',
+      {
+        'user_id': 'local-player',
+        'display_name': 'DataQuest Analyst',
+        'created_at': now,
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+    await db.insert(
+      'progress',
+      {
+        'user_id': 'local-player',
+        'updated_at': now,
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
   }
 
   Future<void> _seedCore(Database db) async {
