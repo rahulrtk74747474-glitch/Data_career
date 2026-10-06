@@ -43,6 +43,16 @@ class CloudSession {
   final String email;
 }
 
+class CloudSignUpResult {
+  const CloudSignUpResult({
+    required this.message,
+    this.session,
+  });
+
+  final String message;
+  final CloudSession? session;
+}
+
 class CloudSyncResult {
   const CloudSyncResult({
     required this.snapshot,
@@ -80,6 +90,11 @@ abstract interface class CloudSyncGateway {
   CloudRuntimeConfig get config;
 
   Future<CloudSession> signIn({
+    required String email,
+    required String password,
+  });
+
+  Future<CloudSignUpResult> signUp({
     required String email,
     required String password,
   });
@@ -155,6 +170,48 @@ class SupabaseCloudService implements CloudSyncGateway {
       userId: userId,
       accessToken: token,
       email: email.trim(),
+    );
+  }
+
+  Future<CloudSignUpResult> signUp({
+    required String email,
+    required String password,
+  }) async {
+    _requireCloud();
+    final response = await _client.post(
+      Uri.parse('${_baseUrl()}/auth/v1/signup'),
+      headers: {
+        'apikey': config.supabaseAnonKey,
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email.trim(),
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError(_message(response, 'Cloud sign-up failed.'));
+    }
+
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final user = decoded['user'] as Map<String, dynamic>?;
+    final token = decoded['access_token'] as String?;
+    final userId = user?['id'] as String?;
+    if (token != null && userId != null) {
+      return CloudSignUpResult(
+        message: 'Cloud account created and signed in for this session.',
+        session: CloudSession(
+          userId: userId,
+          accessToken: token,
+          email: email.trim(),
+        ),
+      );
+    }
+
+    return const CloudSignUpResult(
+      message:
+          'Account created. If email confirmation is enabled, confirm the email and then sign in.',
     );
   }
 
