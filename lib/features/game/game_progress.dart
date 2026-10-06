@@ -20,6 +20,7 @@ class GameProgress {
     required this.completedDailyDates,
     this.companyChapter = -1,
     this.companyJourneyCompleted = false,
+    this.completedEventIds = const <String>{},
   });
 
   static const roleNames = [
@@ -64,6 +65,7 @@ class GameProgress {
       completedDailyDates: <String>{},
       companyChapter: 0,
       companyJourneyCompleted: false,
+      completedEventIds: <String>{},
     );
   }
 
@@ -84,6 +86,7 @@ class GameProgress {
   /// concrete independent chapter.
   final int companyChapter;
   final bool companyJourneyCompleted;
+  final Set<String> completedEventIds;
 
   int get resolvedCompanyChapter {
     if (companyChapter >= 0) {
@@ -152,6 +155,7 @@ class GameProgress {
     Set<String>? completedDailyDates,
     int? companyChapter,
     bool? companyJourneyCompleted,
+    Set<String>? completedEventIds,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -169,6 +173,7 @@ class GameProgress {
       companyChapter: companyChapter ?? resolvedCompanyChapter,
       companyJourneyCompleted:
           companyJourneyCompleted ?? this.companyJourneyCompleted,
+      completedEventIds: completedEventIds ?? this.completedEventIds,
     );
   }
 
@@ -187,6 +192,7 @@ class GameProgress {
       'completedDailyDates': completedDailyDates.toList(),
       'companyChapter': resolvedCompanyChapter,
       'companyJourneyCompleted': companyJourneyCompleted,
+      'completedEventIds': completedEventIds.toList(),
     };
   }
 
@@ -220,6 +226,10 @@ class GameProgress {
           .toInt(),
       companyJourneyCompleted:
           (json['companyJourneyCompleted'] as bool?) ?? false,
+      completedEventIds: Set<String>.from(
+        (json['completedEventIds'] as List<dynamic>?) ??
+            const <dynamic>[],
+      ),
     );
   }
 
@@ -327,6 +337,26 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
       dailyStreak: nextDailyStreak,
       lastDailyDate: dateKey,
       completedDailyDates: <String>{...state.completedDailyDates, dateKey},
+    );
+    await _save();
+  }
+
+  Future<void> applyRandomEvent({
+    required String eventId,
+    required double revenueDelta,
+    required double churnDelta,
+    required double costDelta,
+    required double satisfactionDelta,
+  }) async {
+    if (state.completedEventIds.contains(eventId)) return;
+
+    state = state.copyWith(
+      completedEventIds: <String>{...state.completedEventIds, eventId},
+      revenueIndex: state.revenueIndex + revenueDelta,
+      churnRate: (state.churnRate + churnDelta).clamp(0, 100).toDouble(),
+      costIndex: state.costIndex + costDelta,
+      satisfaction:
+          (state.satisfaction + satisfactionDelta).clamp(0, 100).toDouble(),
     );
     await _save();
   }
