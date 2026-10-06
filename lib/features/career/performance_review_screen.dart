@@ -80,7 +80,7 @@ class PerformanceReviewScreen extends ConsumerWidget {
       SnackBar(
         content: Text(
           companyChanged
-              ? 'Promoted to ${after.role}. SaaS Growth Co. is now unlocked.'
+              ? 'Promoted to ${after.role}. ${after.companyName} is now unlocked.'
               : 'Promoted to ${after.role}.',
         ),
       ),
