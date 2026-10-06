@@ -1,0 +1,450 @@
+{
+  "schemaVersion": 1,
+  "packId": "pandas-expansion-v1",
+  "challenges": [
+    {
+      "id": "pandas-active-filter-002",
+      "title": "Filter Active SaaS Accounts",
+      "difficulty": "Beginner",
+      "context": "Customer Success needs only active accounts before calculating retention metrics.",
+      "datasetName": "saas_accounts",
+      "rows": [
+        {
+          "account_id": "S1",
+          "active": 1,
+          "mrr": 1200
+        },
+        {
+          "account_id": "S2",
+          "active": 0,
+          "mrr": 0
+        },
+        {
+          "account_id": "S3",
+          "active": 1,
+          "mrr": 2800
+        }
+      ],
+      "prompt": "Write Pandas that filters active == 1 and selects account_id and mrr.",
+      "requiredFragments": [
+        "df[",
+        "active",
+        "==1",
+        "[['account_id','mrr']]"
+      ],
+      "operation": {
+        "type": "filter_equals",
+        "column": "active",
+        "value": 1,
+        "selectColumns": [
+          "account_id",
+          "mrr"
+        ]
+      },
+      "expectedRows": [
+        {
+          "account_id": "S1",
+          "mrr": 1200
+        },
+        {
+          "account_id": "S3",
+          "mrr": 2800
+        }
+      ],
+      "hints": [
+        "Filter the dataframe first.",
+        "Compare active to 1.",
+        "Select only account_id and mrr."
+      ],
+      "explanation": "Filtering before metric calculation keeps inactive rows from contaminating the analysis.",
+      "xp": 95
+    },
+    {
+      "id": "pandas-fill-plan-002",
+      "title": "Fill Missing Plan Labels",
+      "difficulty": "Beginner",
+      "context": "A CRM export has blank plan values that should stay explicit rather than be guessed.",
+      "datasetName": "crm_accounts",
+      "rows": [
+        {
+          "account_id": "A1",
+          "plan": "Pro"
+        },
+        {
+          "account_id": "A2",
+          "plan": null
+        },
+        {
+          "account_id": "A3",
+          "plan": "Basic"
+        }
+      ],
+      "prompt": "Fill missing plan values with 'Unknown'.",
+      "requiredFragments": [
+        "fillna",
+        "'unknown'"
+      ],
+      "operation": {
+        "type": "fillna",
+        "column": "plan",
+        "value": "Unknown"
+      },
+      "expectedRows": [
+        {
+          "account_id": "A1",
+          "plan": "Pro"
+        },
+        {
+          "account_id": "A2",
+          "plan": "Unknown"
+        },
+        {
+          "account_id": "A3",
+          "plan": "Basic"
+        }
+      ],
+      "hints": [
+        "Use fillna on one column.",
+        "Do not invent a real plan.",
+        "Use the explicit label Unknown."
+      ],
+      "explanation": "An Unknown category preserves missingness without manufacturing unsupported facts.",
+      "xp": 95
+    },
+    {
+      "id": "pandas-segment-mrr-002",
+      "title": "MRR by Segment",
+      "difficulty": "Intermediate",
+      "context": "Finance wants current monthly recurring revenue by customer segment.",
+      "datasetName": "monthly_accounts",
+      "rows": [
+        {
+          "segment": "SMB",
+          "mrr": 1200
+        },
+        {
+          "segment": "Enterprise",
+          "mrr": 5300
+        },
+        {
+          "segment": "SMB",
+          "mrr": 800
+        },
+        {
+          "segment": "Enterprise",
+          "mrr": 4500
+        }
+      ],
+      "prompt": "Group by segment and sum mrr into total_mrr.",
+      "requiredFragments": [
+        "groupby",
+        "segment",
+        "mrr",
+        "sum"
+      ],
+      "operation": {
+        "type": "group_sum",
+        "groupBy": "segment",
+        "valueColumn": "mrr",
+        "outputColumn": "total_mrr"
+      },
+      "expectedRows": [
+        {
+          "segment": "SMB",
+          "total_mrr": 2000
+        },
+        {
+          "segment": "Enterprise",
+          "total_mrr": 9800
+        }
+      ],
+      "hints": [
+        "Group by segment.",
+        "Select mrr.",
+        "Aggregate with sum."
+      ],
+      "explanation": "GroupBy transforms account-level rows into decision-level segment totals.",
+      "xp": 110
+    },
+    {
+      "id": "pandas-top-campaigns-002",
+      "title": "Top Campaigns by Conversions",
+      "difficulty": "Intermediate",
+      "context": "Marketing wants the two strongest campaigns by conversions.",
+      "datasetName": "campaigns",
+      "rows": [
+        {
+          "campaign": "Search",
+          "conversions": 84
+        },
+        {
+          "campaign": "Social",
+          "conversions": 48
+        },
+        {
+          "campaign": "Email",
+          "conversions": 62
+        }
+      ],
+      "prompt": "Sort conversions descending, take head(2), and select campaign and conversions.",
+      "requiredFragments": [
+        "sort_values",
+        "conversions",
+        "ascending=false",
+        "head(2)"
+      ],
+      "operation": {
+        "type": "sort_head",
+        "sortBy": "conversions",
+        "descending": true,
+        "head": 2,
+        "selectColumns": [
+          "campaign",
+          "conversions"
+        ]
+      },
+      "expectedRows": [
+        {
+          "campaign": "Search",
+          "conversions": 84
+        },
+        {
+          "campaign": "Email",
+          "conversions": 62
+        }
+      ],
+      "hints": [
+        "Sort first.",
+        "Use descending order.",
+        "Then take the first two rows."
+      ],
+      "explanation": "Sort + head is the standard dataframe pattern for top-N analysis.",
+      "xp": 115
+    },
+    {
+      "id": "pandas-conversion-rate-002",
+      "title": "Create Conversion Rate",
+      "difficulty": "Intermediate",
+      "context": "Growth needs a conversion-rate column for each channel.",
+      "datasetName": "channel_metrics",
+      "rows": [
+        {
+          "channel": "Search",
+          "clicks": 1000,
+          "conversions": 80
+        },
+        {
+          "channel": "Social",
+          "clicks": 800,
+          "conversions": 40
+        }
+      ],
+      "prompt": "Assign conversion_rate = conversions / clicks * 100 rounded to one decimal.",
+      "requiredFragments": [
+        "conversion_rate",
+        "conversions",
+        "clicks",
+        "100"
+      ],
+      "operation": {
+        "type": "assign_ratio",
+        "numerator": "conversions",
+        "denominator": "clicks",
+        "newColumn": "conversion_rate",
+        "multiplier": 100,
+        "precision": 1
+      },
+      "expectedRows": [
+        {
+          "channel": "Search",
+          "clicks": 1000,
+          "conversions": 80,
+          "conversion_rate": 8
+        },
+        {
+          "channel": "Social",
+          "clicks": 800,
+          "conversions": 40,
+          "conversion_rate": 5
+        }
+      ],
+      "hints": [
+        "Create a new column.",
+        "Divide conversions by clicks.",
+        "Multiply by 100 for percent."
+      ],
+      "explanation": "Derived ratios make channel performance comparable across different traffic volumes.",
+      "xp": 115
+    },
+    {
+      "id": "pandas-completed-region-002",
+      "title": "Completed Revenue by Region",
+      "difficulty": "Advanced",
+      "context": "Operations wants regional revenue excluding non-completed orders.",
+      "datasetName": "regional_orders",
+      "rows": [
+        {
+          "region": "North",
+          "status": "completed",
+          "revenue": 1000
+        },
+        {
+          "region": "West",
+          "status": "completed",
+          "revenue": 800
+        },
+        {
+          "region": "North",
+          "status": "refunded",
+          "revenue": 400
+        },
+        {
+          "region": "North",
+          "status": "completed",
+          "revenue": 500
+        }
+      ],
+      "prompt": "Filter status == 'completed', then group by region and sum revenue into revenue.",
+      "requiredFragments": [
+        "status",
+        "completed",
+        "groupby",
+        "region",
+        "revenue",
+        "sum"
+      ],
+      "operation": {
+        "type": "filter_group_sum",
+        "filterColumn": "status",
+        "filterValue": "completed",
+        "groupBy": "region",
+        "valueColumn": "revenue",
+        "outputColumn": "revenue"
+      },
+      "expectedRows": [
+        {
+          "region": "North",
+          "revenue": 1500
+        },
+        {
+          "region": "West",
+          "revenue": 800
+        }
+      ],
+      "hints": [
+        "Filter before grouping.",
+        "Group the remaining rows by region.",
+        "Sum revenue."
+      ],
+      "explanation": "Filtering before aggregation protects KPI denominators and totals from invalid business states.",
+      "xp": 130
+    },
+    {
+      "id": "pandas-fill-support-002",
+      "title": "Fill Missing Support Counts",
+      "difficulty": "Advanced",
+      "context": "A support export uses blank ticket counts for accounts with no logged tickets.",
+      "datasetName": "support_accounts",
+      "rows": [
+        {
+          "account_id": "S1",
+          "support_tickets": 2
+        },
+        {
+          "account_id": "S2",
+          "support_tickets": null
+        },
+        {
+          "account_id": "S3",
+          "support_tickets": 5
+        }
+      ],
+      "prompt": "Fill missing support_tickets with 0.",
+      "requiredFragments": [
+        "support_tickets",
+        "fillna",
+        "0"
+      ],
+      "operation": {
+        "type": "fillna",
+        "column": "support_tickets",
+        "value": 0
+      },
+      "expectedRows": [
+        {
+          "account_id": "S1",
+          "support_tickets": 2
+        },
+        {
+          "account_id": "S2",
+          "support_tickets": 0
+        },
+        {
+          "account_id": "S3",
+          "support_tickets": 5
+        }
+      ],
+      "hints": [
+        "Use fillna on support_tickets.",
+        "Here a blank explicitly means no logged ticket.",
+        "Fill with numeric zero."
+      ],
+      "explanation": "Missing-value treatment depends on business meaning; use zero only when the source semantics justify it.",
+      "xp": 125
+    },
+    {
+      "id": "pandas-cpc-002",
+      "title": "Cost per Conversion",
+      "difficulty": "Advanced",
+      "context": "Paid marketing needs a normalized acquisition-efficiency metric.",
+      "datasetName": "paid_channels",
+      "rows": [
+        {
+          "channel": "Search",
+          "spend": 12000,
+          "conversions": 80
+        },
+        {
+          "channel": "Social",
+          "spend": 9000,
+          "conversions": 45
+        }
+      ],
+      "prompt": "Assign cost_per_conversion = spend / conversions rounded to one decimal.",
+      "requiredFragments": [
+        "cost_per_conversion",
+        "spend",
+        "conversions"
+      ],
+      "operation": {
+        "type": "assign_ratio",
+        "numerator": "spend",
+        "denominator": "conversions",
+        "newColumn": "cost_per_conversion",
+        "multiplier": 1,
+        "precision": 1
+      },
+      "expectedRows": [
+        {
+          "channel": "Search",
+          "spend": 12000,
+          "conversions": 80,
+          "cost_per_conversion": 150
+        },
+        {
+          "channel": "Social",
+          "spend": 9000,
+          "conversions": 45,
+          "cost_per_conversion": 200
+        }
+      ],
+      "hints": [
+        "Create a derived column.",
+        "Cost is the numerator.",
+        "Conversions are the denominator."
+      ],
+      "explanation": "Cost per conversion normalizes spend by outcomes and supports channel efficiency comparisons.",
+      "xp": 130
+    }
+  ]
+}
