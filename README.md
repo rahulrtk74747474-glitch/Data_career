@@ -1,37 +1,79 @@
 # DataQuest: Analyst Career
 
-DataQuest is an offline-first Flutter game that trains a learner for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews, company chapters, evidence and career progression.
+DataQuest is an offline-first Flutter game that trains a learner for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews, company chapters, evidence, graduation and job-readiness practice.
 
-## Current build: Phase 9
+## Current build: v1.0 — Phase 10 complete
 
-Phase 9 adds the **Graduation & Job-Readiness system** after the complete five-company career journey.
+The complete defined roadmap is implemented through **Phase 10**.
 
-Current journey:
+Core journey:
 - E-commerce Co.
 - SaaS Growth Co.
 - NorthStar Bank Analytics
 - Harborview Hospital Analytics
 - Logistics Network Co.
-- **Final cross-company capstone**
-- **Interview Gauntlet**
-- **Job Readiness & Graduation**
+- Final cross-company analyst capstone
+- Interview Gauntlet
+- Job Readiness & Graduation
+- Portable backup / restore
+- Optional cloud continuity
+- Weekly case delivery with offline fallback
+- Privacy-safe alias leaderboard
 
-New Phase 9 capabilities:
-- SQLite v8 final cross-company synthetic KPI dataset
-- six-part final analyst capstone: data cleaning, SQL, statistics, KPI, dashboard choice and executive recommendation
-- persisted capstone result plus immutable capstone attempt evidence
-- transparent Job Readiness Score based on demonstrated evidence rather than XP
-- readiness breakdowns for SQL, spreadsheets/cleaning, statistics, Python/Pandas, business communication and interviews
-- targeted remediation recommendations for weak domains
-- 15-minute mixed Interview Gauntlet covering SQL, statistics, analytics case, behavioral ethics, dashboard choice and executive communication
-- evidence-backed editable resume bullet builder
-- portfolio project cards generated from strongest Boss Case and capstone evidence
-- graduation eligibility gates
-- locally generated completion certificate with Open/Share and browser Print → Save as PDF
-- explicit certificate disclaimer that DataQuest completion is a training credential, not an accredited academic qualification
-- 94-test verified regression suite
+### Phase 10 production capabilities
 
-### Job Readiness formula
+- versioned portable JSON Backup & Restore
+- backups cover career progress, mastery, placement, task performance, interviews, Boss Cases, capstone summaries, immutable evidence and reminder preferences
+- synthetic curriculum datasets are not copied into backups; the app recreates them locally
+- imported backups are schema-validated before mutation
+- unsupported/newer backup schemas are rejected safely
+- SQLite restore is transactional
+- restore uses an in-memory safety snapshot and rolls SQLite plus SharedPreferences-backed progress/reminders back if a later persistence step fails
+- backend-agnostic optional cloud-sync gateway
+- optional Supabase REST implementation configured only through `--dart-define`
+- explicit session-only email/password sign-in and account creation; passwords and access tokens are not persisted by DataQuest
+- deterministic local/cloud conflict resolution instead of last-write-wins
+- immutable evidence attempts are deduplicated during merge
+- optional alias-only leaderboard publishing readiness score, graduation flag and update time only
+- no email, evidence details or company-history fields are published to the leaderboard
+- versioned Weekly Analyst Case delivery
+- remote weekly content is schema-validated before use
+- last valid weekly pack is cached locally
+- invalid/offline remote content falls back to cache and then to a bundled offline case
+- dedicated Release Diagnostics screen showing safe app/database/content/backup status without exposing keys, passwords or tokens
+- Android release manifest includes Internet permission for optional online services while the core remains fully offline
+- release accessibility regression tests
+- low-memory bundled-content budget
+- production AAB verification
+- per-ABI release APK verification
+- CI size budgets and artifact reporting
+
+## Verified v1.0 release gate
+
+GitHub Actions run #257 passed:
+- dependency resolution
+- Android wrapper generation/configuration
+- static analysis
+- **107/107 automated tests**
+- debug APK build
+- release AAB build
+- ARM32, ARM64 and x86_64 release APK builds
+- release-size budgets
+- debug APK upload
+- release AAB upload
+- split release APK upload
+
+Measured build outputs:
+- debug APK: **162.10 MB** — development-only multi-runtime artifact
+- release AAB: **53.24 MB**
+- ARM32 release APK: **16.98 MB**
+- ARM64 release APK: **19.34 MB**
+- x86_64 release APK: **20.76 MB**
+- bundled content assets: **0.12 MB**
+
+The split release APKs are the better direct-install size reference. Flutter/Google Play app bundles can deliver architecture-specific content rather than the all-architecture debug payload.
+
+## Job Readiness formula
 
 XP is intentionally excluded from Job Readiness.
 
@@ -42,20 +84,62 @@ XP is intentionally excluded from Job Readiness.
 - career/company completion: 5%
 - final capstone: 10%
 
-Graduation currently requires:
+Graduation requires:
 - all five company chapters complete
 - final capstone at least 80/100
 - Job Readiness Score at least 80/100
 - Interview Gauntlet at least 75/100
 - no core readiness domain below 65%
 
-Earlier systems remain available: Practice Gym, adaptive review, SQL Workstation, Python/Pandas Lab, Dashboard Decision Lab, Interview Mode, Daily Challenge, Performance Reviews, company-aware Boss Cases, local reminders, notification deep-links, immutable evidence history and portfolio export/share.
+## Offline-first guarantee
 
-Read `PROGRESS_LOG.md` before making future changes.
+Without internet or cloud configuration, DataQuest still supports:
+- the complete five-company career
+- all bundled lessons and synthetic datasets
+- Practice Gym and adaptive review
+- SQL Workstation
+- guided Python/Pandas Lab
+- Dashboard Decision Lab
+- Daily Challenge
+- bundled/cached Weekly Case
+- Interview Mode and Interview Gauntlet
+- Performance Reviews and Company Chapter Reviews
+- company-aware Boss Cases
+- final capstone
+- Job Readiness calculations
+- graduation eligibility
+- resume suggestions
+- portfolio/certificate generation and sharing
+- local reminders
+- portable backup/restore
+
+Cloud save, online weekly cases and leaderboard are optional enhancements.
+
+## Optional online configuration
+
+No cloud endpoint or credential is committed to this repository.
+
+To enable optional Supabase continuity:
+
+```bash
+flutter run \
+  --dart-define=DATAQUEST_SUPABASE_URL=https://YOUR_PROJECT.supabase.co \
+  --dart-define=DATAQUEST_SUPABASE_ANON_KEY=YOUR_PUBLIC_ANON_KEY
+```
+
+Run `docs/supabase_phase10.sql` in the selected Supabase project first.
+
+To additionally enable a remote weekly case feed:
+
+```bash
+--dart-define=DATAQUEST_WEEKLY_CASE_URL=https://example.com/dataquest-weekly.json
+```
+
+The weekly endpoint must return the supported versioned JSON schema; invalid/newer content is rejected before it becomes playable.
 
 ## Run locally
 
-The Android wrapper is generated on demand in this repository. After generating it, apply the checked-in notification configuration script:
+The Android wrapper is generated on demand in this repository. After generating it, apply the checked-in Android configuration script:
 
 ```bash
 flutter create --platforms=android --project-name dataquest_analyst_career --org com.dataquest .
@@ -71,18 +155,26 @@ flutter analyze
 flutter test
 ```
 
-## Build an APK
+## Build Android release artifacts
+
+Google Play / bundle:
 
 ```bash
-flutter build apk --release
+flutter build appbundle --release
 ```
 
-GitHub Actions automatically generates/configures the Android wrapper, analyzes the project, runs tests, builds a debug APK, and uploads it as an artifact.
+Direct-install release APKs by CPU architecture:
 
-## Offline design
+```bash
+flutter build apk --release --split-per-abi
+```
 
-The complete five-company career game, final capstone, Job Readiness calculations, Interview Gauntlet, resume suggestions, certificate eligibility, synthetic datasets, SQL execution, guided Pandas simulator, mastery, Boss Cases, evidence history, reminder preferences and portfolio generation work locally.
+## Evidence and credential integrity
 
 Resume suggestions only describe recorded DataQuest synthetic training evidence and scores. They do not invent real employer impact.
 
-The portfolio and certificate are lightweight local HTML artifacts. They can be opened or shared from the app and converted to PDF through the browser's **Print → Save as PDF** workflow without shipping a heavyweight PDF engine.
+The DataQuest certificate is a training-completion credential, not an accredited academic or professional qualification.
+
+Portfolio and certificate files are lightweight local HTML artifacts. They can be opened/shared from the app and converted to PDF through the browser's **Print → Save as PDF** workflow without bundling a heavyweight PDF renderer.
+
+Read `PROGRESS_LOG.md` before future maintenance changes.
