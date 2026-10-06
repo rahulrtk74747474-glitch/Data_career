@@ -10,6 +10,7 @@ import '../models/daily_challenge.dart';
 import '../models/interview.dart';
 import '../models/pandas_challenge.dart';
 import '../models/placement_question.dart';
+import '../models/spreadsheet_challenge.dart';
 
 class ContentRepository {
   const ContentRepository();
@@ -97,6 +98,21 @@ class ContentRepository {
     return challenges
         .map(
           (item) => PandasChallenge.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<SpreadsheetChallenge>> loadSpreadsheetChallenges() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/spreadsheet_cleaning_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    final challenges = decoded['challenges'] as List<dynamic>;
+    return challenges
+        .map(
+          (item) => SpreadsheetChallenge.fromJson(
             Map<String, dynamic>.from(item as Map),
           ),
         )
