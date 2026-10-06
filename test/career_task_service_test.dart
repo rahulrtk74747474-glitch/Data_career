@@ -1,0 +1,89 @@
+import 'package:dataquest_analyst_career/features/game/game_progress.dart';
+import 'package:dataquest_analyst_career/models/analyst_task.dart';
+import 'package:dataquest_analyst_career/services/career_task_service.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  final tasks = [
+    _task('e-beginner', 'Beginner', 'ecommerce', 0),
+    _task('e-intermediate', 'Intermediate', 'ecommerce', 1),
+    _task('s-intermediate', 'Intermediate', 'saas', 2),
+    _task('s-advanced', 'Advanced', 'saas', 3),
+  ];
+
+  test('intern sees only beginner ecommerce tickets', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 0),
+      tasks: tasks,
+    );
+    expect(visible.map((task) => task.id).toList(), ['e-beginner']);
+  });
+
+  test('Data Analyst sees SaaS intermediate tickets', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 2),
+      tasks: tasks,
+    );
+    expect(visible.map((task) => task.id).toList(), ['s-intermediate']);
+  });
+
+  test('Senior can see intermediate and advanced SaaS tickets', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 3),
+      tasks: tasks,
+    );
+    expect(
+      visible.map((task) => task.id).toSet(),
+      {'s-intermediate', 's-advanced'},
+    );
+  });
+}
+
+GameProgress _progress({required int level}) {
+  return GameProgress(
+    xp: 1000,
+    streak: 0,
+    completedTaskIds: const {},
+    revenueIndex: 100,
+    churnRate: 8,
+    costIndex: 100,
+    satisfaction: 70,
+    careerLevel: level,
+    dailyStreak: 0,
+    lastDailyDate: null,
+    completedDailyDates: const {},
+  );
+}
+
+AnalystTask _task(
+  String id,
+  String difficulty,
+  String company,
+  int minLevel,
+) {
+  return AnalystTask(
+    id: id,
+    title: id,
+    department: 'CEO',
+    skill: 'Business Analytics',
+    skillKey: 'business',
+    context: '',
+    goal: '',
+    deliverable: '',
+    answerType: 'choice',
+    prompt: '',
+    expectedAnswer: 'A',
+    requiredTokens: const [],
+    expectedRows: const [],
+    expectedSelections: const [],
+    hints: const ['1', '2', '3'],
+    explanation: '',
+    xp: 50,
+    datasetName: '',
+    rows: const [],
+    options: const ['A', 'B'],
+    difficulty: difficulty,
+    companyKey: company,
+    minCareerLevel: minLevel,
+  );
+}
