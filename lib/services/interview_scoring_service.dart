@@ -57,7 +57,7 @@ class InterviewScoringService {
     }
 
     return InterviewQuestionScore(
-      score: score.clamp(0, 100),
+      score: score.clamp(0, 100).toInt(),
       feedback: feedback.toString(),
     );
   }
