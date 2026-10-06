@@ -42,7 +42,7 @@ void main() {
 ''';
     manifestText = manifestText.replaceFirst(
       '    </application>',
-      '${receivers}    </application>',
+      '$receivers    </application>',
     );
   }
   manifest.writeAsStringSync(manifestText);
