@@ -6,7 +6,7 @@ class PortfolioSnapshot {
   const PortfolioSnapshot({
     required this.taskPerformances,
     required this.bossCases,
-    required this.attempts,
+    this.attempts = const [],
   });
 
   final List<TaskPerformance> taskPerformances;
