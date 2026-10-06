@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import '../models/analyst_task.dart';
 import '../models/boss_case.dart';
 import '../models/dashboard_challenge.dart';
+import '../models/daily_challenge.dart';
+import '../models/interview.dart';
 import '../models/pandas_challenge.dart';
 import '../models/placement_question.dart';
 
@@ -18,6 +20,7 @@ class ContentRepository {
       'assets/content/phase2_tasks.json',
       'assets/content/phase3_tasks.json',
       'assets/content/phase4_tasks.json',
+      'assets/content/phase5_tasks.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -81,6 +84,36 @@ class ContentRepository {
     return challenges
         .map(
           (item) => DashboardChallenge.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<DailyChallengeDefinition>> loadDailyChallenges() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/daily_challenges_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    final challenges = decoded['challenges'] as List<dynamic>;
+    return challenges
+        .map(
+          (item) => DailyChallengeDefinition.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<InterviewRoundDefinition>> loadInterviewRounds() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/interview_rounds_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    final rounds = decoded['rounds'] as List<dynamic>;
+    return rounds
+        .map(
+          (item) => InterviewRoundDefinition.fromJson(
             Map<String, dynamic>.from(item as Map),
           ),
         )
