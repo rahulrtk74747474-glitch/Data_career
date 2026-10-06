@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "packId": "dashboard-lab-v1",
+  "challenges": [
+    {
+      "id": "dashboard-chart-trend-001",
+      "title": "Show a 12-Month Revenue Trend",
+      "difficulty": "Beginner",
+      "category": "Chart Choice",
+      "context": "The CEO wants to see whether monthly revenue is rising, falling or seasonal across the last year.",
+      "prompt": "Which primary visual best serves this decision?",
+      "options": [
+        "Line chart with month on the x-axis and revenue on the y-axis",
+        "Pie chart with one slice per month",
+        "Single KPI card showing only the latest month",
+        "Scatter plot of month number versus row number"
+      ],
+      "correctOption": "Line chart with month on the x-axis and revenue on the y-axis",
+      "hints": [
+        "The x-axis has a natural time order.",
+        "The decision depends on change over time.",
+        "A line chart makes trend and seasonality visible."
+      ],
+      "explanation": "Line charts encode ordered time naturally and make direction, turning points and seasonality easier to see than part-to-whole charts.",
+      "xp": 70
+    },
+    {
+      "id": "dashboard-kpi-retention-001",
+      "title": "Define the Retention KPI",
+      "difficulty": "Intermediate",
+      "category": "KPI Design",
+      "context": "A SaaS manager asks whether customers acquired in each month keep using the product over later months.",
+      "prompt": "Which KPI design is most defensible?",
+      "options": [
+        "Cohort retention: percentage of each acquisition cohort active in each later period",
+        "Total signups since company launch",
+        "Average employee age",
+        "Raw page views without a customer denominator"
+      ],
+      "correctOption": "Cohort retention: percentage of each acquisition cohort active in each later period",
+      "hints": [
+        "The question is about behavior after acquisition.",
+        "Different acquisition months need comparable denominators.",
+        "Cohorts preserve the starting population for retention analysis."
+      ],
+      "explanation": "Cohort retention compares like-with-like populations and prevents growth in new signups from hiding deterioration in existing-customer behavior.",
+      "xp": 90
+    },
+    {
+      "id": "dashboard-critique-axis-001",
+      "title": "Catch a Misleading Bar Chart",
+      "difficulty": "Intermediate",
+      "category": "Visual Critique",
+      "context": "A dashboard shows product A at 98 satisfaction and product B at 96, but the bar-axis starts at 95 so A looks several times taller.",
+      "prompt": "What is the main design risk?",
+      "options": [
+        "The truncated axis exaggerates a small absolute difference",
+        "Bars can never display percentages",
+        "The chart needs more decorative colors",
+        "The data must be causal because it is visualized"
+      ],
+      "correctOption": "The truncated axis exaggerates a small absolute difference",
+      "hints": [
+        "Compare the numeric difference with the visual difference.",
+        "Bar length is interpreted from a baseline.",
+        "Starting near 95 magnifies a two-point gap."
+      ],
+      "explanation": "For bars, a zero baseline usually protects proportional interpretation. A truncated baseline can visually overstate small differences.",
+      "xp": 90
+    },
+    {
+      "id": "dashboard-exec-hierarchy-001",
+      "title": "Design the Executive Landing Page",
+      "difficulty": "Advanced",
+      "category": "Dashboard Hierarchy",
+      "context": "The CEO has five minutes each Monday. The analytics team currently shows 42 charts on one page.",
+      "prompt": "Which redesign is strongest?",
+      "options": [
+        "Lead with a small set of decision KPIs and exceptions, then allow drill-down into diagnostic detail",
+        "Keep all 42 charts so no information is omitted",
+        "Replace all numbers with decorative gauges",
+        "Show raw transaction rows first"
+      ],
+      "correctOption": "Lead with a small set of decision KPIs and exceptions, then allow drill-down into diagnostic detail",
+      "hints": [
+        "Executive attention is scarce.",
+        "The first page should answer what changed and where action is needed.",
+        "Details can exist behind drill-down rather than competing for attention."
+      ],
+      "explanation": "A strong executive dashboard establishes hierarchy: headline outcomes, exceptions and actionable drivers first; diagnostic detail remains available without overwhelming the landing view.",
+      "xp": 110
+    },
+    {
+      "id": "dashboard-kpi-funnel-001",
+      "title": "Choose the Checkout KPI Set",
+      "difficulty": "Advanced",
+      "category": "KPI Design",
+      "context": "E-commerce revenue fell. Product traffic is stable, so leadership wants to know whether checkout behavior changed.",
+      "prompt": "Which KPI set best diagnoses the funnel?",
+      "options": [
+        "Product view→cart rate, cart→checkout rate, checkout→purchase rate, plus counts at each stage",
+        "Only total website page views",
+        "Only total revenue",
+        "Employee headcount by office",
+        "Number of dashboard users"
+      ],
+      "correctOption": "Product view→cart rate, cart→checkout rate, checkout→purchase rate, plus counts at each stage",
+      "hints": [
+        "A total outcome alone cannot locate the leaking stage.",
+        "Rates need their underlying counts for context.",
+        "Measure each transition in the funnel."
+      ],
+      "explanation": "Stage counts plus transition rates identify where loss occurs and prevent a single top-line KPI from hiding the mechanism.",
+      "xp": 120
+    }
+  ]
+}

@@ -2,22 +2,21 @@
 
 DataQuest is an offline-first Flutter game that trains a student for real data-analyst work by simulating company tickets, datasets, analysis, decisions and career progression.
 
-## Current build: Phase 3
+## Current build: Phase 4
 
-Phase 3 adds the first adaptive practice loop and end-to-end analyst case:
+Phase 4 adds the first Python/Pandas, dashboard-design and portfolio-evidence systems:
 
-- Practice Gym organized by skill and difficulty
-- Adaptive review queue driven by mastery and spaced-review due dates
-- Home-screen task recommendations from weakest unfinished skills
-- SQL schema/table browser
-- Reusable read-only SQL scratchpad
-- Real SQLite JOIN and filtering/aggregation tickets
-- Versioned SQLite migration that preserves Phase 2 data
-- Weekly Boss Case: cleaning → SQL → KPI → chart choice → executive recommendation
-- Weighted Boss Case rubric and persistent performance record
-- Boss Case performance feeds back into skill mastery
-- Full offline operation
-- Automated tests for review prioritization, recommendations, SQL workspace, Boss Case scoring and saved results
+- Guided offline Python/Pandas dataframe simulator
+- Six Pandas challenges across Beginner, Intermediate and Advanced
+- Filtering, fillna, groupby/sum, sorting/head, derived ratios and filter+aggregate workflows
+- Dedicated Python/Pandas mastery skill
+- Dashboard Decision Lab for KPI design, chart choice, hierarchy and visual critique
+- Persistent strongest-score/attempt evidence for tickets and labs
+- Portfolio Evidence screen combining strongest work and Boss Case results
+- Offline copy-to-clipboard portfolio summary
+- Expanded Practice Gym task bank and skill filter
+- SQLite v3 migration that preserves earlier progress
+- Automated Pandas and portfolio tests
 
 Read `PROGRESS_LOG.md` before making future changes.
 
@@ -42,19 +41,8 @@ flutter test
 flutter build apk --release
 ```
 
-GitHub Actions also analyzes, tests and builds a debug APK on every push to `main`.
+GitHub Actions also analyzes, tests and builds a debug APK on pushes to `main`.
 
-## Offline analyst database
+## Offline design
 
-Learning tables:
-- `campaign_performance`
-- `customer_dirty`
-- `customers`
-- `orders`
-
-Adaptive state:
-- `skill_mastery`
-- `placement_results`
-- `boss_case_results`
-
-The SQL workstation is read-only for learners; mutation statements remain blocked.
+No Python runtime is bundled. The Pandas Lab validates realistic Pandas operation patterns and executes equivalent dataframe operations in Dart against small synthetic datasets. This keeps the app lightweight and fully offline while teaching common analyst workflows.

@@ -22,17 +22,23 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 2,
+        version: 3,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
           await _createPhaseThreeSchema(db);
           await _seedPhaseThree(db);
+          await _createPhaseFourSchema(db);
+          await _seedPhaseFour(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
             await _createPhaseThreeSchema(db);
             await _seedPhaseThree(db);
+          }
+          if (oldVersion < 3) {
+            await _createPhaseFourSchema(db);
+            await _seedPhaseFour(db);
           }
         },
       ),
@@ -115,6 +121,20 @@ class AppDatabase {
     ''');
   }
 
+  Future<void> _createPhaseFourSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS task_performance (
+        task_id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        skill_key TEXT NOT NULL,
+        difficulty TEXT NOT NULL,
+        best_score INTEGER NOT NULL,
+        attempts INTEGER NOT NULL,
+        last_completed_at TEXT NOT NULL
+      )
+    ''');
+  }
+
   Future<void> _seedCore(Database db) async {
     final campaignRows = <Map<String, Object?>>[
       {'date': '2026-09-28', 'channel': 'Search', 'spend': 12000, 'conversions': 84},
@@ -189,6 +209,14 @@ class AppDatabase {
       );
     }
     await batch.commit(noResult: true);
+  }
+
+  Future<void> _seedPhaseFour(Database db) async {
+    await db.insert(
+      'skill_mastery',
+      {'skill_key': 'python'},
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
   }
 
   Future<void> close() async {

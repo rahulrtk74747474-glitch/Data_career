@@ -4,13 +4,18 @@ import '../../data/app_database.dart';
 import '../../models/analyst_task.dart';
 import '../../models/boss_case.dart';
 import '../../models/boss_case_result.dart';
+import '../../models/dashboard_challenge.dart';
+import '../../models/pandas_challenge.dart';
 import '../../models/placement_question.dart';
+import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
 import '../../models/sql_table_schema.dart';
 import '../../repositories/boss_case_result_repository.dart';
 import '../../repositories/content_repository.dart';
 import '../../repositories/mastery_repository.dart';
+import '../../repositories/portfolio_repository.dart';
 import '../../repositories/sql_workspace_repository.dart';
+import '../../repositories/task_performance_repository.dart';
 import '../../services/adaptive_review_service.dart';
 import '../../services/sql_runner.dart';
 import 'game_progress.dart';
@@ -43,6 +48,15 @@ final bossCaseResultRepositoryProvider =
   return BossCaseResultRepository(ref.watch(appDatabaseProvider));
 });
 
+final taskPerformanceRepositoryProvider =
+    Provider<TaskPerformanceRepository>((ref) {
+  return TaskPerformanceRepository(ref.watch(appDatabaseProvider));
+});
+
+final portfolioRepositoryProvider = Provider<PortfolioRepository>((ref) {
+  return PortfolioRepository(ref.watch(appDatabaseProvider));
+});
+
 final tasksProvider = FutureProvider<List<AnalystTask>>((ref) {
   return ref.read(contentRepositoryProvider).loadCareerTasks();
 });
@@ -54,6 +68,16 @@ final placementQuestionsProvider =
 
 final bossCaseProvider = FutureProvider<BossCaseDefinition>((ref) {
   return ref.read(contentRepositoryProvider).loadBossCase();
+});
+
+final pandasChallengesProvider =
+    FutureProvider<List<PandasChallenge>>((ref) {
+  return ref.read(contentRepositoryProvider).loadPandasChallenges();
+});
+
+final dashboardChallengesProvider =
+    FutureProvider<List<DashboardChallenge>>((ref) {
+  return ref.read(contentRepositoryProvider).loadDashboardChallenges();
 });
 
 final skillProfileProvider = FutureProvider<List<SkillMastery>>((ref) {
@@ -71,6 +95,10 @@ final sqlSchemasProvider = FutureProvider<List<SqlTableSchema>>((ref) {
 final bossCaseResultProvider =
     FutureProvider.family<BossCaseResult?, String>((ref, caseId) {
   return ref.read(bossCaseResultRepositoryProvider).load(caseId);
+});
+
+final portfolioSnapshotProvider = FutureProvider<PortfolioSnapshot>((ref) {
+  return ref.read(portfolioRepositoryProvider).load();
 });
 
 final reviewQueueProvider = FutureProvider<List<ReviewItem>>((ref) async {

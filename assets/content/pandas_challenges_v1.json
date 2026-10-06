@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "packId": "pandas-lab-v1",
+  "challenges": [
+    {
+      "id": "pandas-filter-001",
+      "title": "Filter Completed Orders",
+      "difficulty": "Beginner",
+      "context": "Your manager only wants completed orders and two useful columns.",
+      "datasetName": "orders_df",
+      "rows": [
+        {"order_id": "O1", "status": "completed", "revenue": 1200},
+        {"order_id": "O2", "status": "cancelled", "revenue": 900},
+        {"order_id": "O3", "status": "completed", "revenue": 2300}
+      ],
+      "prompt": "Using dataframe df, filter status == 'completed' and return only order_id and revenue.",
+      "requiredFragments": ["df[", "status", "completed", "order_id", "revenue"],
+      "operation": {
+        "type": "filter_equals",
+        "column": "status",
+        "value": "completed",
+        "selectColumns": ["order_id", "revenue"]
+      },
+      "expectedRows": [
+        {"order_id": "O1", "revenue": 1200},
+        {"order_id": "O3", "revenue": 2300}
+      ],
+      "hints": [
+        "Boolean filtering uses df[condition].",
+        "Compare df['status'] with 'completed'.",
+        "After filtering, select [['order_id', 'revenue']]."
+      ],
+      "explanation": "Boolean indexing reduces the dataframe to qualifying rows; a second bracket list selects only the requested columns.",
+      "xp": 80
+    },
+    {
+      "id": "pandas-fillna-001",
+      "title": "Repair Missing Regions",
+      "difficulty": "Beginner",
+      "context": "A small CRM extract has missing region labels. The agreed business rule is to preserve them as Unknown rather than guessing.",
+      "datasetName": "customers_df",
+      "rows": [
+        {"customer": "Asha", "region": "North"},
+        {"customer": "Ravi", "region": null},
+        {"customer": "Sana", "region": ""}
+      ],
+      "prompt": "Use fillna('Unknown') on the region column. Treat the blank example as missing for this guided exercise.",
+      "requiredFragments": ["region", "fillna(", "unknown"],
+      "operation": {
+        "type": "fillna",
+        "column": "region",
+        "value": "Unknown"
+      },
+      "expectedRows": [
+        {"customer": "Asha", "region": "North"},
+        {"customer": "Ravi", "region": "Unknown"},
+        {"customer": "Sana", "region": "Unknown"}
+      ],
+      "hints": [
+        "Work on a single Series: df['region'].",
+        "The Pandas method is fillna().",
+        "Assign the cleaned Series back to df['region']."
+      ],
+      "explanation": "Explicit missing-value rules are safer than inventing categories. In production, empty strings would normally be normalized to null first.",
+      "xp": 80
+    },
+    {
+      "id": "pandas-groupby-001",
+      "title": "Revenue by Segment",
+      "difficulty": "Intermediate",
+      "context": "Finance needs one row per customer segment with total completed revenue.",
+      "datasetName": "segment_orders_df",
+      "rows": [
+        {"segment": "Consumer", "revenue": 1200},
+        {"segment": "Enterprise", "revenue": 3200},
+        {"segment": "Consumer", "revenue": 800},
+        {"segment": "Enterprise", "revenue": 2800},
+        {"segment": "SMB", "revenue": 2300}
+      ],
+      "prompt": "Group df by segment and sum revenue.",
+      "requiredFragments": ["groupby(", "segment", "revenue", "sum("],
+      "operation": {
+        "type": "group_sum",
+        "groupBy": "segment",
+        "valueColumn": "revenue",
+        "outputColumn": "revenue"
+      },
+      "expectedRows": [
+        {"segment": "Consumer", "revenue": 2000},
+        {"segment": "Enterprise", "revenue": 6000},
+        {"segment": "SMB", "revenue": 2300}
+      ],
+      "hints": [
+        "This changes the grain from order rows to segment rows.",
+        "Use groupby('segment').",
+        "Select revenue and call sum()."
+      ],
+      "explanation": "groupby creates one group per segment and aggregation collapses each group to its revenue total.",
+      "xp": 110
+    },
+    {
+      "id": "pandas-sort-head-001",
+      "title": "Find the Top Two Orders",
+      "difficulty": "Intermediate",
+      "context": "The account team wants the two largest orders for immediate follow-up.",
+      "datasetName": "orders_df",
+      "rows": [
+        {"order_id": "O1", "revenue": 1200},
+        {"order_id": "O2", "revenue": 3200},
+        {"order_id": "O3", "revenue": 2300},
+        {"order_id": "O4", "revenue": 800}
+      ],
+      "prompt": "Sort revenue descending and return the first two rows with order_id and revenue.",
+      "requiredFragments": ["sort_values(", "revenue", "ascending=false", "head(2"],
+      "operation": {
+        "type": "sort_head",
+        "sortBy": "revenue",
+        "descending": true,
+        "head": 2,
+        "selectColumns": ["order_id", "revenue"]
+      },
+      "expectedRows": [
+        {"order_id": "O2", "revenue": 3200},
+        {"order_id": "O3", "revenue": 2300}
+      ],
+      "hints": [
+        "Use sort_values() on revenue.",
+        "Descending means ascending=False.",
+        "Chain .head(2) after the sort."
+      ],
+      "explanation": "Sorting before head ensures the retained records are the largest values, not simply the first physical rows.",
+      "xp": 110
+    },
+    {
+      "id": "pandas-ratio-001",
+      "title": "Create Conversion Rate",
+      "difficulty": "Advanced",
+      "context": "Marketing needs a derived conversion-rate percentage for every channel.",
+      "datasetName": "funnel_df",
+      "rows": [
+        {"channel": "Search", "clicks": 1000, "conversions": 80},
+        {"channel": "Social", "clicks": 800, "conversions": 40}
+      ],
+      "prompt": "Create df['conversion_rate'] as conversions / clicks * 100.",
+      "requiredFragments": ["conversion_rate", "conversions", "clicks", "*100"],
+      "operation": {
+        "type": "assign_ratio",
+        "numerator": "conversions",
+        "denominator": "clicks",
+        "newColumn": "conversion_rate",
+        "multiplier": 100,
+        "precision": 1
+      },
+      "expectedRows": [
+        {"channel": "Search", "clicks": 1000, "conversions": 80, "conversion_rate": 8.0},
+        {"channel": "Social", "clicks": 800, "conversions": 40, "conversion_rate": 5.0}
+      ],
+      "hints": [
+        "New columns are assigned with df['new_column'] = ...",
+        "The rate is conversions divided by clicks.",
+        "Multiply the decimal by 100 for a percentage."
+      ],
+      "explanation": "Vectorized column arithmetic calculates the metric for every row without a Python loop.",
+      "xp": 140
+    },
+    {
+      "id": "pandas-filter-group-001",
+      "title": "Completed Revenue by Region",
+      "difficulty": "Advanced",
+      "context": "The CFO wants completed revenue by region, excluding cancelled and refunded records.",
+      "datasetName": "regional_orders_df",
+      "rows": [
+        {"region": "North", "status": "completed", "revenue": 1200},
+        {"region": "North", "status": "cancelled", "revenue": 500},
+        {"region": "West", "status": "completed", "revenue": 3200},
+        {"region": "North", "status": "completed", "revenue": 800},
+        {"region": "West", "status": "refunded", "revenue": 400}
+      ],
+      "prompt": "Filter to completed rows, then group by region and sum revenue.",
+      "requiredFragments": ["status", "completed", "groupby(", "region", "revenue", "sum("],
+      "operation": {
+        "type": "filter_group_sum",
+        "filterColumn": "status",
+        "filterValue": "completed",
+        "groupBy": "region",
+        "valueColumn": "revenue",
+        "outputColumn": "revenue"
+      },
+      "expectedRows": [
+        {"region": "North", "revenue": 2000},
+        {"region": "West", "revenue": 3200}
+      ],
+      "hints": [
+        "Apply the status filter before aggregating.",
+        "Store the filtered frame or chain the operations.",
+        "Then groupby('region')['revenue'].sum()."
+      ],
+      "explanation": "Filtering defines the valid revenue population before aggregation. Reversing or omitting that business rule changes the KPI.",
+      "xp": 150
+    }
+  ]
+}

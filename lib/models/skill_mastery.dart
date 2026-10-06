@@ -25,6 +25,8 @@ class SkillMastery {
         return 'Statistics';
       case 'business':
         return 'Business';
+      case 'python':
+        return 'Python/Pandas';
       default:
         return skillKey;
     }
@@ -40,6 +42,8 @@ class SkillMastery {
         return 'Stats';
       case 'business':
         return 'Business';
+      case 'python':
+        return 'Pandas';
       default:
         return displayName;
     }

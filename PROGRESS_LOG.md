@@ -19,80 +19,62 @@
 
 Status: **IMPLEMENTED**
 
-Implemented:
-- Flutter app shell with Material 3 light/dark themes.
-- Riverpod app state.
-- Offline career progress persistence with SharedPreferences.
-- Career dashboard showing role, XP and company metrics.
-- Data-driven JSON task loader.
-- Spreadsheet, SQL and statistics/communication starter tickets.
-- Progressive hints, retry, scoring and explanations.
-
 ## Phase 2 — Offline analyst workstation and skill model
 
 Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #6)**
-
-Implemented:
-- Real local SQLite with seeded campaign and messy customer datasets.
-- Actual read-only SQL execution and result-set grading.
-- Placement testing across five core analyst skills.
-- Persistent mastery, weak-topic tracking and 1/3/7-day review scheduling.
-- Skill radar.
-- Messy data-cleaning ticket.
-- Tests for SQLite, grading, mastery and app launch.
 
 ## Phase 3 — Practice Gym, adaptive review and Boss Case
 
 Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #8)**
 
+## Phase 4 — Python/Pandas Lab, dashboard decisions and portfolio evidence
+
+Status: **IMPLEMENTED — CI verification pending**
+
 Implemented:
-1. Added Practice Gym organized by skill and difficulty.
-2. Added adaptive review queue using due dates and mastery priority.
-3. Added home-screen recommendations from weakest unfinished skills.
-4. Added SQL schema browser and reusable read-only scratchpad.
-5. Migrated SQLite schema from v1 to v2 without deleting Phase 2 progress.
-6. Added `customers` and `orders` learning tables.
-7. Added real SQLite JOIN ticket.
-8. Added real filtering + aggregation ticket.
-9. Added first weekly Boss Case combining cleaning → SQL → KPI → chart → executive recommendation.
-10. Added weighted 100-point Boss Case rubric.
-11. Added persistent `boss_case_results` performance record.
-12. Boss Case component performance updates skill mastery.
-13. Added automated tests for adaptive review priority, recommendations, SQL schemas/queries, Boss Case scoring and Boss Case persistence.\n14. CI run #8 passed static analysis, all 16 tests, Android debug APK build, and artifact upload.
+1. Added an offline guided Python/Pandas simulator without bundling a heavy Python runtime.
+2. Added six dataframe challenges across Beginner, Intermediate and Advanced.
+3. Added Pandas workflows for filtering, missing-value handling, groupby aggregation, sorting/top-N, derived ratios and filter+aggregate.
+4. Added a dedicated persistent Python/Pandas mastery skill through SQLite migration.
+5. Added Dashboard Decision Lab covering chart choice, KPI design, visual critique and executive hierarchy.
+6. Added persistent `task_performance` evidence with best score, attempt count and last completion time.
+7. Added Portfolio Evidence screen combining strongest ticket/lab work with Boss Case results.
+8. Added offline portfolio summary export via clipboard.
+9. Expanded Practice Gym with skill filtering and additional Beginner/Intermediate/Advanced tasks.
+10. Migrated SQLite schema to version 3 without deleting prior career, mastery or Boss Case data.
+11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.
 
-### Content schema migration
+### Technical choice
 
-- Ticket schema version 3 adds optional `difficulty`.
-- v1/v2 ticket packs remain readable and default to Beginner.
-- Boss Cases are stored in a separate versioned JSON definition.
-- Core learning content remains data-driven and offline.
+- Pandas is implemented as a guided simulator: learner code must contain the requested Pandas operation pattern, while equivalent dataframe operations execute locally in Dart.
+- This deliberately avoids shipping CPython/NumPy/Pandas binaries into the Android APK and protects low-end-device performance.
+- Portfolio export is plain structured text copied to the system clipboard, requiring no cloud account or file permission.
 
-## Known Phase 3 limitations
+## Known Phase 4 limitations
 
-- Practice Gym currently uses the existing ticket library; it does not yet contain large task banks per difficulty.
-- Review queue selects one representative task per weak/due skill.
-- SQL scratchpad is intentionally read-only and limited to local seeded learning tables.
-- Boss Case currently saves the latest score per case rather than a full attempt history.
-- Python/Pandas execution is not implemented yet.
-- Dashboard-building, portfolio export, Interview Mode and Daily Challenge remain future work.
+- The Pandas Lab is not an arbitrary Python interpreter; unsupported Python syntax is not executed.
+- Portfolio export is text/clipboard rather than PDF or DOCX.
+- Only the best/latest evidence is stored, not a full immutable attempt history.
+- Dashboard lab uses decision challenges rather than a freeform drag-and-drop dashboard builder.
+- Daily Challenge and Interview Mode are not implemented yet.
+- Company progression beyond the first e-commerce company is still future work.
 - Cloud sync and leaderboards remain optional.
 
-## Exact next step — Phase 4
+## Exact next step — Phase 5
 
-**Build the Python/Pandas Lab + dashboard decision lab + portfolio evidence system.**
+**Build Interview Mode + Daily Challenge + career/company progression.**
 
-Phase 4 should:
-1. Add an offline Python/Pandas learning simulator focused on dataframe operations.
-2. Add data-manipulation tickets equivalent to common analyst Pandas workflows.
-3. Add dashboard/chart selection exercises with KPI design and visual critique.
-4. Add a portfolio evidence record containing completed Boss Cases and strongest ticket scores.
-5. Add exportable portfolio summaries without requiring cloud sync.
-6. Expand Practice Gym task banks across Beginner, Intermediate and Advanced.
-7. Add automated tests for Pandas-style grading and portfolio calculations.
-8. Preserve low-end Android performance and full offline operation.
+Phase 5 should:
+1. Add SQL, statistics, case and behavioral interview rounds with timed/untimed practice.
+2. Add data-driven Daily Challenge rotation and streak integration.
+3. Add performance-review gates for promotion and progression from e-commerce to SaaS.
+4. Add role-specific difficulty and ticket mixes as the player progresses.
+5. Add interview feedback rubrics and saved interview performance.
+6. Add automated tests for promotion gates, daily challenge selection and interview scoring.
+7. Preserve full offline functionality.
 
-Do not start Phase 5 until Phase 4 is explicitly requested or Phase 4 is complete and the user asks to continue.
+Do not start Phase 6 until Phase 5 is explicitly requested or Phase 5 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 3: Added Practice Gym, adaptive review/recommendations, SQL schema scratchpad, real JOIN/filter tickets, and the first persisted multi-step Boss Case with weighted scoring.`
+`2026-10-06 — Phase 4: Added guided offline Pandas workflows, dashboard/KPI decision practice, persistent strongest-score evidence, portfolio summary export, and expanded multi-level Practice Gym content.`
