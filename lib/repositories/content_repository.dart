@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../models/analyst_task.dart';
 import '../models/boss_case.dart';
+import '../models/capstone.dart';
 import '../models/dashboard_challenge.dart';
 import '../models/daily_challenge.dart';
 import '../models/interview.dart';
@@ -79,6 +80,14 @@ class ContentRepository {
     return cases;
   }
 
+  Future<CapstoneDefinition> loadCapstone() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/capstone_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    return CapstoneDefinition.fromJson(decoded);
+  }
+
   Future<List<PandasChallenge>> loadPandasChallenges() async {
     final raw = await rootBundle.loadString(
       'assets/content/pandas_challenges_v1.json',
@@ -134,6 +143,7 @@ class ContentRepository {
       'assets/content/interview_bank_v1.json',
       'assets/content/interview_hospital_v1.json',
       'assets/content/interview_logistics_v1.json',
+      'assets/content/interview_gauntlet_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
