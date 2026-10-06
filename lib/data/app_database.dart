@@ -22,7 +22,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 6,
+        version: 7,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -35,6 +35,8 @@ class AppDatabase {
           await _seedPhaseSix(db);
           await _createPhaseSevenSchema(db);
           await _seedPhaseSeven(db);
+          await _createPhaseEightSchema(db);
+          await _seedPhaseEight(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -55,6 +57,10 @@ class AppDatabase {
           if (oldVersion < 6) {
             await _createPhaseSevenSchema(db);
             await _seedPhaseSeven(db);
+          }
+          if (oldVersion < 7) {
+            await _createPhaseEightSchema(db);
+            await _seedPhaseEight(db);
           }
         },
       ),
@@ -236,6 +242,44 @@ class AppDatabase {
     ''');
   }
 
+  Future<void> _createPhaseEightSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS logistics_shipments (
+        shipment_id TEXT PRIMARY KEY,
+        ship_date TEXT NOT NULL,
+        origin_hub TEXT NOT NULL,
+        destination_hub TEXT NOT NULL,
+        route_code TEXT NOT NULL,
+        promised_hours REAL NOT NULL,
+        actual_hours REAL NOT NULL,
+        weight_kg REAL NOT NULL,
+        status TEXT NOT NULL,
+        shipping_cost REAL NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS logistics_inventory_flow (
+        flow_date TEXT NOT NULL,
+        warehouse TEXT NOT NULL,
+        sku_category TEXT NOT NULL,
+        inbound_units INTEGER NOT NULL,
+        outbound_units INTEGER NOT NULL,
+        ending_units INTEGER NOT NULL,
+        capacity_units INTEGER NOT NULL,
+        PRIMARY KEY (flow_date, warehouse, sku_category)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS logistics_throughput_forecast (
+        day_name TEXT PRIMARY KEY,
+        expected_shipments INTEGER NOT NULL,
+        planned_throughput INTEGER NOT NULL
+      )
+    ''');
+  }
+
   Future<void> _seedCore(Database db) async {
     final campaignRows = <Map<String, Object?>>[
       {'date': '2026-09-28', 'channel': 'Search', 'spend': 12000, 'conversions': 84},
@@ -407,6 +451,66 @@ class AppDatabase {
     for (final row in forecast) {
       batch.insert(
         'hospital_capacity_forecast',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> _seedPhaseEight(Database db) async {
+    final shipments = <Map<String, Object?>>[
+      {'shipment_id': 'S001', 'ship_date': '2026-10-01', 'origin_hub': 'North', 'destination_hub': 'West', 'route_code': 'NW-1', 'promised_hours': 24, 'actual_hours': 21, 'weight_kg': 120, 'status': 'delivered', 'shipping_cost': 4200},
+      {'shipment_id': 'S002', 'ship_date': '2026-10-01', 'origin_hub': 'North', 'destination_hub': 'South', 'route_code': 'NS-1', 'promised_hours': 30, 'actual_hours': 37, 'weight_kg': 180, 'status': 'delivered', 'shipping_cost': 6100},
+      {'shipment_id': 'S003', 'ship_date': '2026-10-02', 'origin_hub': 'West', 'destination_hub': 'East', 'route_code': 'WE-1', 'promised_hours': 28, 'actual_hours': 26, 'weight_kg': 90, 'status': 'delivered', 'shipping_cost': 3900},
+      {'shipment_id': 'S004', 'ship_date': '2026-10-02', 'origin_hub': 'South', 'destination_hub': 'North', 'route_code': 'SN-1', 'promised_hours': 30, 'actual_hours': 35, 'weight_kg': 210, 'status': 'delivered', 'shipping_cost': 6800},
+      {'shipment_id': 'S005', 'ship_date': '2026-10-03', 'origin_hub': 'North', 'destination_hub': 'West', 'route_code': 'NW-1', 'promised_hours': 24, 'actual_hours': 25, 'weight_kg': 135, 'status': 'delivered', 'shipping_cost': 4500},
+      {'shipment_id': 'S006', 'ship_date': '2026-10-03', 'origin_hub': 'West', 'destination_hub': 'East', 'route_code': 'WE-1', 'promised_hours': 28, 'actual_hours': 34, 'weight_kg': 160, 'status': 'delivered', 'shipping_cost': 5200},
+      {'shipment_id': 'S007', 'ship_date': '2026-10-04', 'origin_hub': 'South', 'destination_hub': 'North', 'route_code': 'SN-1', 'promised_hours': 30, 'actual_hours': 29, 'weight_kg': 200, 'status': 'delivered', 'shipping_cost': 6400},
+      {'shipment_id': 'S008', 'ship_date': '2026-10-04', 'origin_hub': 'North', 'destination_hub': 'South', 'route_code': 'NS-1', 'promised_hours': 30, 'actual_hours': 42, 'weight_kg': 170, 'status': 'delivered', 'shipping_cost': 6300},
+      {'shipment_id': 'S009', 'ship_date': '2026-10-05', 'origin_hub': 'North', 'destination_hub': 'West', 'route_code': 'NW-1', 'promised_hours': 24, 'actual_hours': 20, 'weight_kg': 110, 'status': 'delivered', 'shipping_cost': 4100},
+      {'shipment_id': 'S010', 'ship_date': '2026-10-05', 'origin_hub': 'West', 'destination_hub': 'East', 'route_code': 'WE-1', 'promised_hours': 28, 'actual_hours': 31, 'weight_kg': 145, 'status': 'delivered', 'shipping_cost': 5000}
+    ];
+
+    final inventory = <Map<String, Object?>>[
+      {'flow_date': '2026-10-01', 'warehouse': 'WH-North', 'sku_category': 'Fast', 'inbound_units': 420, 'outbound_units': 390, 'ending_units': 820, 'capacity_units': 1000},
+      {'flow_date': '2026-10-01', 'warehouse': 'WH-West', 'sku_category': 'Fast', 'inbound_units': 360, 'outbound_units': 330, 'ending_units': 760, 'capacity_units': 900},
+      {'flow_date': '2026-10-02', 'warehouse': 'WH-North', 'sku_category': 'Fast', 'inbound_units': 470, 'outbound_units': 410, 'ending_units': 880, 'capacity_units': 1000},
+      {'flow_date': '2026-10-02', 'warehouse': 'WH-West', 'sku_category': 'Fast', 'inbound_units': 410, 'outbound_units': 345, 'ending_units': 825, 'capacity_units': 900},
+      {'flow_date': '2026-10-03', 'warehouse': 'WH-North', 'sku_category': 'Slow', 'inbound_units': 210, 'outbound_units': 150, 'ending_units': 940, 'capacity_units': 1000},
+      {'flow_date': '2026-10-03', 'warehouse': 'WH-West', 'sku_category': 'Slow', 'inbound_units': 180, 'outbound_units': 120, 'ending_units': 870, 'capacity_units': 900},
+      {'flow_date': '2026-10-04', 'warehouse': 'WH-North', 'sku_category': 'Fast', 'inbound_units': 440, 'outbound_units': 430, 'ending_units': 950, 'capacity_units': 1000},
+      {'flow_date': '2026-10-04', 'warehouse': 'WH-West', 'sku_category': 'Fast', 'inbound_units': 390, 'outbound_units': 380, 'ending_units': 880, 'capacity_units': 900}
+    ];
+
+    final forecast = <Map<String, Object?>>[
+      {'day_name': 'Monday', 'expected_shipments': 420, 'planned_throughput': 450},
+      {'day_name': 'Tuesday', 'expected_shipments': 440, 'planned_throughput': 450},
+      {'day_name': 'Wednesday', 'expected_shipments': 455, 'planned_throughput': 460},
+      {'day_name': 'Thursday', 'expected_shipments': 470, 'planned_throughput': 460},
+      {'day_name': 'Friday', 'expected_shipments': 520, 'planned_throughput': 480},
+      {'day_name': 'Saturday', 'expected_shipments': 570, 'planned_throughput': 500},
+      {'day_name': 'Sunday', 'expected_shipments': 490, 'planned_throughput': 470}
+    ];
+
+    final batch = db.batch();
+    for (final row in shipments) {
+      batch.insert(
+        'logistics_shipments',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in inventory) {
+      batch.insert(
+        'logistics_inventory_flow',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in forecast) {
+      batch.insert(
+        'logistics_throughput_forecast',
         row,
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
