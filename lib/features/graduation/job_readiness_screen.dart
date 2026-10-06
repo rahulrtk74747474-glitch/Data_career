@@ -100,14 +100,17 @@ class JobReadinessScreen extends ConsumerWidget {
                             : 'Best: ${gauntletResult.bestScore}/100 • ${gauntletResult.attempts} attempts',
                       ),
                       trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => InterviewSessionScreen(
-                            round: round,
-                            timed: true,
-                          ),
-                        ),
-                      ),
+                      enabled: progress.companyJourneyCompleted,
+                      onTap: progress.companyJourneyCompleted
+                          ? () => Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => InterviewSessionScreen(
+                                    round: round,
+                                    timed: true,
+                                  ),
+                                ),
+                              )
+                          : null,
                     ),
                   ),
                 ),
