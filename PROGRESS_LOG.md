@@ -160,24 +160,71 @@ Implemented:
 - Free-text interview grading remains local rubric/keyword based.
 - Cloud save, leaderboards and multi-device synchronization remain optional future work.
 
-## Exact next step — Phase 8
+## Phase 8 — Logistics Analytics and company-journey completion
 
-**Build the Logistics Analytics chapter and complete the current company journey.**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #167)**
 
-Phase 8 should:
-1. Add hospital → Logistics Network Co. unlock requirements using the independent company-chapter review system.
-2. Add safe synthetic logistics data for shipments, warehouses, routes, SLA performance, delays, inventory flow and operating cost.
-3. Add logistics SQL, cleaning, statistics, forecasting, cohort/route, cost and executive-communication tickets.
-4. Add a logistics-specific Boss Case, Daily Challenges and interview/case content.
-5. Add network-capacity, SLA, delay-driver and demand/throughput forecasting exercises.
-6. Add a company-journey completion experience after Logistics while leaving the career role ladder unchanged.
-7. Add notification-tap routing to the relevant Daily Challenge or Review Queue screen.
-8. Improve portfolio delivery with a share/open workflow and evaluate native PDF export without compromising low-end-device performance.
-9. Add automated tests for hospital→logistics unlocks, logistics datasets/content, Boss Case routing, notification destinations and final company-journey completion.
-10. Preserve offline-first operation, synthetic data and low-end Android performance.
+Implemented:
+1. Added Hospital → **Logistics Network Co.** unlock through the independent Company Chapter Review.
+2. Kept the role ladder unchanged; Head of Analytics can continue into Logistics without an artificial seventh role.
+3. Added separately persisted `companyJourneyCompleted` state after the final Logistics evidence review.
+4. Migrated SQLite to version 7 without deleting earlier career, mastery, interview, Boss Case or evidence data.
+5. Added synthetic `logistics_shipments` data covering routes, promised/actual transit hours, weight, status and shipping cost.
+6. Added synthetic `logistics_inventory_flow` data for warehouse inbound/outbound flow, ending inventory and capacity.
+7. Added synthetic `logistics_throughput_forecast` data for day-of-week demand and planned throughput.
+8. Added ten Advanced Logistics Analytics career tickets covering SQL, cleaning, statistics, SLA, throughput gaps, warehouse utilization, normalized cost, route cohorts, delay-driver analysis, forecasting and executive communication.
+9. Added a Logistics-specific end-to-end Boss Case with data-quality controls, real SQLite route-SLA grading, KPI interpretation, chart choice and executive recommendation.
+10. Added five Logistics Daily Challenge entries.
+11. Added a chapter-gated Logistics Analytics Interview with SQL, forecast interpretation and a rubric-scored network decision case.
+12. Added Logistics tables to the SQL Workstation.
+13. Extended company-specific interview evidence so Hospital → Logistics uses the hospital interview and the final Logistics review uses the logistics interview.
+14. Added the final five-company completion experience while leaving all Practice, Daily, Interview, Boss Case and Portfolio modes available afterward.
+15. Added notification payload routing for Daily Challenge and Review Queue.
+16. Reminder taps now deep-link to the correct screen, including launches where the notification opened the app from a stopped state.
+17. Reminder initialization is non-blocking so unsupported/test platforms cannot prevent the offline app from starting.
+18. Added native portfolio **Open report** and **Share report** actions using the generated local HTML evidence report.
+19. Kept browser **Print → Save as PDF** as the PDF workflow instead of bundling a heavyweight PDF engine into the low-end-device app.
+20. Added automated tests for Hospital→Logistics gates, final journey persistence, Logistics task/Boss routing, Logistics SQLite calculations, content packs, SQL schema exposure and notification destinations.
+21. CI run #167 passed Android wrapper generation/configuration, static analysis, all **77 tests**, Android debug APK build and artifact upload.
 
-Do not start Phase 9 until Phase 8 is explicitly requested or Phase 8 is complete and the user asks to continue.
+### Phase 8 technical notes
+
+- Logistics content uses synthetic operational data only.
+- Route-level SLA differences are taught as investigation signals, not proof that a route code itself causes delay.
+- Forecasting exercises explicitly use seasonality, error validation and scenario ranges rather than deterministic forecasts.
+- Final company-journey completion is persisted independently from both career role and active company chapter.
+- Notification deep-links use the existing local notification payloads; no cloud messaging is required.
+- Portfolio Open/Share adds native device delivery while retaining a lightweight HTML report.
+- Native PDF generation was evaluated but not added in this phase because the HTML → browser Print/Save-as-PDF workflow provides the output without adding a larger PDF-rendering dependency.
+- SQLite v7 preserves all Phase 1–7 progress.
+
+## Known Phase 8 limitations
+
+- The five-company journey is complete; there are no additional industry chapters yet.
+- Logistics is a compact training curriculum rather than a full transportation-management system.
+- Free-text interview grading remains local rubric/keyword based.
+- Portfolio PDF still relies on the device/browser print flow rather than a one-tap native PDF generator.
+- Cloud save, leaderboards and multi-device synchronization remain optional future work.
+- Resume and graduation/certification workflows are not yet generated from the evidence ledger.
+
+## Exact next step — Phase 9
+
+**Build the Graduation & Job-Readiness system with a final cross-company capstone.**
+
+Phase 9 should:
+1. Add a final offline capstone that combines cleaning, SQL, statistics, KPI/dashboard reasoning and executive recommendation across a realistic multi-step analyst case.
+2. Add a transparent Job Readiness Score derived from skill mastery, career/company completion, Boss Cases, interviews and immutable evidence rather than XP alone.
+3. Add readiness breakdowns for SQL, spreadsheets/cleaning, statistics, Python/Pandas, business communication and interviews, with targeted remediation recommendations.
+4. Add an Interview Gauntlet that mixes timed SQL, statistics, analytics case and behavioral questions in one hiring-loop simulation.
+5. Add an offline resume-bullet builder that converts completed evidence into editable achievement bullets without inventing unsupported claims.
+6. Add portfolio project cards summarizing the strongest cross-company cases, skills used, scores and evidence.
+7. Add graduation/certificate eligibility rules tied to the capstone and readiness evidence.
+8. Add a lightweight locally generated completion certificate and improve portfolio/certificate share/open delivery while protecting APK size.
+9. Add automated tests for capstone scoring, readiness calculations, certificate eligibility, evidence-to-resume transformations and mixed interview scoring.
+10. Preserve offline-first operation, synthetic data, immutable attempt history and low-end Android performance.
+
+Do not start Phase 10 until Phase 9 is explicitly requested or Phase 9 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 7: Decoupled company chapters from career roles, added synthetic Hospital Analytics operations/capacity training with Boss/Daily/Interview content, and added user-controlled local Daily/Review reminders.`
+`2026-10-06 — Phase 8: Completed the Logistics Analytics chapter and five-company journey, added synthetic SLA/capacity/cost/forecast training, Logistics Boss/Daily/Interview content, notification deep-links, and native portfolio open/share delivery.`
