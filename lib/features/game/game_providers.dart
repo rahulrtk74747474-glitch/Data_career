@@ -257,23 +257,24 @@ final companyChapterReviewProvider =
       .length;
 
   int? interviewScore;
+  String? requiredRoundKey;
   switch (progress.companyKey) {
+    case 'logistics':
+      requiredRoundKey = 'logistics_analytics';
+      break;
+    case 'hospital':
+      requiredRoundKey = 'hospital_analytics';
+      break;
     case 'bank':
-      final bankResults = interviews
-          .where((result) => result.roundKey == 'bank_analytics')
-          .toList();
-      if (bankResults.isNotEmpty) {
-        interviewScore = bankResults
-            .map((result) => result.bestScore)
-            .reduce((a, b) => a > b ? a : b);
-      }
+      requiredRoundKey = 'bank_analytics';
       break;
     case 'saas':
       final generalResults = interviews
           .where(
             (result) =>
                 result.roundKey != 'bank_analytics' &&
-                result.roundKey != 'hospital_analytics',
+                result.roundKey != 'hospital_analytics' &&
+                result.roundKey != 'logistics_analytics',
           )
           .toList();
       if (generalResults.isNotEmpty) {
@@ -282,6 +283,17 @@ final companyChapterReviewProvider =
             .reduce((a, b) => a > b ? a : b);
       }
       break;
+  }
+
+  if (requiredRoundKey != null) {
+    final companyResults = interviews
+        .where((result) => result.roundKey == requiredRoundKey)
+        .toList();
+    if (companyResults.isNotEmpty) {
+      interviewScore = companyResults
+          .map((result) => result.bestScore)
+          .reduce((a, b) => a > b ? a : b);
+    }
   }
 
   return CompanyChapterProgressionService.evaluate(
