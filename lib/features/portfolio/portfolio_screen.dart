@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/portfolio_snapshot.dart';
+import '../../models/skill_mastery.dart';
 import '../../services/portfolio_service.dart';
 import '../game/game_providers.dart';
 
@@ -32,34 +33,82 @@ class PortfolioScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Your strongest completed tickets, labs and Boss Cases are saved locally and can be exported as a text summary for a resume, application or interview-prep document.',
+                'Best-score summaries are paired with an append-only attempt timeline. Export a local HTML report and open it in a browser to print or save as PDF.',
               ),
               const SizedBox(height: 16),
               _PortfolioMetrics(snapshot: portfolio),
               const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () async {
-                  final skillData =
-                      skills.valueOrNull ?? const [];
-                  final summary = PortfolioService.buildSummary(
-                    snapshot: portfolio,
-                    role: progress.role,
-                    xp: progress.xp,
-                    skills: skillData,
-                  );
-                  await Clipboard.setData(ClipboardData(text: summary));
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Portfolio summary copied to clipboard.',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.copy_all_outlined),
-                label: const Text('Copy portfolio summary'),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final skillData =
+                          skills.valueOrNull ?? const <SkillMastery>[];
+                      final summary = PortfolioService.buildSummary(
+                        snapshot: portfolio,
+                        role: progress.role,
+                        xp: progress.xp,
+                        skills: skillData,
+                        companyName: progress.companyName,
+                      );
+                      await Clipboard.setData(ClipboardData(text: summary));
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Portfolio summary copied to clipboard.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.copy_all_outlined),
+                    label: const Text('Copy summary'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () async {
+                      final skillData =
+                          skills.valueOrNull ?? const <SkillMastery>[];
+                      try {
+                        final exportResult = await ref
+                            .read(portfolioExportServiceProvider)
+                            .exportHtml(
+                              snapshot: portfolio,
+                              role: progress.role,
+                              companyName: progress.companyName,
+                              xp: progress.xp,
+                              skills: skillData,
+                            );
+                        await Clipboard.setData(
+                          ClipboardData(text: exportResult.path),
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'HTML portfolio saved locally (${exportResult.bytes} bytes). File path copied.',
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (error) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Could not save portfolio report: $error',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.description_outlined),
+                    label: const Text('Save HTML / PDF-ready report'),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Text(
@@ -104,6 +153,28 @@ class PortfolioScreen extends ConsumerWidget {
                       trailing: Text('${result.totalScore}/100'),
                     ),
                   ),
+              const SizedBox(height: 18),
+              Text(
+                'Immutable attempt history',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              if (portfolio.attempts.isEmpty)
+                const Text('No recorded attempts yet.')
+              else
+                for (final attempt in portfolio.attempts.take(30))
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.history_outlined),
+                      title: Text(attempt.title),
+                      subtitle: Text(
+                        '${attempt.sourceType} • ${attempt.mode} • ${attempt.companyKey}\n'
+                        '${attempt.completedAt.toLocal().toString().split('.').first}',
+                      ),
+                      isThreeLine: true,
+                      trailing: Text('${attempt.score}/100'),
+                    ),
+                  ),
             ],
           ),
         ),
@@ -132,8 +203,12 @@ class _PortfolioMetrics extends StatelessWidget {
               value: snapshot.evidenceCount.toString(),
             ),
             _Metric(
-              label: 'Avg best',
-              value: '${snapshot.averageBestScore.toStringAsFixed(0)}%',
+              label: 'Attempts',
+              value: snapshot.attemptCount.toString(),
+            ),
+            _Metric(
+              label: 'Avg attempt',
+              value: '${snapshot.averageAttemptScore.toStringAsFixed(0)}%',
             ),
             _Metric(
               label: 'Strongest',
