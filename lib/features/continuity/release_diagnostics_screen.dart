@@ -51,6 +51,10 @@ class ReleaseDiagnosticsScreen extends ConsumerWidget {
                   value: 'v${value.weeklyCaseSchema}',
                 ),
                 _DiagnosticTile(
+                  label: 'Content schemas',
+                  value: value.contentSchemaSummary,
+                ),
+                _DiagnosticTile(
                   label: 'Cloud save',
                   value: value.cloudConfigured
                       ? 'Configured for this build'
