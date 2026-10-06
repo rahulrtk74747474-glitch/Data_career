@@ -56,15 +56,20 @@ class SpreadsheetSimulator {
 
     try {
       final result = _execute(challenge.rows, command);
-      final grade = SqlResultGrader.grade(
-        actualRows: result,
-        expectedRows: challenge.expectedRows,
-      );
+      final orderMatters = command.toUpperCase().startsWith('SORT ');
+      final correct = orderMatters
+          ? _orderedRowsEqual(result, challenge.expectedRows)
+          : SqlResultGrader.grade(
+              actualRows: result,
+              expectedRows: challenge.expectedRows,
+            ).isCorrect;
       return SpreadsheetRunResult(
-        isCorrect: grade.isCorrect,
-        feedback: grade.isCorrect
+        isCorrect: correct,
+        feedback: correct
             ? 'Correct. The workbook output matches the expected result.'
-            : 'The command ran, but the resulting rows do not yet match the requested output.',
+            : orderMatters
+                ? 'The rows are present, but the requested sort order is not correct yet.'
+                : 'The command ran, but the resulting rows do not yet match the requested output.',
         rows: result,
       );
     } on FormatException catch (error) {
@@ -261,6 +266,32 @@ class SpreadsheetSimulator {
           'Cleaning supports FILL, DEDUPE, TITLE, NONNEGATIVE or DATE_ISO.',
         );
     }
+  }
+
+  static bool _orderedRowsEqual(
+    List<Map<String, Object?>> actual,
+    List<Map<String, dynamic>> expected,
+  ) {
+    if (actual.length != expected.length) return false;
+    for (var index = 0; index < actual.length; index++) {
+      final a = actual[index];
+      final e = expected[index];
+      if (a.length != e.length) return false;
+      for (final entry in e.entries) {
+        final actualValue = a[entry.key];
+        final expectedValue = entry.value;
+        if (actualValue is num && expectedValue is num) {
+          if ((actualValue.toDouble() - expectedValue.toDouble()).abs() >
+              0.000001) {
+            return false;
+          }
+        } else if (actualValue?.toString().trim().toLowerCase() !=
+            expectedValue?.toString().trim().toLowerCase()) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   static int _compare(Object? a, Object? b) {
