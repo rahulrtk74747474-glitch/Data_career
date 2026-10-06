@@ -11,6 +11,7 @@ class SqlWorkspaceRepository {
     'customer_dirty',
     'customers',
     'orders',
+    'saas_account_monthly',
     'bank_accounts',
     'loan_portfolio',
     'bank_transactions',
