@@ -31,7 +31,7 @@ class PromotionReview {
 class CareerProgressionService {
   const CareerProgressionService._();
 
-  static const _completedRequirements = [3, 6, 9, 12, 15];
+  static const _completedRequirements = [3, 6, 9, 10, 10];
   static const _masteryRequirements = [40.0, 55.0, 65.0, 72.0, 80.0];
   static const _interviewRequirements = [0, 0, 0, 65, 75];
 
