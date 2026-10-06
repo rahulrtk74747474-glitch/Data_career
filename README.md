@@ -1,22 +1,26 @@
 # DataQuest: Analyst Career
 
-DataQuest is an offline-first Flutter game that trains a student for real data-analyst work by simulating company tickets, datasets, analysis, decisions and career progression.
+DataQuest is an offline-first Flutter game that trains a student for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews and career progression.
 
-## Current build: Phase 4
+## Current build: Phase 5
 
-Phase 4 adds the first Python/Pandas, dashboard-design and portfolio-evidence systems:
+Phase 5 adds the career loop around the technical training:
 
-- Guided offline Python/Pandas dataframe simulator
-- Six Pandas challenges across Beginner, Intermediate and Advanced
-- Filtering, fillna, groupby/sum, sorting/head, derived ratios and filter+aggregate workflows
-- Dedicated Python/Pandas mastery skill
-- Dashboard Decision Lab for KPI design, chart choice, hierarchy and visual critique
-- Persistent strongest-score/attempt evidence for tickets and labs
-- Portfolio Evidence screen combining strongest work and Boss Case results
-- Offline copy-to-clipboard portfolio summary
-- Expanded Practice Gym task bank and skill filter
-- SQLite v3 migration that preserves earlier progress
-- Automated Pandas and portfolio tests
+- Interview Mode with SQL, statistics, analytics case and behavioral rounds
+- Timed and untimed interview practice
+- Real local SQLite grading for SQL interview questions
+- Weighted offline rubrics for case and behavioral answers
+- Persistent best/latest interview scores and attempt counts
+- Data-driven Daily Challenge rotation
+- Consecutive-day Daily Challenge streaks and one-time daily bonus XP
+- Performance Review promotion gates instead of XP-only promotion
+- E-commerce → SaaS company progression at Data Analyst level
+- SaaS-specific retention, MRR-proxy, experiment and NRR tickets
+- Role/company-aware Career Mode ticket difficulty
+- SQLite v4 migration preserving earlier progress
+- 35-test verified regression suite
+
+Phase 4 features remain available: Practice Gym, adaptive review, SQL workstation, Boss Case, Python/Pandas Lab, Dashboard Decision Lab and Portfolio Evidence.
 
 Read `PROGRESS_LOG.md` before making future changes.
 
@@ -28,7 +32,7 @@ flutter pub get
 flutter run
 ```
 
-## Test
+## Verify
 
 ```bash
 flutter analyze
@@ -41,8 +45,8 @@ flutter test
 flutter build apk --release
 ```
 
-GitHub Actions also analyzes, tests and builds a debug APK on pushes to `main`.
+GitHub Actions analyzes, tests and builds a debug APK on pushes to `main`.
 
 ## Offline design
 
-No Python runtime is bundled. The Pandas Lab validates realistic Pandas operation patterns and executes equivalent dataframe operations in Dart against small synthetic datasets. This keeps the app lightweight and fully offline while teaching common analyst workflows.
+The core career game, interviews, Daily Challenges, SQLite SQL execution, guided Pandas simulator, mastery, performance reviews and portfolio systems work entirely on-device. No cloud account is required.
