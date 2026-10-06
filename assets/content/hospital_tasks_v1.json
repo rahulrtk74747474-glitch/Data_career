@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 4,
+  "packId": "career-hospital-operations-v1",
+  "tasks": [
+    {
+      "id": "hospital-wait-sql-001",
+      "title": "Compare Average Wait Time by Unit",
+      "department": "Operations",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "Hospital operations leadership wants an aggregate comparison of waiting time across service units. The dataset contains unit-day totals only and no patient identifiers.",
+      "goal": "Calculate average waiting time at the correct unit grain.",
+      "deliverable": "Return unit and avg_wait_minutes rounded to one decimal.",
+      "answerType": "sql_result",
+      "prompt": "Query hospital_daily_ops. Return unit and ROUND(AVG(avg_wait_minutes), 1) AS avg_wait_minutes, grouped by unit.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"unit": "Emergency", "avg_wait_minutes": 59.0},
+        {"unit": "Outpatient", "avg_wait_minutes": 30.0}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Each row is one unit-day, not one patient.",
+        "Use AVG(avg_wait_minutes).",
+        "GROUP BY unit and round to one decimal."
+      ],
+      "explanation": "This gives an aggregate operational comparison. It does not measure clinical severity or quality of treatment.",
+      "xp": 200,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "hospital-cleaning-001",
+      "title": "Validate the Operations Extract",
+      "department": "Data Quality",
+      "skill": "Data Cleaning",
+      "skillKey": "cleaning",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "Before a capacity meeting, you receive an aggregate unit-day operations extract.",
+      "goal": "Identify the required validation checks without inventing patient-level data.",
+      "deliverable": "Select every required data-quality action.",
+      "answerType": "multi_select",
+      "prompt": "Which checks should be completed before analysis?",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [
+        "Check that each unit-date combination is unique.",
+        "Validate non-negative counts and waiting times.",
+        "Check that completed visits do not exceed arrivals.",
+        "Treat zero staffed beds as not-applicable for non-bed outpatient capacity unless documentation says otherwise."
+      ],
+      "hints": [
+        "Start with grain and uniqueness.",
+        "Then check impossible numeric relationships.",
+        "A zero can mean not-applicable, not necessarily missing."
+      ],
+      "explanation": "Operational data quality starts with grain, domain constraints, and documented meaning. Do not fabricate missing patient-level values.",
+      "xp": 185,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": [
+        "Check that each unit-date combination is unique.",
+        "Validate non-negative counts and waiting times.",
+        "Check that completed visits do not exceed arrivals.",
+        "Treat zero staffed beds as not-applicable for non-bed outpatient capacity unless documentation says otherwise.",
+        "Create synthetic patient names for every row.",
+        "Replace every unusual value with the overall average without investigation."
+      ]
+    },
+    {
+      "id": "hospital-wait-stats-001",
+      "title": "Interpret an Average Wait-Time Increase",
+      "department": "Quality Operations",
+      "skill": "Statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "Emergency average wait time rose on two days. Leadership asks whether the experience worsened for everyone.",
+      "goal": "Avoid overclaiming from an average.",
+      "deliverable": "Choose the strongest statistical response.",
+      "answerType": "choice",
+      "prompt": "What should the analyst say?",
+      "expectedAnswer": "The average suggests an operational signal, but inspect the wait-time distribution or percentiles and volume mix before claiming every visit experienced a longer wait",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "A mean can move because of a tail.",
+        "Volume mix can change the aggregate.",
+        "Operational conclusions should distinguish a signal from a universal claim."
+      ],
+      "explanation": "Means can hide skew and subgroup changes. A good analyst requests distributional evidence before making a broad statement.",
+      "xp": 190,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "The average suggests an operational signal, but inspect the wait-time distribution or percentiles and volume mix before claiming every visit experienced a longer wait",
+        "Every visit definitely waited longer",
+        "Average wait time is never useful",
+        "The result proves a clinical treatment problem"
+      ]
+    },
+    {
+      "id": "hospital-capacity-gap-sql-001",
+      "title": "Find Forecast Capacity Gaps",
+      "department": "Capacity Planning",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "The operations team has a day-of-week arrival forecast and planned service capacity.",
+      "goal": "Identify days where expected demand exceeds planned capacity.",
+      "deliverable": "Return day_name and capacity_gap for positive gaps only.",
+      "answerType": "sql_result",
+      "prompt": "Query hospital_capacity_forecast. Return day_name and expected_arrivals - planned_capacity AS capacity_gap where expected arrivals exceed planned capacity.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"day_name": "Thursday", "capacity_gap": 5},
+        {"day_name": "Friday", "capacity_gap": 15},
+        {"day_name": "Saturday", "capacity_gap": 25},
+        {"day_name": "Sunday", "capacity_gap": 5}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "The gap is demand minus planned capacity.",
+        "Filter to rows where expected_arrivals > planned_capacity.",
+        "No GROUP BY is required because the table is already one row per day name."
+      ],
+      "explanation": "The query identifies operational planning pressure. A gap is not a clinical recommendation; it is an input to staffing and scheduling review.",
+      "xp": 210,
+      "datasetName": "hospital_capacity_forecast",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "hospital-forecasting-001",
+      "title": "Choose a Demand Forecasting Approach",
+      "department": "Capacity Planning",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "Saturday demand is repeatedly higher than early-week demand. The manager asks for next month’s staffing input.",
+      "goal": "Choose a defensible operations-forecasting method.",
+      "deliverable": "Select the best forecasting approach.",
+      "answerType": "choice",
+      "prompt": "Which approach is strongest for a first operational forecast?",
+      "expectedAnswer": "Model day-of-week seasonality using several comparable weeks, validate forecast error, and add scenario ranges before staffing decisions",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "One busy day should not define the future.",
+        "Repeated day-of-week patterns are a form of seasonality.",
+        "Forecasts need back-testing or error measurement."
+      ],
+      "explanation": "Operational forecasting should capture repeatable patterns, quantify error, and support scenarios rather than present one point estimate as certainty.",
+      "xp": 195,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Model day-of-week seasonality using several comparable weeks, validate forecast error, and add scenario ranges before staffing decisions",
+        "Use only the single busiest Saturday as next month’s forecast",
+        "Assume every day has identical demand",
+        "Increase capacity without measuring forecast error"
+      ]
+    },
+    {
+      "id": "hospital-cohort-ops-001",
+      "title": "Design an Operational Cohort Comparison",
+      "department": "Operations",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "Leadership wants to know whether a process change improved throughput over time.",
+      "goal": "Define comparable operational cohorts without using patient identity or clinical characteristics.",
+      "deliverable": "Choose a fair cohort design.",
+      "answerType": "choice",
+      "prompt": "How should the analyst structure the comparison?",
+      "expectedAnswer": "Compare the same unit and comparable day-of-week periods before and after the process change, while tracking arrivals and capacity so mix changes are visible",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "Keep the operating context comparable.",
+        "Day-of-week demand may differ.",
+        "Throughput can change because demand or capacity changed."
+      ],
+      "explanation": "Operational cohorts should hold the process context as constant as practical and surface demand/capacity mix rather than attributing every change to the intervention.",
+      "xp": 195,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Compare the same unit and comparable day-of-week periods before and after the process change, while tracking arrivals and capacity so mix changes are visible",
+        "Compare Emergency before the change with Outpatient after the change",
+        "Ignore arrival volume because throughput is all that matters",
+        "Use patient names to create cohorts"
+      ]
+    },
+    {
+      "id": "hospital-exec-communication-001",
+      "title": "Write the Operations Executive Message",
+      "department": "Executive Office",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You found recurring weekend capacity gaps and higher Emergency waiting times in the synthetic operations data.",
+      "goal": "Communicate an actionable but appropriately bounded insight.",
+      "deliverable": "Choose the strongest executive recommendation.",
+      "answerType": "choice",
+      "prompt": "Which message is best?",
+      "expectedAnswer": "Weekend demand exceeds planned capacity in the forecast and Emergency waits are higher on selected days; validate the pattern over more weeks and test scheduling or staffing scenarios before operational rollout",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "State the evidence first.",
+        "Separate operations findings from clinical conclusions.",
+        "Recommend a controlled next step, not an unsupported certainty."
+      ],
+      "explanation": "Strong executive communication is concise, decision-oriented, and explicit about uncertainty and scope.",
+      "xp": 205,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Weekend demand exceeds planned capacity in the forecast and Emergency waits are higher on selected days; validate the pattern over more weeks and test scheduling or staffing scenarios before operational rollout",
+        "The data proves poor medical care",
+        "Immediately change treatment protocols",
+        "Hide the capacity gap until more data arrives"
+      ]
+    }
+  ]
+}
