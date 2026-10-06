@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "packId": "daily-rotation-v3",
+  "packId": "daily-rotation-v4",
   "challenges": [
     {
       "id": "daily-ecom-sheet",
@@ -126,6 +126,41 @@
       "taskId": "hospital-cohort-ops-001",
       "bonusXp": 90,
       "companyKey": "hospital",
+      "minCareerLevel": 5
+    },
+    {
+      "id": "daily-logistics-sla",
+      "taskId": "logistics-sla-sql-001",
+      "bonusXp": 100,
+      "companyKey": "logistics",
+      "minCareerLevel": 5
+    },
+    {
+      "id": "daily-logistics-clean",
+      "taskId": "logistics-cleaning-001",
+      "bonusXp": 95,
+      "companyKey": "logistics",
+      "minCareerLevel": 5
+    },
+    {
+      "id": "daily-logistics-throughput",
+      "taskId": "logistics-throughput-gap-sql-001",
+      "bonusXp": 105,
+      "companyKey": "logistics",
+      "minCareerLevel": 5
+    },
+    {
+      "id": "daily-logistics-warehouse",
+      "taskId": "logistics-warehouse-utilization-sql-001",
+      "bonusXp": 105,
+      "companyKey": "logistics",
+      "minCareerLevel": 5
+    },
+    {
+      "id": "daily-logistics-cost",
+      "taskId": "logistics-cost-sql-001",
+      "bonusXp": 105,
+      "companyKey": "logistics",
       "minCareerLevel": 5
     }
   ]
