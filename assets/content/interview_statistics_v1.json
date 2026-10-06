@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "statistics",
+    "title": "Statistics Interview",
+    "description": "Interpret uncertainty, experiments and causality without hiding behind formulas.",
+    "durationSeconds": 300,
+    "questions": [
+      {
+        "id": "stats-interview-1",
+        "context": "An A/B test estimates +3% lift, with a 95% interval from -2% to +8%.",
+        "prompt": "What is the strongest interpretation?",
+        "answerType": "choice",
+        "options": [
+          "The estimate is promising but uncertain; the interval includes harm and benefit, so avoid claiming a proven lift",
+          "The variant definitely improves conversion by exactly 3%",
+          "The test proves there is no effect",
+          "Ignore the interval because the point estimate is positive"
+        ],
+        "expectedAnswer": "The estimate is promising but uncertain; the interval includes harm and benefit, so avoid claiming a proven lift",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "The point estimate and interval should be interpreted together."
+      },
+      {
+        "id": "stats-interview-2",
+        "context": "Users who enable notifications retain better than users who do not.",
+        "prompt": "Which next step best addresses causality?",
+        "answerType": "choice",
+        "options": [
+          "Randomize an eligible notification intervention or use a credible causal design before making a causal claim",
+          "Announce that notifications are the sole reason for retention",
+          "Delete users who disabled notifications",
+          "Use a pie chart to settle the question"
+        ],
+        "expectedAnswer": "Randomize an eligible notification intervention or use a credible causal design before making a causal claim",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "Observed adoption can be confounded by user intent or engagement."
+      }
+    ]
+  }]
+}
