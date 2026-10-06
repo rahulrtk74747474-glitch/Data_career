@@ -22,11 +22,17 @@ class _DataQuestAppState extends ConsumerState<DataQuestApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final launchPayload = await ref.read(reminderSchedulerProvider).initialize(
-            onPayload: _openNotificationPayload,
-          );
-      if (launchPayload != null && mounted) {
-        _openNotificationPayload(launchPayload);
+      try {
+        final launchPayload =
+            await ref.read(reminderSchedulerProvider).initialize(
+                  onPayload: _openNotificationPayload,
+                );
+        if (launchPayload != null && mounted) {
+          _openNotificationPayload(launchPayload);
+        }
+      } catch (_) {
+        // Reminder support must never prevent the offline learning app
+        // from starting on unsupported/test platforms.
       }
     });
   }
