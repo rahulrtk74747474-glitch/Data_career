@@ -206,6 +206,7 @@ class HomeScreen extends ConsumerWidget {
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
       await ref.read(taskPerformanceRepositoryProvider).resetAll();
       await ref.read(interviewResultRepositoryProvider).resetAll();
+      await ref.read(evidenceRepositoryProvider).resetAll();
       ref.invalidate(skillProfileProvider);
       ref.invalidate(placementCompletedProvider);
       ref.invalidate(reviewQueueProvider);
