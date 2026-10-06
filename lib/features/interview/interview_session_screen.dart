@@ -285,6 +285,7 @@ class _InterviewSessionScreenState
     ref.invalidate(interviewResultsProvider);
     ref.invalidate(skillProfileProvider);
     ref.invalidate(promotionReviewProvider);
+    ref.invalidate(companyChapterReviewProvider);
     ref.invalidate(portfolioSnapshotProvider);
 
     if (!mounted) return;
