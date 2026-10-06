@@ -25,20 +25,46 @@ void main() {
     expect(blocked.passed, isFalse);
     expect(passed.passed, isTrue);
     expect(passed.targetChapter, 3);
+    expect(passed.finalAvailableChapter, isFalse);
   });
 
-  test('hospital is final company chapter available in Phase 7', () {
+  test('hospital chapter unlocks logistics after hospital evidence', () {
+    final progress = _progress(chapter: 3);
+
+    final blocked = CompanyChapterProgressionService.evaluate(
+      progress: progress,
+      completedCurrentCompanyTickets: 5,
+      skills: _skills(82),
+      bossCaseScore: 78,
+      interviewScore: 77,
+    );
+    final passed = CompanyChapterProgressionService.evaluate(
+      progress: progress,
+      completedCurrentCompanyTickets: 5,
+      skills: _skills(84),
+      bossCaseScore: 82,
+      interviewScore: 84,
+    );
+
+    expect(blocked.passed, isFalse);
+    expect(passed.passed, isTrue);
+    expect(passed.targetChapter, 4);
+    expect(passed.finalAvailableChapter, isFalse);
+  });
+
+  test('logistics chapter becomes final journey completion review', () {
     final review = CompanyChapterProgressionService.evaluate(
-      progress: _progress(chapter: 3),
-      completedCurrentCompanyTickets: 7,
-      skills: _skills(90),
-      bossCaseScore: 100,
-      interviewScore: 100,
+      progress: _progress(chapter: 4),
+      completedCurrentCompanyTickets: 6,
+      skills: _skills(88),
+      bossCaseScore: 90,
+      interviewScore: 90,
     );
 
     expect(review.finalAvailableChapter, isTrue);
-    expect(review.passed, isFalse);
-    expect(review.targetChapter, 3);
+    expect(review.isJourneyCompletionReview, isTrue);
+    expect(review.targetChapter, 4);
+    expect(review.passed, isTrue);
   });
 
   test('legacy save without companyChapter derives bank at Lead level', () {
@@ -52,12 +78,28 @@ void main() {
     expect(progress.companyKey, 'bank');
     expect(progress.resolvedCompanyChapter, 2);
     expect(progress.toJson()['companyChapter'], 2);
+    expect(progress.companyJourneyCompleted, isFalse);
+  });
+
+  test('journey completion is separately persisted from role and chapter', () {
+    final progress = GameProgress.fromJson({
+      'xp': 2600,
+      'careerLevel': 5,
+      'companyChapter': 4,
+      'companyJourneyCompleted': true,
+      'completedTaskIds': <String>[],
+      'completedDailyDates': <String>[],
+    });
+
+    expect(progress.role, 'Head of Analytics');
+    expect(progress.companyKey, 'logistics');
+    expect(progress.companyJourneyCompleted, isTrue);
   });
 }
 
 GameProgress _progress({required int chapter}) {
   return GameProgress(
-    xp: 2400,
+    xp: 2600,
     streak: 0,
     completedTaskIds: const {},
     revenueIndex: 100,
