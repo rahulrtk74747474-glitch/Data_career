@@ -89,7 +89,7 @@ class _ReviewCard extends StatelessWidget {
         leading: CircleAvatar(child: Text(rank.toString())),
         title: Text(item.task.title),
         subtitle: Text(
-          item.skill.displayName + ' • ' + item.reason,
+          '${item.skill.displayName} • ${item.reason}',
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

@@ -114,8 +114,7 @@ class HomeScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  Text(progress.completedTaskIds.length.toString() +
-                      ' completed'),
+                  Text('${progress.completedTaskIds.length} completed'),
                 ],
               ),
               const SizedBox(height: 8),
@@ -214,7 +213,7 @@ class _FeatureGrid extends StatelessWidget {
         'Review Queue',
         reviewCount == 0
             ? 'Nothing due'
-            : reviewCount.toString() + ' priority reviews',
+            : '$reviewCount priority reviews',
         Icons.replay,
         onReview,
       ),
@@ -290,7 +289,7 @@ class _Recommendations extends StatelessWidget {
                 leading: const Icon(Icons.auto_awesome),
                 title: Text(task.title),
                 subtitle:
-                    Text(task.skill + ' • ' + task.difficulty),
+                    Text('${task.skill} • ${task.difficulty}'),
                 onTap: () => onOpen(task),
               ),
             ),
@@ -351,11 +350,7 @@ class _SkillSummaryCard extends StatelessWidget {
         leading: const Icon(Icons.psychology_alt_outlined),
         title: const Text('Adaptive learning'),
         subtitle: Text(
-          'Weakest now: ' +
-              weakest.displayName +
-              ' (' +
-              weakest.mastery.toStringAsFixed(0) +
-              '%).',
+          'Weakest now: ${weakest.displayName} (${weakest.mastery.toStringAsFixed(0)}%).',
         ),
       ),
     );
@@ -389,12 +384,8 @@ class _CareerCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               progress.xp >= 2000
-                  ? progress.xp.toString() +
-                      ' XP • Top career level reached'
-                  : progress.xp.toString() +
-                      ' / ' +
-                      progress.nextRoleXp.toString() +
-                      ' XP to next role',
+                  ? '${progress.xp} XP • Top career level reached'
+                  : '${progress.xp} / ${progress.nextRoleXp} XP to next role',
             ),
           ],
         ),
@@ -418,7 +409,7 @@ class _MetricGrid extends StatelessWidget {
       ),
       (
         label: 'Churn',
-        value: progress.churnRate.toStringAsFixed(1) + '%',
+        value: '${progress.churnRate.toStringAsFixed(1)}%',
         icon: Icons.person_remove_alt_1,
       ),
       (
@@ -428,7 +419,7 @@ class _MetricGrid extends StatelessWidget {
       ),
       (
         label: 'Satisfaction',
-        value: progress.satisfaction.toStringAsFixed(0) + '%',
+        value: '${progress.satisfaction.toStringAsFixed(0)}%',
         icon: Icons.sentiment_satisfied_alt,
       ),
     ];
@@ -495,14 +486,7 @@ class _TaskCard extends StatelessWidget {
         ),
         title: Text(task.title),
         subtitle: Text(
-          task.department +
-              ' • ' +
-              task.skill +
-              ' • ' +
-              task.difficulty +
-              ' • ' +
-              task.xp.toString() +
-              ' XP',
+          '${task.department} • ${task.skill} • ${task.difficulty} • ${task.xp} XP',
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {

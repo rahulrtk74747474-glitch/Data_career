@@ -109,8 +109,7 @@ class _PracticeTaskCard extends StatelessWidget {
         leading: const Icon(Icons.fitness_center),
         title: Text(task.title),
         subtitle: Text(
-          task.difficulty + ' • ' + task.department + ' • ' +
-              task.xp.toString() + ' XP first completion',
+          '${task.difficulty} • ${task.department} • ${task.xp} XP first completion',
         ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {

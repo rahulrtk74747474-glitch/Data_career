@@ -43,8 +43,8 @@ class AdaptiveReviewService {
       final weakness = (100 - skill.mastery).round();
       final priority = (due ? 2000 : 1000) + weakness;
       final reason = due
-          ? 'Due now • mastery ' + skill.mastery.toStringAsFixed(0) + '%'
-          : 'Weak topic • mastery ' + skill.mastery.toStringAsFixed(0) + '%';
+          ? 'Due now • mastery ${skill.mastery.toStringAsFixed(0)}%'
+          : 'Weak topic • mastery ${skill.mastery.toStringAsFixed(0)}%';
 
       items.add(
         ReviewItem(

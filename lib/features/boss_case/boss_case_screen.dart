@@ -119,9 +119,7 @@ class _BossCaseScreenState extends ConsumerState<BossCaseScreen> {
                         const SizedBox(height: 8),
                         Text(
                           _sqlResult!.isSuccess
-                              ? 'SQLite returned ' +
-                                  _sqlResult!.rows.length.toString() +
-                                  ' rows.'
+                              ? 'SQLite returned ${_sqlResult!.rows.length} rows.'
                               : (_sqlResult!.error ?? 'SQL error'),
                         ),
                       ],
@@ -308,9 +306,9 @@ class _PreviousResult extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.history),
-        title: Text('Previous score: ' + result.totalScore.toString() + '/100'),
+        title: Text('Previous score: ${result.totalScore}/100'),
         subtitle: Text(
-          'Saved ' + result.completedAt.toLocal().toString().split('.').first,
+          'Saved ${result.completedAt.toLocal().toString().split('.').first}',
         ),
       ),
     );
@@ -338,7 +336,7 @@ class _StepCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Step ' + number.toString() + ' • ' + title,
+              'Step $number • $title',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 10),
@@ -373,16 +371,18 @@ class _SingleChoice extends StatelessWidget {
         Text(prompt),
         const SizedBox(height: 6),
         for (final option in options)
-          RadioListTile<String>(
-            contentPadding: EdgeInsets.zero,
-            value: option,
-            groupValue: value.isEmpty ? null : value,
-            title: Text(option),
-            onChanged: enabled
-                ? (selected) {
-                    if (selected != null) onChanged(selected);
-                  }
-                : null,
+          Card(
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              leading: Icon(
+                value == option
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+              ),
+              title: Text(option),
+              selected: value == option,
+              onTap: enabled ? () => onChanged(option) : null,
+            ),
           ),
       ],
     );
@@ -419,7 +419,7 @@ class _ScoreCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Boss score: ' + score.total.toString() + '/100',
+              'Boss score: ${score.total}/100',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 10),
@@ -427,11 +427,7 @@ class _ScoreCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
-                  component.$1 +
-                      ': ' +
-                      component.$2.toString() +
-                      '/' +
-                      component.$3.toString(),
+                  '${component.$1}: ${component.$2}/${component.$3}',
                 ),
               ),
           ],

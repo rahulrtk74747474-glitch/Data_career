@@ -25,7 +25,7 @@ class SqlWorkspaceRepository {
       if (!_learningTables.contains(table)) continue;
 
       final columns = await db.rawQuery(
-        'PRAGMA table_info(' + _quoteIdentifier(table) + ')',
+        'PRAGMA table_info(${_quoteIdentifier(table)})',
       );
 
       schemas.add(
@@ -57,12 +57,12 @@ class SqlWorkspaceRepository {
     final safeLimit = limit.clamp(1, 20).toInt();
     final db = await _appDatabase.database;
     return db.rawQuery(
-      'SELECT * FROM ' + _quoteIdentifier(table) + ' LIMIT ?',
+      'SELECT * FROM ${_quoteIdentifier(table)} LIMIT ?',
       [safeLimit],
     );
   }
 
   static String _quoteIdentifier(String identifier) {
-    return '"' + identifier.replaceAll('"', '""') + '"';
+    return '"${identifier.replaceAll('"', '""')}"';
   }
 }

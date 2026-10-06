@@ -57,12 +57,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             Text(task.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 4),
             Text(
-              task.skill +
-                  ' • ' +
-                  task.difficulty +
-                  ' • Up to ' +
-                  task.xp.toString() +
-                  ' XP',
+              '${task.skill} • ${task.difficulty} • Up to ${task.xp} XP',
             ),
             const SizedBox(height: 18),
             _InfoBlock(
@@ -282,16 +277,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
       _submitting = false;
       _solved = true;
       _feedback = widget.reviewMode
-          ? grade.feedback +
-              '\nReview score: ' +
-              score.toString() +
-              '/100. Mastery and next review date updated.'
-          : grade.feedback +
-              '\nScore: ' +
-              score.toString() +
-              '/100. XP, company metrics and ' +
-              task.skill +
-              ' mastery updated.';
+          ? '${grade.feedback}\nReview score: $score/100. Mastery and next review date updated.'
+          : '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
     });
   }
 }
@@ -484,10 +471,7 @@ class _HintPanel extends StatelessWidget {
             ),
             for (var index = 0; index < revealedHints; index++) ...[
               const SizedBox(height: 10),
-              Text('Hint ' +
-                  (index + 1).toString() +
-                  ': ' +
-                  hints[index]),
+              Text('Hint ${index + 1}: ${hints[index]}'),
             ],
             const SizedBox(height: 10),
             OutlinedButton.icon(
@@ -497,7 +481,7 @@ class _HintPanel extends StatelessWidget {
                 revealedHints == 0
                     ? 'Reveal hint 1'
                     : revealedHints < hints.length
-                        ? 'Reveal hint ' + (revealedHints + 1).toString()
+                        ? 'Reveal hint ${revealedHints + 1}'
                         : 'All hints revealed',
               ),
             ),

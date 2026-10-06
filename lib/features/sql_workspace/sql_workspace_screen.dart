@@ -164,9 +164,7 @@ class _SchemaBrowser extends ConsumerWidget {
                 for (final column in schema.columns)
                   Chip(
                     label: Text(
-                      column.name +
-                          (column.type.isEmpty ? '' : ' • ' + column.type) +
-                          (column.primaryKey ? ' • PK' : ''),
+                      '${column.name}${column.type.isEmpty ? '' : ' • ${column.type}'}${column.primaryKey ? ' • PK' : ''}',
                     ),
                   ),
               ],
@@ -183,7 +181,7 @@ class _SchemaBrowser extends ConsumerWidget {
               return const LinearProgressIndicator();
             }
             if (snapshot.hasError) {
-              return Text('Preview error: ' + snapshot.error.toString());
+              return Text('Preview error: ${snapshot.error}');
             }
             final rows = snapshot.data ?? const [];
             if (rows.isEmpty) return const Text('No rows.');
