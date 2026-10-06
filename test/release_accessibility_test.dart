@@ -27,7 +27,12 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    for (var frame = 0; frame < 40; frame++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      if (find.text('E-commerce Co. • Commercial Analytics').evaluate().isNotEmpty) {
+        break;
+      }
+    }
 
     await expectLater(
       tester,
