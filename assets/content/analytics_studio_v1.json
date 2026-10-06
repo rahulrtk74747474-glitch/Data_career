@@ -1,0 +1,767 @@
+{
+  "schemaVersion": 1,
+  "packId": "analytics-studio-v1",
+  "challenges": [
+    {
+      "id": "stats-mean-median-001",
+      "title": "Mean vs Median With Outlier",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "Order values are ₹600, ₹650, ₹700, ₹720 and ₹7,500.",
+      "prompt": "Which statistic best represents a typical order value?",
+      "options": [
+        "Median, because the extreme ₹7,500 order pulls the mean upward",
+        "Mean, because it always describes the middle customer",
+        "Mode, because every dataset must have one"
+      ],
+      "expectedAnswer": "Median, because the extreme ₹7,500 order pulls the mean upward",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Write a short insight explaining the outlier effect and what metric you would report.",
+      "evidenceTerms": [
+        "median",
+        "7500",
+        "outlier",
+        "700"
+      ],
+      "recommendationTerms": [
+        "report",
+        "use",
+        "compare"
+      ],
+      "impactTerms": [
+        "typical",
+        "customer",
+        "order value",
+        "decision"
+      ],
+      "hints": [
+        "Compare mean sensitivity to extreme values.",
+        "The median uses rank, not magnitude.",
+        "A typical-value metric should resist one extreme order."
+      ],
+      "explanation": "Median is more robust than mean when a small sample contains a large outlier.",
+      "xp": 85
+    },
+    {
+      "id": "stats-distribution-skew-001",
+      "title": "Recognize Right-Skewed Delivery Time",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Beginner",
+      "companyKey": "logistics",
+      "context": "Most deliveries take 20–30 hours, but a few disruption cases take 80–100 hours.",
+      "prompt": "What shape is most plausible?",
+      "options": [
+        "Right-skewed distribution",
+        "Perfectly symmetric normal distribution",
+        "Uniform distribution"
+      ],
+      "expectedAnswer": "Right-skewed distribution",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Explain what the long tail means for how you summarize delivery time.",
+      "evidenceTerms": [
+        "20",
+        "30",
+        "80",
+        "100",
+        "tail",
+        "skew"
+      ],
+      "recommendationTerms": [
+        "median",
+        "percentile",
+        "report",
+        "monitor"
+      ],
+      "impactTerms": [
+        "sla",
+        "delivery",
+        "service",
+        "delay"
+      ],
+      "hints": [
+        "The rare values are much larger than the typical values.",
+        "A long high-value tail is right skew.",
+        "Consider percentiles as well as averages."
+      ],
+      "explanation": "A few very long delays create a right tail and can distort the mean.",
+      "xp": 90
+    },
+    {
+      "id": "stats-correlation-001",
+      "title": "Correlation Without Causal Overclaim",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Intermediate",
+      "companyKey": "saas",
+      "context": "Accounts with more training sessions show higher retention, but larger customers also buy more training.",
+      "prompt": "What is the strongest interpretation?",
+      "options": [
+        "Training attendance is associated with retention, but account size and other factors may confound the relationship",
+        "Training sessions definitely cause all retention improvement",
+        "The relationship should be ignored because correlation is useless"
+      ],
+      "expectedAnswer": "Training attendance is associated with retention, but account size and other factors may confound the relationship",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Write the finding and one next analysis that would reduce causal uncertainty.",
+      "evidenceTerms": [
+        "retention",
+        "training",
+        "association",
+        "account size"
+      ],
+      "recommendationTerms": [
+        "control",
+        "segment",
+        "experiment",
+        "test",
+        "compare"
+      ],
+      "impactTerms": [
+        "retention",
+        "churn",
+        "customer"
+      ],
+      "hints": [
+        "Association is useful but not automatically causal.",
+        "Large accounts may differ in many ways.",
+        "Suggest a controlled or segmented next step."
+      ],
+      "explanation": "Confounding variables can explain part of an observed correlation.",
+      "xp": 105
+    },
+    {
+      "id": "stats-ab-test-001",
+      "title": "Interpret an A/B Test",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "context": "Variant B converts at 5.4% versus 5.0% for A, but p=0.18 and the confidence interval includes zero lift.",
+      "prompt": "What should the analyst conclude?",
+      "options": [
+        "The result is inconclusive; the observed lift is not strong enough to rule out sampling noise",
+        "Variant B is proven better because 5.4% is larger",
+        "Variant A is proven better because p is above 0.05"
+      ],
+      "expectedAnswer": "The result is inconclusive; the observed lift is not strong enough to rule out sampling noise",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Summarize the evidence and recommend what to do next.",
+      "evidenceTerms": [
+        "5.4",
+        "5.0",
+        "0.18",
+        "confidence",
+        "inconclusive"
+      ],
+      "recommendationTerms": [
+        "continue",
+        "sample",
+        "power",
+        "rerun",
+        "monitor"
+      ],
+      "impactTerms": [
+        "conversion",
+        "revenue",
+        "risk"
+      ],
+      "hints": [
+        "Observed difference is not the same as statistical evidence.",
+        "The interval still allows no lift.",
+        "Recommend more evidence rather than declaring a winner."
+      ],
+      "explanation": "An inconclusive test should not be converted into a confident winner/loser claim.",
+      "xp": 110
+    },
+    {
+      "id": "stats-type1-error-001",
+      "title": "Control False Positive Risk",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "context": "A team tests 40 customer segments independently and highlights every p<0.05 result.",
+      "prompt": "What risk increases?",
+      "options": [
+        "False positives from multiple testing",
+        "Only false negatives",
+        "No statistical risk because 0.05 is always safe"
+      ],
+      "expectedAnswer": "False positives from multiple testing",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Explain the risk and name a safer analysis practice.",
+      "evidenceTerms": [
+        "40",
+        "multiple",
+        "false positive",
+        "0.05"
+      ],
+      "recommendationTerms": [
+        "adjust",
+        "correction",
+        "pre-register",
+        "validate",
+        "holdout"
+      ],
+      "impactTerms": [
+        "risk",
+        "policy",
+        "decision",
+        "customer"
+      ],
+      "hints": [
+        "More tests create more chances for chance significance.",
+        "Think family-wise error or false discovery.",
+        "Use correction or validation."
+      ],
+      "explanation": "Multiple comparisons inflate the chance of false positive findings unless controlled.",
+      "xp": 125
+    },
+    {
+      "id": "stats-power-001",
+      "title": "Diagnose an Underpowered Experiment",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "context": "A retention experiment has only 80 accounts per arm and the minimum meaningful lift is small.",
+      "prompt": "What is the best diagnosis?",
+      "options": [
+        "The test may be underpowered to detect the meaningful lift reliably",
+        "Small samples always prove no effect",
+        "Power does not depend on sample size"
+      ],
+      "expectedAnswer": "The test may be underpowered to detect the meaningful lift reliably",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "State the limitation and what you would calculate before the next test.",
+      "evidenceTerms": [
+        "80",
+        "power",
+        "sample",
+        "lift"
+      ],
+      "recommendationTerms": [
+        "power analysis",
+        "sample size",
+        "calculate",
+        "extend"
+      ],
+      "impactTerms": [
+        "retention",
+        "decision",
+        "experiment"
+      ],
+      "hints": [
+        "Power depends partly on sample size.",
+        "Small effects require more information.",
+        "Plan the next sample from the minimum detectable effect."
+      ],
+      "explanation": "Power analysis links sample size to the effect size the business cares about detecting.",
+      "xp": 125
+    },
+    {
+      "id": "stats-hypothesis-wait-001",
+      "title": "Hypothesis Test for Wait Time",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "context": "Average wait time rose from 48 to 54 minutes after a scheduling change, with high day-to-day variation.",
+      "prompt": "What is the best next step?",
+      "options": [
+        "Test the change with an appropriate comparison and confidence interval while checking day mix and capacity conditions",
+        "Assume the six-minute increase was caused by scheduling",
+        "Ignore variability because averages are enough"
+      ],
+      "expectedAnswer": "Test the change with an appropriate comparison and confidence interval while checking day mix and capacity conditions",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Write a cautious operational interpretation and next step.",
+      "evidenceTerms": [
+        "48",
+        "54",
+        "variation",
+        "wait"
+      ],
+      "recommendationTerms": [
+        "test",
+        "compare",
+        "confidence",
+        "control"
+      ],
+      "impactTerms": [
+        "wait",
+        "capacity",
+        "service",
+        "operations"
+      ],
+      "hints": [
+        "The average changed, but variability matters.",
+        "Check whether operating mix changed too.",
+        "Use uncertainty around the difference."
+      ],
+      "explanation": "A hypothesis test is useful only alongside assumptions, context and effect-size interpretation.",
+      "xp": 130
+    },
+    {
+      "id": "stats-seasonality-001",
+      "title": "Separate Seasonality From Trend",
+      "mode": "statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "context": "Shipments rise every Friday and Saturday but stay flat across months after adjusting for weekday.",
+      "prompt": "What pattern is most consistent?",
+      "options": [
+        "Day-of-week seasonality without a clear monthly trend",
+        "Strong monthly growth trend",
+        "Pure random noise with no repeatable pattern"
+      ],
+      "expectedAnswer": "Day-of-week seasonality without a clear monthly trend",
+      "chartOptions": [],
+      "expectedChart": "",
+      "kpiOptions": [],
+      "expectedKpis": [],
+      "insightPrompt": "Explain how this should influence a throughput forecast.",
+      "evidenceTerms": [
+        "friday",
+        "saturday",
+        "weekday",
+        "seasonality"
+      ],
+      "recommendationTerms": [
+        "seasonal",
+        "weekday",
+        "forecast",
+        "back-test"
+      ],
+      "impactTerms": [
+        "capacity",
+        "throughput",
+        "staffing",
+        "shipments"
+      ],
+      "hints": [
+        "The pattern repeats by weekday.",
+        "After adjustment, months are flat.",
+        "Forecasts should model the repeatable calendar effect."
+      ],
+      "explanation": "Seasonality is a repeatable calendar pattern and should be modeled separately from trend.",
+      "xp": 130
+    },
+    {
+      "id": "dash-revenue-trend-001",
+      "title": "Executive Revenue Trend",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "The CEO wants monthly revenue direction and whether order volume explains the change.",
+      "prompt": "Choose the visual and KPI set.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Line chart by month",
+        "Pie chart by month",
+        "Single gauge"
+      ],
+      "expectedChart": "Line chart by month",
+      "kpiOptions": [
+        "Revenue",
+        "Orders",
+        "Average order value",
+        "Employee headcount"
+      ],
+      "expectedKpis": [
+        "Revenue",
+        "Orders",
+        "Average order value"
+      ],
+      "insightPrompt": "Write the executive insight you would put below the chart.",
+      "evidenceTerms": [
+        "revenue",
+        "orders",
+        "average order value",
+        "month"
+      ],
+      "recommendationTerms": [
+        "investigate",
+        "monitor",
+        "focus",
+        "compare"
+      ],
+      "impactTerms": [
+        "growth",
+        "revenue",
+        "sales",
+        "margin"
+      ],
+      "hints": [
+        "Time is ordered.",
+        "Separate volume from value per order.",
+        "Avoid unrelated HR metrics."
+      ],
+      "explanation": "A line chart preserves time order; revenue, orders and AOV explain whether growth comes from volume or basket size.",
+      "xp": 95
+    },
+    {
+      "id": "dash-category-bar-001",
+      "title": "Compare Product Categories",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "Merchandising wants to compare revenue and margin across six product categories.",
+      "prompt": "Choose the chart and KPI set.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Horizontal bar chart",
+        "Pie chart with six slices",
+        "Line chart treating categories as dates"
+      ],
+      "expectedChart": "Horizontal bar chart",
+      "kpiOptions": [
+        "Revenue",
+        "Gross margin %",
+        "Units sold",
+        "Website uptime"
+      ],
+      "expectedKpis": [
+        "Revenue",
+        "Gross margin %",
+        "Units sold"
+      ],
+      "insightPrompt": "Write one category comparison insight and a next action.",
+      "evidenceTerms": [
+        "revenue",
+        "margin",
+        "units",
+        "category"
+      ],
+      "recommendationTerms": [
+        "prioritize",
+        "review",
+        "investigate",
+        "test"
+      ],
+      "impactTerms": [
+        "margin",
+        "revenue",
+        "inventory",
+        "profit"
+      ],
+      "hints": [
+        "Categories are discrete, not time.",
+        "Bar length supports comparison.",
+        "Use both scale and profitability."
+      ],
+      "explanation": "Bars make categorical comparison easy; combining revenue, units and margin avoids optimizing on sales alone.",
+      "xp": 95
+    },
+    {
+      "id": "dash-relationship-scatter-001",
+      "title": "Spend vs Conversion Relationship",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Intermediate",
+      "companyKey": "saas",
+      "context": "Marketing asks whether higher campaign spend tends to coincide with more conversions.",
+      "prompt": "Choose the chart and KPIs.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Scatter plot",
+        "Stacked area chart",
+        "Donut chart"
+      ],
+      "expectedChart": "Scatter plot",
+      "kpiOptions": [
+        "Spend",
+        "Conversions",
+        "Cost per conversion",
+        "Office rent"
+      ],
+      "expectedKpis": [
+        "Spend",
+        "Conversions",
+        "Cost per conversion"
+      ],
+      "insightPrompt": "Describe the relationship without claiming causation.",
+      "evidenceTerms": [
+        "spend",
+        "conversion",
+        "cost per conversion",
+        "relationship"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "test",
+        "compare",
+        "investigate"
+      ],
+      "impactTerms": [
+        "acquisition",
+        "cost",
+        "conversion",
+        "marketing"
+      ],
+      "hints": [
+        "Two numeric variables suggest a scatter plot.",
+        "Efficiency matters as well as volume.",
+        "Use association language."
+      ],
+      "explanation": "Scatter plots show numeric relationships; efficiency KPIs help interpret whether extra spend is productive.",
+      "xp": 110
+    },
+    {
+      "id": "dash-retention-cohort-001",
+      "title": "Retention Cohort View",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Intermediate",
+      "companyKey": "saas",
+      "context": "Product wants to know whether newer signup cohorts retain better over months since signup.",
+      "prompt": "Choose the visual and KPIs.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Cohort heatmap",
+        "Single pie chart",
+        "Gauge per customer"
+      ],
+      "expectedChart": "Cohort heatmap",
+      "kpiOptions": [
+        "Month-N retention",
+        "Cohort size",
+        "Churn rate",
+        "Gross office area"
+      ],
+      "expectedKpis": [
+        "Month-N retention",
+        "Cohort size",
+        "Churn rate"
+      ],
+      "insightPrompt": "Write one insight comparing newer and older cohorts.",
+      "evidenceTerms": [
+        "cohort",
+        "retention",
+        "churn",
+        "month"
+      ],
+      "recommendationTerms": [
+        "compare",
+        "investigate",
+        "test",
+        "monitor"
+      ],
+      "impactTerms": [
+        "retention",
+        "churn",
+        "ltv",
+        "revenue"
+      ],
+      "hints": [
+        "Cohort analysis has two time dimensions.",
+        "Heatmaps expose retention decay patterns.",
+        "Always show cohort size."
+      ],
+      "explanation": "Cohort heatmaps make retention decay comparable while cohort size guards against overreading tiny groups.",
+      "xp": 115
+    },
+    {
+      "id": "dash-funnel-kpis-001",
+      "title": "Conversion Funnel Dashboard",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "context": "Growth wants to identify the stage with the largest conversion loss.",
+      "prompt": "Choose the chart and KPI set.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Funnel or ordered stage bar chart",
+        "Map chart",
+        "Scatter plot"
+      ],
+      "expectedChart": "Funnel or ordered stage bar chart",
+      "kpiOptions": [
+        "Stage users",
+        "Stage-to-stage conversion",
+        "Drop-off rate",
+        "Server rack count"
+      ],
+      "expectedKpis": [
+        "Stage users",
+        "Stage-to-stage conversion",
+        "Drop-off rate"
+      ],
+      "insightPrompt": "Write a decision-ready funnel insight.",
+      "evidenceTerms": [
+        "stage",
+        "conversion",
+        "drop-off",
+        "users"
+      ],
+      "recommendationTerms": [
+        "test",
+        "fix",
+        "prioritize",
+        "investigate"
+      ],
+      "impactTerms": [
+        "conversion",
+        "revenue",
+        "customer",
+        "growth"
+      ],
+      "hints": [
+        "Stages have a defined order.",
+        "Show both counts and rates.",
+        "Focus action on the largest meaningful drop."
+      ],
+      "explanation": "Funnel views preserve stage order and expose where users are lost.",
+      "xp": 115
+    },
+    {
+      "id": "dash-executive-hierarchy-001",
+      "title": "Executive Operations Scorecard",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "context": "Hospital operations leadership wants one page for demand, wait, throughput and capacity pressure.",
+      "prompt": "Choose the chart style and KPI set.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Small KPI scorecards plus trend/exception charts",
+        "A dashboard of 20 gauges",
+        "One giant pie chart"
+      ],
+      "expectedChart": "Small KPI scorecards plus trend/exception charts",
+      "kpiOptions": [
+        "Arrivals",
+        "Completed visits",
+        "Average wait",
+        "Capacity utilization",
+        "Cancellations",
+        "Employee birthdays"
+      ],
+      "expectedKpis": [
+        "Arrivals",
+        "Completed visits",
+        "Average wait",
+        "Capacity utilization",
+        "Cancellations"
+      ],
+      "insightPrompt": "Write the headline executive message that should accompany the scorecard.",
+      "evidenceTerms": [
+        "arrivals",
+        "completed",
+        "wait",
+        "capacity",
+        "cancellations"
+      ],
+      "recommendationTerms": [
+        "prioritize",
+        "monitor",
+        "adjust",
+        "investigate"
+      ],
+      "impactTerms": [
+        "capacity",
+        "service",
+        "throughput",
+        "operations"
+      ],
+      "hints": [
+        "Executives need a small decision set.",
+        "Mix level KPIs with trend/exception visuals.",
+        "Avoid decorative metrics."
+      ],
+      "explanation": "Executive dashboards should emphasize a small causal/operational chain rather than maximize chart count.",
+      "xp": 130
+    },
+    {
+      "id": "dash-axis-critique-001",
+      "title": "Spot a Misleading Axis",
+      "mode": "dashboard",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "context": "A bar chart compares delinquency rates of 4.8% and 5.1% but the y-axis starts at 4.7%.",
+      "prompt": "Choose the safer visual treatment and KPI set.",
+      "options": [],
+      "expectedAnswer": "",
+      "chartOptions": [
+        "Bar or dot plot with a non-misleading scale and explicit labels",
+        "Keep the truncated axis because it makes the change easier to see",
+        "3D bars without labels"
+      ],
+      "expectedChart": "Bar or dot plot with a non-misleading scale and explicit labels",
+      "kpiOptions": [
+        "Delinquency rate",
+        "Account count",
+        "Absolute delinquent accounts",
+        "Logo color"
+      ],
+      "expectedKpis": [
+        "Delinquency rate",
+        "Account count",
+        "Absolute delinquent accounts"
+      ],
+      "insightPrompt": "Explain the real change and why the original chart could mislead.",
+      "evidenceTerms": [
+        "4.8",
+        "5.1",
+        "0.3",
+        "axis",
+        "delinquency"
+      ],
+      "recommendationTerms": [
+        "label",
+        "scale",
+        "show",
+        "compare"
+      ],
+      "impactTerms": [
+        "risk",
+        "portfolio",
+        "decision",
+        "delinquency"
+      ],
+      "hints": [
+        "The absolute difference is 0.3 percentage points.",
+        "A truncated bar baseline exaggerates visual size.",
+        "Show denominator/count context too."
+      ],
+      "explanation": "Chart scales should not visually exaggerate small differences; denominators and absolute counts add context.",
+      "xp": 135
+    }
+  ]
+}
