@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "logistics_analytics",
+    "title": "Logistics Analytics Interview",
+    "description": "Advanced network-operations interview on SLA, throughput, warehouse capacity, cost and executive decision support using synthetic data.",
+    "companyKey": "logistics",
+    "minCompanyChapter": 4,
+    "durationSeconds": 600,
+    "questions": [
+      {
+        "id": "logistics-interview-sql-1",
+        "context": "The interviewer asks which routes have the highest late-shipment workload.",
+        "prompt": "Using logistics_shipments, return route_code and COUNT(*) AS late_shipments for rows where actual_hours > promised_hours, grouped by route_code.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"route_code": "NS-1", "late_shipments": 2},
+          {"route_code": "NW-1", "late_shipments": 1},
+          {"route_code": "SN-1", "late_shipments": 1},
+          {"route_code": "WE-1", "late_shipments": 2}
+        ],
+        "criteria": [],
+        "explanation": "A correct answer isolates late shipments before grouping. This measures observed workload, not the root cause of delay."
+      },
+      {
+        "id": "logistics-interview-choice-1",
+        "context": "Saturday forecast demand exceeds planned throughput by 70 shipments.",
+        "prompt": "What is the strongest first recommendation?",
+        "answerType": "choice",
+        "options": [
+          "Treat the gap as a planning signal, validate forecast error and test staffing, routing or capacity scenarios before rollout",
+          "Assume exactly 70 shipments will fail every Saturday",
+          "Double all warehouse capacity immediately",
+          "Remove the Saturday forecast from the report"
+        ],
+        "expectedAnswer": "Treat the gap as a planning signal, validate forecast error and test staffing, routing or capacity scenarios before rollout",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "Forecast gaps support scenario planning under uncertainty; they are not guaranteed failure counts."
+      },
+      {
+        "id": "logistics-interview-case-1",
+        "context": "A route has weak SLA and high normalized cost. Leadership asks whether it should be redesigned.",
+        "prompt": "Describe how you would structure the analysis before recommending a network change.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Define SLA and cost metrics", "weight": 20, "keywords": ["sla", "definition", "cost", "kg", "metric"]},
+          {"label": "Control for shipment mix", "weight": 20, "keywords": ["weight", "distance", "mix", "volume", "route"]},
+          {"label": "Inspect delay drivers", "weight": 20, "keywords": ["delay", "driver", "hub", "capacity", "handoff"]},
+          {"label": "Compare periods or cohorts", "weight": 20, "keywords": ["cohort", "period", "before", "after", "comparable"]},
+          {"label": "Recommend scenario or pilot testing", "weight": 20, "keywords": ["scenario", "pilot", "test", "monitor", "validate"]}
+        ],
+        "explanation": "A strong network case separates service, cost, shipment mix and capacity before recommending a controlled routing or operating change."
+      }
+    ]
+  }]
+}
