@@ -33,7 +33,7 @@ class PortfolioScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Best-score summaries are paired with an append-only attempt timeline. Export a local HTML report and open it in a browser to print or save as PDF.',
+                'Best-score summaries are paired with an append-only attempt timeline. Generate a local HTML report, open it on-device, share it, or use the browser Print → Save as PDF flow.',
               ),
               const SizedBox(height: 16),
               _PortfolioMetrics(snapshot: portfolio),
@@ -67,7 +67,7 @@ class PortfolioScreen extends ConsumerWidget {
                     icon: const Icon(Icons.copy_all_outlined),
                     label: const Text('Copy summary'),
                   ),
-                  FilledButton.icon(
+                  OutlinedButton.icon(
                     onPressed: () async {
                       final skillData =
                           skills.valueOrNull ?? const <SkillMastery>[];
@@ -81,14 +81,16 @@ class PortfolioScreen extends ConsumerWidget {
                               xp: progress.xp,
                               skills: skillData,
                             );
-                        await Clipboard.setData(
-                          ClipboardData(text: exportResult.path),
-                        );
+                        final openResult = await ref
+                            .read(portfolioDeliveryServiceProvider)
+                            .open(exportResult.path);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'HTML portfolio saved locally (${exportResult.bytes} bytes). File path copied.',
+                                openResult.opened
+                                    ? 'Portfolio opened with your device file/browser app.'
+                                    : 'Could not open report: ${openResult.message}',
                               ),
                             ),
                           );
@@ -98,15 +100,66 @@ class PortfolioScreen extends ConsumerWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Could not save portfolio report: $error',
+                                'Could not open portfolio report: $error',
                               ),
                             ),
                           );
                         }
                       }
                     },
-                    icon: const Icon(Icons.description_outlined),
-                    label: const Text('Save HTML / PDF-ready report'),
+                    icon: const Icon(Icons.open_in_new_outlined),
+                    label: const Text('Open report'),
+                  ),
+                  Builder(
+                    builder: (buttonContext) => FilledButton.icon(
+                      onPressed: () async {
+                        final skillData =
+                            skills.valueOrNull ?? const <SkillMastery>[];
+                        try {
+                          final exportResult = await ref
+                              .read(portfolioExportServiceProvider)
+                              .exportHtml(
+                                snapshot: portfolio,
+                                role: progress.role,
+                                companyName: progress.companyName,
+                                xp: progress.xp,
+                                skills: skillData,
+                              );
+                          final box = buttonContext.findRenderObject()
+                              as RenderBox?;
+                          final origin = box == null
+                              ? null
+                              : box.localToGlobal(Offset.zero) & box.size;
+                          final shareResult = await ref
+                              .read(portfolioDeliveryServiceProvider)
+                              .share(
+                                exportResult.path,
+                                sharePositionOrigin: origin,
+                              );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Share result: ${shareResult.status.name}.',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (error) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Could not share portfolio report: $error',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(Icons.share_outlined),
+                      label: const Text('Share report'),
+                    ),
                   ),
                 ],
               ),
