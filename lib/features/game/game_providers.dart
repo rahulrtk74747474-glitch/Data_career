@@ -64,7 +64,7 @@ final cloudRuntimeConfigProvider = Provider<CloudRuntimeConfig>((ref) {
   return CloudRuntimeConfig.fromEnvironment();
 });
 
-final cloudSyncServiceProvider = Provider<SupabaseCloudService>((ref) {
+final cloudSyncServiceProvider = Provider<CloudSyncGateway>((ref) {
   final service = SupabaseCloudService(
     config: ref.watch(cloudRuntimeConfigProvider),
   );
