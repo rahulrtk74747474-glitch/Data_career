@@ -20,6 +20,8 @@ class BossCaseDefinition {
     required this.recommendationOptions,
     required this.recommendationExpected,
     required this.rubric,
+    this.companyKey = 'ecommerce',
+    this.minCareerLevel = 0,
   });
 
   final String id;
@@ -42,6 +44,8 @@ class BossCaseDefinition {
   final List<String> recommendationOptions;
   final String recommendationExpected;
   final Map<String, int> rubric;
+  final String companyKey;
+  final int minCareerLevel;
 
   factory BossCaseDefinition.fromJson(Map<String, dynamic> json) {
     return BossCaseDefinition(
@@ -71,6 +75,8 @@ class BossCaseDefinition {
           List<String>.from(json['recommendationOptions'] as List<dynamic>),
       recommendationExpected: json['recommendationExpected'] as String,
       rubric: Map<String, int>.from(json['rubric'] as Map),
+      companyKey: (json['companyKey'] as String?) ?? 'ecommerce',
+      minCareerLevel: (json['minCareerLevel'] as num?)?.toInt() ?? 0,
     );
   }
 
