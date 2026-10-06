@@ -1,0 +1,1633 @@
+{
+  "schemaVersion": 4,
+  "packId": "generated-sql-advanced-25-v1",
+  "generatedFor": {
+    "skill": "SQL",
+    "level": "Advanced"
+  },
+  "tasks": [
+    {
+      "id": "sql-adv-ecom-01",
+      "title": "Top Order per Segment",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the ecommerce chapter. Top Order per Segment is needed for a decision review.",
+      "goal": "Use ROW_NUMBER to return segment, order_id and revenue for the highest completed order in each segment.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use ROW_NUMBER to return segment, order_id and revenue for the highest completed order in each segment.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "order_id": "O2001",
+          "revenue": 1200
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2004",
+          "revenue": 3200
+        },
+        {
+          "segment": "SMB",
+          "order_id": "O2003",
+          "revenue": 2300
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Join customers to orders.",
+        "Partition ROW_NUMBER by segment.",
+        "Keep row number 1 after filtering completed orders."
+      ],
+      "explanation": "Window ranking finds the top record inside each business segment without losing row detail.",
+      "xp": 190,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-ecom-02",
+      "title": "Completed Revenue Share by Segment",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the ecommerce chapter. Completed Revenue Share by Segment is needed for a decision review.",
+      "goal": "Return segment, completed revenue and share_pct of total completed revenue rounded to one decimal using a window total.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return segment, completed revenue and share_pct of total completed revenue rounded to one decimal using a window total.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "revenue": 3100,
+          "share_pct": 23.1
+        },
+        {
+          "segment": "Enterprise",
+          "revenue": 8000,
+          "share_pct": 59.7
+        },
+        {
+          "segment": "SMB",
+          "revenue": 2300,
+          "share_pct": 17.2
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate by segment first.",
+        "Use SUM(revenue) OVER() as the denominator.",
+        "Multiply by 100.0 and ROUND to one decimal."
+      ],
+      "explanation": "A window denominator preserves each segment while adding whole-company context.",
+      "xp": 190,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-ecom-03",
+      "title": "Customer Cumulative Revenue",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the ecommerce chapter. Customer Cumulative Revenue is needed for a decision review.",
+      "goal": "Return customer_id, order_date, revenue and cumulative_revenue for completed orders using a running SUM partitioned by customer_id.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return customer_id, order_date, revenue and cumulative_revenue for completed orders using a running SUM partitioned by customer_id.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "customer_id": "C001",
+          "order_date": "2026-09-20",
+          "revenue": 1200,
+          "cumulative_revenue": 1200
+        },
+        {
+          "customer_id": "C001",
+          "order_date": "2026-09-21",
+          "revenue": 800,
+          "cumulative_revenue": 2000
+        },
+        {
+          "customer_id": "C002",
+          "order_date": "2026-09-21",
+          "revenue": 2300,
+          "cumulative_revenue": 2300
+        },
+        {
+          "customer_id": "C003",
+          "order_date": "2026-09-22",
+          "revenue": 3200,
+          "cumulative_revenue": 3200
+        },
+        {
+          "customer_id": "C003",
+          "order_date": "2026-09-23",
+          "revenue": 2000,
+          "cumulative_revenue": 5200
+        },
+        {
+          "customer_id": "C004",
+          "order_date": "2026-09-26",
+          "revenue": 1100,
+          "cumulative_revenue": 1100
+        },
+        {
+          "customer_id": "C005",
+          "order_date": "2026-09-24",
+          "revenue": 2800,
+          "cumulative_revenue": 2800
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Filter completed orders.",
+        "PARTITION BY customer_id.",
+        "Use an ordered running SUM from unbounded preceding to current row."
+      ],
+      "explanation": "Partitioned running totals show account-level value accumulation over time.",
+      "xp": 190,
+      "datasetName": "orders",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-ecom-04",
+      "title": "Daily Revenue Delta",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the ecommerce chapter. Daily Revenue Delta is needed for a decision review.",
+      "goal": "Aggregate completed revenue by order_date and return revenue_delta versus the prior available date using LAG.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Aggregate completed revenue by order_date and return revenue_delta versus the prior available date using LAG.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_date": "2026-09-20",
+          "revenue": 1200,
+          "revenue_delta": null
+        },
+        {
+          "order_date": "2026-09-21",
+          "revenue": 3100,
+          "revenue_delta": 1900
+        },
+        {
+          "order_date": "2026-09-22",
+          "revenue": 3200,
+          "revenue_delta": 100
+        },
+        {
+          "order_date": "2026-09-23",
+          "revenue": 2000,
+          "revenue_delta": -1200
+        },
+        {
+          "order_date": "2026-09-24",
+          "revenue": 2800,
+          "revenue_delta": 800
+        },
+        {
+          "order_date": "2026-09-26",
+          "revenue": 1100,
+          "revenue_delta": -1700
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Create daily revenue in a CTE.",
+        "Use LAG(revenue) OVER(ORDER BY order_date).",
+        "Subtract prior revenue from current revenue."
+      ],
+      "explanation": "LAG makes period-over-period change explicit without a self join.",
+      "xp": 190,
+      "datasetName": "orders",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-ecom-05",
+      "title": "Top Two Orders per Segment",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the ecommerce chapter. Top Two Orders per Segment is needed for a decision review.",
+      "goal": "Use ROW_NUMBER to return segment, order_id, revenue and rn for the top two completed orders in each segment.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use ROW_NUMBER to return segment, order_id, revenue and rn for the top two completed orders in each segment.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "order_id": "O2001",
+          "revenue": 1200,
+          "rn": 1
+        },
+        {
+          "segment": "Consumer",
+          "order_id": "O2009",
+          "revenue": 1100,
+          "rn": 2
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2004",
+          "revenue": 3200,
+          "rn": 1
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2007",
+          "revenue": 2800,
+          "rn": 2
+        },
+        {
+          "segment": "SMB",
+          "order_id": "O2003",
+          "revenue": 2300,
+          "rn": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Rank within segment.",
+        "Order each partition by revenue descending.",
+        "Filter rn <= 2 in an outer query."
+      ],
+      "explanation": "Top-N-per-group is a standard advanced SQL pattern for category leaders.",
+      "xp": 190,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-saas-01",
+      "title": "Latest MRR Snapshot per Account",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the saas chapter. Latest MRR Snapshot per Account is needed for a decision review.",
+      "goal": "Use ROW_NUMBER to return account_id, segment, mrr and active for the latest month of every account.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use ROW_NUMBER to return account_id, segment, mrr and active for the latest month of every account.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "S001",
+          "segment": "SMB",
+          "mrr": 1200,
+          "active": 1
+        },
+        {
+          "account_id": "S002",
+          "segment": "Enterprise",
+          "mrr": 5300,
+          "active": 1
+        },
+        {
+          "account_id": "S003",
+          "segment": "SMB",
+          "mrr": 0,
+          "active": 0
+        },
+        {
+          "account_id": "S004",
+          "segment": "MidMarket",
+          "mrr": 2800,
+          "active": 1
+        },
+        {
+          "account_id": "S005",
+          "segment": "Enterprise",
+          "mrr": 4500,
+          "active": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Partition by account_id.",
+        "Order month descending.",
+        "Keep rn = 1."
+      ],
+      "explanation": "Latest-snapshot SQL avoids mixing multiple months when reporting current account state.",
+      "xp": 190,
+      "datasetName": "saas_account_monthly",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-saas-02",
+      "title": "September MRR Change by Account",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the saas chapter. September MRR Change by Account is needed for a decision review.",
+      "goal": "Use LAG to return account_id, September mrr and mrr_change versus August.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use LAG to return account_id, September mrr and mrr_change versus August.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "S001",
+          "mrr": 1200,
+          "mrr_change": 100
+        },
+        {
+          "account_id": "S002",
+          "mrr": 5300,
+          "mrr_change": 100
+        },
+        {
+          "account_id": "S003",
+          "mrr": 0,
+          "mrr_change": -800
+        },
+        {
+          "account_id": "S004",
+          "mrr": 2800,
+          "mrr_change": 200
+        },
+        {
+          "account_id": "S005",
+          "mrr": 4500,
+          "mrr_change": 300
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use LAG(mrr) within each account.",
+        "Calculate the lag before filtering to September.",
+        "Subtract prior MRR from current MRR."
+      ],
+      "explanation": "Lagged account revenue is the foundation for expansion, contraction and churn analysis.",
+      "xp": 190,
+      "datasetName": "saas_account_monthly",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-saas-03",
+      "title": "Rank Accounts Within Segment",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the saas chapter. Rank Accounts Within Segment is needed for a decision review.",
+      "goal": "For September, return account_id, segment, mrr and segment_rank using RANK within each segment by mrr descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "For September, return account_id, segment, mrr and segment_rank using RANK within each segment by mrr descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "S002",
+          "segment": "Enterprise",
+          "mrr": 5300,
+          "segment_rank": 1
+        },
+        {
+          "account_id": "S005",
+          "segment": "Enterprise",
+          "mrr": 4500,
+          "segment_rank": 2
+        },
+        {
+          "account_id": "S004",
+          "segment": "MidMarket",
+          "mrr": 2800,
+          "segment_rank": 1
+        },
+        {
+          "account_id": "S001",
+          "segment": "SMB",
+          "mrr": 1200,
+          "segment_rank": 1
+        },
+        {
+          "account_id": "S003",
+          "segment": "SMB",
+          "mrr": 0,
+          "segment_rank": 2
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Filter September rows.",
+        "PARTITION BY segment.",
+        "RANK on mrr descending."
+      ],
+      "explanation": "Within-segment ranking identifies the largest accounts without letting enterprise scale dominate every segment.",
+      "xp": 190,
+      "datasetName": "saas_account_monthly",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-saas-04",
+      "title": "Monthly MRR Movement",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the saas chapter. Monthly MRR Movement is needed for a decision review.",
+      "goal": "Aggregate total MRR by month and return mrr_change versus the prior month using LAG.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Aggregate total MRR by month and return mrr_change versus the prior month using LAG.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "month": "2026-07",
+          "total_mrr": 13300,
+          "mrr_change": null
+        },
+        {
+          "month": "2026-08",
+          "total_mrr": 13900,
+          "mrr_change": 600
+        },
+        {
+          "month": "2026-09",
+          "total_mrr": 13800,
+          "mrr_change": -100
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate total MRR first.",
+        "Apply LAG to the monthly totals.",
+        "Current minus prior gives movement."
+      ],
+      "explanation": "Separating the aggregation step from the window step keeps recurring-revenue logic readable.",
+      "xp": 190,
+      "datasetName": "saas_account_monthly",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-saas-05",
+      "title": "Detect September Churn",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "saas",
+      "minCareerLevel": 3,
+      "context": "You are the senior analyst for the saas chapter. Detect September Churn is needed for a decision review.",
+      "goal": "Use LAG(active) to return account_id for accounts active in August but inactive in September.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use LAG(active) to return account_id for accounts active in August but inactive in September.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "S003"
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use LAG(active) by account.",
+        "Compute prior_active before filtering September.",
+        "Keep prior_active=1 and active=0."
+      ],
+      "explanation": "Churn detection is a state transition, so windowing across account history is more reliable than a single snapshot.",
+      "xp": 190,
+      "datasetName": "saas_account_monthly",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-bank-01",
+      "title": "Rank Loans Within Risk Band",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "You are the senior analyst for the bank chapter. Rank Loans Within Risk Band is needed for a decision review.",
+      "goal": "Return loan_id, risk_band, outstanding and risk_rank using RANK within each risk band by outstanding descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return loan_id, risk_band, outstanding and risk_rank using RANK within each risk band by outstanding descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "loan_id": "L004",
+          "risk_band": "High",
+          "outstanding": 420000,
+          "risk_rank": 1
+        },
+        {
+          "loan_id": "L006",
+          "risk_band": "High",
+          "outstanding": 80000,
+          "risk_rank": 2
+        },
+        {
+          "loan_id": "L005",
+          "risk_band": "Low",
+          "outstanding": 1800000,
+          "risk_rank": 1
+        },
+        {
+          "loan_id": "L003",
+          "risk_band": "Low",
+          "outstanding": 500000,
+          "risk_rank": 2
+        },
+        {
+          "loan_id": "L001",
+          "risk_band": "Low",
+          "outstanding": 120000,
+          "risk_rank": 3
+        },
+        {
+          "loan_id": "L002",
+          "risk_band": "Medium",
+          "outstanding": 45000,
+          "risk_rank": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "PARTITION BY risk_band.",
+        "Order by outstanding descending.",
+        "Use RANK rather than a global rank."
+      ],
+      "explanation": "Risk-band ranking helps prioritize portfolio review without treating a risk label as an automatic decision.",
+      "xp": 190,
+      "datasetName": "loan_portfolio",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-bank-02",
+      "title": "Running Transaction Amount by Account",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "You are the senior analyst for the bank chapter. Running Transaction Amount by Account is needed for a decision review.",
+      "goal": "Return account_id, txn_date, amount and running_amount using a cumulative SUM per account ordered by txn_date and txn_id.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return account_id, txn_date, amount and running_amount using a cumulative SUM per account ordered by txn_date and txn_id.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "A001",
+          "txn_date": "2026-10-01",
+          "amount": 6500,
+          "running_amount": 6500
+        },
+        {
+          "account_id": "A002",
+          "txn_date": "2026-10-01",
+          "amount": 48000,
+          "running_amount": 48000
+        },
+        {
+          "account_id": "A002",
+          "txn_date": "2026-10-04",
+          "amount": 1200,
+          "running_amount": 49200
+        },
+        {
+          "account_id": "A003",
+          "txn_date": "2026-10-02",
+          "amount": 125000,
+          "running_amount": 125000
+        },
+        {
+          "account_id": "A004",
+          "txn_date": "2026-10-02",
+          "amount": 210000,
+          "running_amount": 210000
+        },
+        {
+          "account_id": "A005",
+          "txn_date": "2026-10-03",
+          "amount": 76000,
+          "running_amount": 76000
+        },
+        {
+          "account_id": "A006",
+          "txn_date": "2026-10-03",
+          "amount": 32000,
+          "running_amount": 32000
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Partition by account_id.",
+        "Use a deterministic order including txn_id.",
+        "Use an unbounded-preceding running frame."
+      ],
+      "explanation": "Running account totals are useful for transaction review context while remaining descriptive, not accusatory.",
+      "xp": 190,
+      "datasetName": "bank_transactions",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-bank-03",
+      "title": "Review Rate by Channel",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "You are the senior analyst for the bank chapter. Review Rate by Channel is needed for a decision review.",
+      "goal": "Return channel, txn_count and review_rate_pct = reviewed transactions / total transactions ×100 rounded to one decimal.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return channel, txn_count and review_rate_pct = reviewed transactions / total transactions ×100 rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "channel": "atm",
+          "txn_count": 1,
+          "review_rate_pct": 100
+        },
+        {
+          "channel": "card",
+          "txn_count": 3,
+          "review_rate_pct": 0
+        },
+        {
+          "channel": "online",
+          "txn_count": 2,
+          "review_rate_pct": 100
+        },
+        {
+          "channel": "rtgs",
+          "txn_count": 1,
+          "review_rate_pct": 0
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "COUNT all rows by channel.",
+        "SUM review_flag because it is 0/1.",
+        "Use 100.0 to preserve decimal division."
+      ],
+      "explanation": "A review flag measures routing workload, not confirmed wrongdoing.",
+      "xp": 190,
+      "datasetName": "bank_transactions",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-bank-04",
+      "title": "Combined Balance and Loan Exposure",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "You are the senior analyst for the bank chapter. Combined Balance and Loan Exposure is needed for a decision review.",
+      "goal": "Join accounts to loans and return account_id, avg_balance, outstanding and total_exposure = avg_balance + outstanding.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Join accounts to loans and return account_id, avg_balance, outstanding and total_exposure = avg_balance + outstanding.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "A001",
+          "avg_balance": 85000,
+          "outstanding": 120000,
+          "total_exposure": 205000
+        },
+        {
+          "account_id": "A002",
+          "avg_balance": 35000,
+          "outstanding": 45000,
+          "total_exposure": 80000
+        },
+        {
+          "account_id": "A003",
+          "avg_balance": 240000,
+          "outstanding": 500000,
+          "total_exposure": 740000
+        },
+        {
+          "account_id": "A004",
+          "avg_balance": 180000,
+          "outstanding": 420000,
+          "total_exposure": 600000
+        },
+        {
+          "account_id": "A005",
+          "avg_balance": 600000,
+          "outstanding": 1800000,
+          "total_exposure": 2400000
+        },
+        {
+          "account_id": "A006",
+          "avg_balance": 22000,
+          "outstanding": 80000,
+          "total_exposure": 102000
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Join on account_id.",
+        "Select both component measures.",
+        "Add them in a derived column."
+      ],
+      "explanation": "A derived exposure view demonstrates joins and calculated business measures while remaining synthetic training data.",
+      "xp": 190,
+      "datasetName": "bank_accounts + loan_portfolio",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-bank-05",
+      "title": "Largest Transaction per Account",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "You are the senior analyst for the bank chapter. Largest Transaction per Account is needed for a decision review.",
+      "goal": "Use ROW_NUMBER to return account_id, txn_id and amount for the largest transaction in each account.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Use ROW_NUMBER to return account_id, txn_id and amount for the largest transaction in each account.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "account_id": "A001",
+          "txn_id": "T001",
+          "amount": 6500
+        },
+        {
+          "account_id": "A002",
+          "txn_id": "T002",
+          "amount": 48000
+        },
+        {
+          "account_id": "A003",
+          "txn_id": "T003",
+          "amount": 125000
+        },
+        {
+          "account_id": "A004",
+          "txn_id": "T004",
+          "amount": 210000
+        },
+        {
+          "account_id": "A005",
+          "txn_id": "T005",
+          "amount": 76000
+        },
+        {
+          "account_id": "A006",
+          "txn_id": "T006",
+          "amount": 32000
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Partition by account_id.",
+        "Order amount descending.",
+        "Keep rn=1 in an outer query."
+      ],
+      "explanation": "Top-transaction views support contextual review but should not be interpreted as proof of suspicious behavior.",
+      "xp": 190,
+      "datasetName": "bank_transactions",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-hospital-01",
+      "title": "Rank Highest-Wait Days Within Unit",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the hospital chapter. Rank Highest-Wait Days Within Unit is needed for a decision review.",
+      "goal": "Return unit, ops_date, avg_wait_minutes and wait_rank using RANK within each unit by wait descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return unit, ops_date, avg_wait_minutes and wait_rank using RANK within each unit by wait descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-04",
+          "avg_wait_minutes": 72,
+          "wait_rank": 1
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-02",
+          "avg_wait_minutes": 68,
+          "wait_rank": 2
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-01",
+          "avg_wait_minutes": 52,
+          "wait_rank": 3
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-03",
+          "avg_wait_minutes": 44,
+          "wait_rank": 4
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-03",
+          "avg_wait_minutes": 35,
+          "wait_rank": 1
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-01",
+          "avg_wait_minutes": 31,
+          "wait_rank": 2
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-02",
+          "avg_wait_minutes": 28,
+          "wait_rank": 3
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-04",
+          "avg_wait_minutes": 26,
+          "wait_rank": 4
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "PARTITION BY unit.",
+        "Order avg_wait_minutes descending.",
+        "Use RANK."
+      ],
+      "explanation": "Operational ranking highlights where to investigate capacity and process conditions without making clinical conclusions.",
+      "xp": 190,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-hospital-02",
+      "title": "Two-Day Moving Wait Average",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the hospital chapter. Two-Day Moving Wait Average is needed for a decision review.",
+      "goal": "Return unit, ops_date and moving_wait_2: the 2-row moving average of avg_wait_minutes within each unit, rounded to one decimal.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return unit, ops_date and moving_wait_2: the 2-row moving average of avg_wait_minutes within each unit, rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-01",
+          "moving_wait_2": 52
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-02",
+          "moving_wait_2": 60
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-03",
+          "moving_wait_2": 56
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-04",
+          "moving_wait_2": 58
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-01",
+          "moving_wait_2": 31
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-02",
+          "moving_wait_2": 29.5
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-03",
+          "moving_wait_2": 31.5
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-04",
+          "moving_wait_2": 30.5
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Partition by unit.",
+        "Order by ops_date.",
+        "Use ROWS BETWEEN 1 PRECEDING AND CURRENT ROW."
+      ],
+      "explanation": "Short moving averages smooth operational noise while preserving unit-level trends.",
+      "xp": 190,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-hospital-03",
+      "title": "Outpatient Cancellation Rate",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the hospital chapter. Outpatient Cancellation Rate is needed for a decision review.",
+      "goal": "Return ops_date and cancellation_rate_pct for Outpatient as cancellations / arrivals ×100 rounded to one decimal.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return ops_date and cancellation_rate_pct for Outpatient as cancellations / arrivals ×100 rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "ops_date": "2026-10-01",
+          "cancellation_rate_pct": 8.3
+        },
+        {
+          "ops_date": "2026-10-02",
+          "cancellation_rate_pct": 5.9
+        },
+        {
+          "ops_date": "2026-10-03",
+          "cancellation_rate_pct": 9.5
+        },
+        {
+          "ops_date": "2026-10-04",
+          "cancellation_rate_pct": 5
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Filter unit='Outpatient'.",
+        "Divide cancellations by arrivals.",
+        "Multiply by 100.0 and round."
+      ],
+      "explanation": "Rates normalize workload across days of different volume.",
+      "xp": 190,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-hospital-04",
+      "title": "Rank Forecast Capacity Gaps",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the hospital chapter. Rank Forecast Capacity Gaps is needed for a decision review.",
+      "goal": "Calculate positive gap = expected_arrivals - planned_capacity, then return day_name, gap and dense gap_rank descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Calculate positive gap = expected_arrivals - planned_capacity, then return day_name, gap and dense gap_rank descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "day_name": "Saturday",
+          "gap": 25,
+          "gap_rank": 1
+        },
+        {
+          "day_name": "Friday",
+          "gap": 15,
+          "gap_rank": 2
+        },
+        {
+          "day_name": "Thursday",
+          "gap": 5,
+          "gap_rank": 3
+        },
+        {
+          "day_name": "Sunday",
+          "gap": 5,
+          "gap_rank": 3
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Calculate gap in a CTE.",
+        "Keep only positive gaps.",
+        "Use DENSE_RANK so equal gaps share a rank."
+      ],
+      "explanation": "Ranking forecast gaps turns a demand forecast into a prioritized operational planning queue.",
+      "xp": 190,
+      "datasetName": "hospital_capacity_forecast",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-hospital-05",
+      "title": "Arrival Change Within Unit",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the hospital chapter. Arrival Change Within Unit is needed for a decision review.",
+      "goal": "Return unit, ops_date, arrivals and arrival_delta versus the prior day for each unit using LAG.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return unit, ops_date, arrivals and arrival_delta versus the prior day for each unit using LAG.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-01",
+          "arrivals": 120,
+          "arrival_delta": null
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-02",
+          "arrivals": 135,
+          "arrival_delta": 15
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-03",
+          "arrivals": 110,
+          "arrival_delta": -25
+        },
+        {
+          "unit": "Emergency",
+          "ops_date": "2026-10-04",
+          "arrivals": 145,
+          "arrival_delta": 35
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-01",
+          "arrivals": 180,
+          "arrival_delta": null
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-02",
+          "arrivals": 170,
+          "arrival_delta": -10
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-03",
+          "arrivals": 190,
+          "arrival_delta": 20
+        },
+        {
+          "unit": "Outpatient",
+          "ops_date": "2026-10-04",
+          "arrivals": 160,
+          "arrival_delta": -30
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use LAG(arrivals).",
+        "Partition by unit.",
+        "Order by ops_date."
+      ],
+      "explanation": "Unit-specific deltas reveal demand changes without mixing fundamentally different operational streams.",
+      "xp": 190,
+      "datasetName": "hospital_daily_ops",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-logistics-01",
+      "title": "Rank Delay Severity Within Route",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the logistics chapter. Rank Delay Severity Within Route is needed for a decision review.",
+      "goal": "Return route_code, shipment_id, delay_hours = actual_hours - promised_hours and delay_rank within each route descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return route_code, shipment_id, delay_hours = actual_hours - promised_hours and delay_rank within each route descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "route_code": "NS-1",
+          "shipment_id": "S008",
+          "delay_hours": 12,
+          "delay_rank": 1
+        },
+        {
+          "route_code": "NS-1",
+          "shipment_id": "S002",
+          "delay_hours": 7,
+          "delay_rank": 2
+        },
+        {
+          "route_code": "NW-1",
+          "shipment_id": "S005",
+          "delay_hours": 1,
+          "delay_rank": 1
+        },
+        {
+          "route_code": "NW-1",
+          "shipment_id": "S001",
+          "delay_hours": -3,
+          "delay_rank": 2
+        },
+        {
+          "route_code": "NW-1",
+          "shipment_id": "S009",
+          "delay_hours": -4,
+          "delay_rank": 3
+        },
+        {
+          "route_code": "SN-1",
+          "shipment_id": "S004",
+          "delay_hours": 5,
+          "delay_rank": 1
+        },
+        {
+          "route_code": "SN-1",
+          "shipment_id": "S007",
+          "delay_hours": -1,
+          "delay_rank": 2
+        },
+        {
+          "route_code": "WE-1",
+          "shipment_id": "S006",
+          "delay_hours": 6,
+          "delay_rank": 1
+        },
+        {
+          "route_code": "WE-1",
+          "shipment_id": "S010",
+          "delay_hours": 3,
+          "delay_rank": 2
+        },
+        {
+          "route_code": "WE-1",
+          "shipment_id": "S003",
+          "delay_hours": -2,
+          "delay_rank": 3
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Derive delay_hours first.",
+        "Partition rank by route_code.",
+        "Order delay_hours descending."
+      ],
+      "explanation": "Route-level ranking identifies the largest observed delay cases for investigation without claiming the route itself caused them.",
+      "xp": 190,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-logistics-02",
+      "title": "Late Rate by Route",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the logistics chapter. Late Rate by Route is needed for a decision review.",
+      "goal": "Return route_code, shipments, late_shipments and late_rate_pct rounded to one decimal.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return route_code, shipments, late_shipments and late_rate_pct rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "route_code": "NS-1",
+          "shipments": 2,
+          "late_shipments": 2,
+          "late_rate_pct": 100
+        },
+        {
+          "route_code": "NW-1",
+          "shipments": 3,
+          "late_shipments": 1,
+          "late_rate_pct": 33.3
+        },
+        {
+          "route_code": "SN-1",
+          "shipments": 2,
+          "late_shipments": 1,
+          "late_rate_pct": 50
+        },
+        {
+          "route_code": "WE-1",
+          "shipments": 3,
+          "late_shipments": 2,
+          "late_rate_pct": 66.7
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Count all shipments by route.",
+        "Conditionally count actual_hours > promised_hours.",
+        "Divide late count by total with 100.0."
+      ],
+      "explanation": "Late-rate normalization enables fairer route comparison than raw late counts alone.",
+      "xp": 190,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-logistics-03",
+      "title": "Running Network Shipping Cost",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the logistics chapter. Running Network Shipping Cost is needed for a decision review.",
+      "goal": "Aggregate shipping_cost by ship_date, then return daily_cost and running_cost using a cumulative window.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Aggregate shipping_cost by ship_date, then return daily_cost and running_cost using a cumulative window.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "ship_date": "2026-10-01",
+          "daily_cost": 10300,
+          "running_cost": 10300
+        },
+        {
+          "ship_date": "2026-10-02",
+          "daily_cost": 10700,
+          "running_cost": 21000
+        },
+        {
+          "ship_date": "2026-10-03",
+          "daily_cost": 9700,
+          "running_cost": 30700
+        },
+        {
+          "ship_date": "2026-10-04",
+          "daily_cost": 12700,
+          "running_cost": 43400
+        },
+        {
+          "ship_date": "2026-10-05",
+          "daily_cost": 9100,
+          "running_cost": 52500
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate daily cost first.",
+        "Use SUM(daily_cost) OVER.",
+        "Order by ship_date."
+      ],
+      "explanation": "A running cost curve shows cumulative operating spend over the analysis period.",
+      "xp": 190,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-logistics-04",
+      "title": "Rank Warehouse Utilization Days",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the logistics chapter. Rank Warehouse Utilization Days is needed for a decision review.",
+      "goal": "Return warehouse, flow_date, utilization_pct and utilization_rank within warehouse by utilization descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Return warehouse, flow_date, utilization_pct and utilization_rank within warehouse by utilization descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "warehouse": "WH-North",
+          "flow_date": "2026-10-04",
+          "utilization_pct": 95,
+          "utilization_rank": 1
+        },
+        {
+          "warehouse": "WH-North",
+          "flow_date": "2026-10-03",
+          "utilization_pct": 94,
+          "utilization_rank": 2
+        },
+        {
+          "warehouse": "WH-North",
+          "flow_date": "2026-10-02",
+          "utilization_pct": 88,
+          "utilization_rank": 3
+        },
+        {
+          "warehouse": "WH-North",
+          "flow_date": "2026-10-01",
+          "utilization_pct": 82,
+          "utilization_rank": 4
+        },
+        {
+          "warehouse": "WH-West",
+          "flow_date": "2026-10-04",
+          "utilization_pct": 97.8,
+          "utilization_rank": 1
+        },
+        {
+          "warehouse": "WH-West",
+          "flow_date": "2026-10-03",
+          "utilization_pct": 96.7,
+          "utilization_rank": 2
+        },
+        {
+          "warehouse": "WH-West",
+          "flow_date": "2026-10-02",
+          "utilization_pct": 91.7,
+          "utilization_rank": 3
+        },
+        {
+          "warehouse": "WH-West",
+          "flow_date": "2026-10-01",
+          "utilization_pct": 84.4,
+          "utilization_rank": 4
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Utilization is ending_units / capacity_units ×100.",
+        "Partition rank by warehouse.",
+        "Round utilization to one decimal."
+      ],
+      "explanation": "Utilization ranking highlights congestion periods but should be interpreted with throughput and service levels.",
+      "xp": 190,
+      "datasetName": "logistics_inventory_flow",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    },
+    {
+      "id": "sql-adv-logistics-05",
+      "title": "Rank Throughput Forecast Gaps",
+      "department": "Advanced SQL",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "You are the senior analyst for the logistics chapter. Rank Throughput Forecast Gaps is needed for a decision review.",
+      "goal": "Calculate positive gap = expected_shipments - planned_throughput, then return day_name, gap and dense gap_rank descending.",
+      "deliverable": "Return exactly the requested columns at the requested grain.",
+      "answerType": "sql_result",
+      "prompt": "Calculate positive gap = expected_shipments - planned_throughput, then return day_name, gap and dense gap_rank descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "day_name": "Saturday",
+          "gap": 70,
+          "gap_rank": 1
+        },
+        {
+          "day_name": "Friday",
+          "gap": 40,
+          "gap_rank": 2
+        },
+        {
+          "day_name": "Sunday",
+          "gap": 20,
+          "gap_rank": 3
+        },
+        {
+          "day_name": "Thursday",
+          "gap": 10,
+          "gap_rank": 4
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Calculate gap in a CTE.",
+        "Keep positive gaps only.",
+        "Use DENSE_RANK over gap descending."
+      ],
+      "explanation": "Prioritized forecast gaps support staffing and capacity scenario planning under uncertainty.",
+      "xp": 190,
+      "datasetName": "logistics_throughput_forecast",
+      "rows": [],
+      "options": [],
+      "rubric": {
+        "resultAccuracy": 70,
+        "correctGrainAndFilters": 20,
+        "readableQueryStructure": 10
+      }
+    }
+  ]
+}
