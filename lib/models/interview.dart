@@ -74,6 +74,8 @@ class InterviewRoundDefinition {
     required this.description,
     required this.durationSeconds,
     required this.questions,
+    this.companyKey = 'general',
+    this.minCompanyChapter = 0,
   });
 
   final String key;
@@ -81,6 +83,8 @@ class InterviewRoundDefinition {
   final String description;
   final int durationSeconds;
   final List<InterviewQuestion> questions;
+  final String companyKey;
+  final int minCompanyChapter;
 
   factory InterviewRoundDefinition.fromJson(Map<String, dynamic> json) {
     return InterviewRoundDefinition(
@@ -95,6 +99,9 @@ class InterviewRoundDefinition {
             ),
           )
           .toList(),
+      companyKey: (json['companyKey'] as String?) ?? 'general',
+      minCompanyChapter:
+          (json['minCompanyChapter'] as num?)?.toInt() ?? 0,
     );
   }
 }
