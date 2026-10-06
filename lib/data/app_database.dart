@@ -22,7 +22,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 5,
+        version: 6,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -33,6 +33,8 @@ class AppDatabase {
           await _createPhaseFiveSchema(db);
           await _createPhaseSixSchema(db);
           await _seedPhaseSix(db);
+          await _createPhaseSevenSchema(db);
+          await _seedPhaseSeven(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -49,6 +51,10 @@ class AppDatabase {
           if (oldVersion < 5) {
             await _createPhaseSixSchema(db);
             await _seedPhaseSix(db);
+          }
+          if (oldVersion < 6) {
+            await _createPhaseSevenSchema(db);
+            await _seedPhaseSeven(db);
           }
         },
       ),
@@ -206,6 +212,30 @@ class AppDatabase {
     ''');
   }
 
+  Future<void> _createPhaseSevenSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS hospital_daily_ops (
+        ops_date TEXT NOT NULL,
+        unit TEXT NOT NULL,
+        arrivals INTEGER NOT NULL,
+        completed_visits INTEGER NOT NULL,
+        staffed_beds INTEGER NOT NULL,
+        occupied_beds INTEGER NOT NULL,
+        avg_wait_minutes REAL NOT NULL,
+        cancellations INTEGER NOT NULL,
+        PRIMARY KEY (ops_date, unit)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS hospital_capacity_forecast (
+        day_name TEXT PRIMARY KEY,
+        expected_arrivals INTEGER NOT NULL,
+        planned_capacity INTEGER NOT NULL
+      )
+    ''');
+  }
+
   Future<void> _seedCore(Database db) async {
     final campaignRows = <Map<String, Object?>>[
       {'date': '2026-09-28', 'channel': 'Search', 'spend': 12000, 'conversions': 84},
@@ -337,6 +367,46 @@ class AppDatabase {
     for (final row in transactions) {
       batch.insert(
         'bank_transactions',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> _seedPhaseSeven(Database db) async {
+    final operations = <Map<String, Object?>>[
+      {'ops_date': '2026-10-01', 'unit': 'Emergency', 'arrivals': 120, 'completed_visits': 108, 'staffed_beds': 40, 'occupied_beds': 38, 'avg_wait_minutes': 52, 'cancellations': 0},
+      {'ops_date': '2026-10-01', 'unit': 'Outpatient', 'arrivals': 180, 'completed_visits': 165, 'staffed_beds': 0, 'occupied_beds': 0, 'avg_wait_minutes': 31, 'cancellations': 15},
+      {'ops_date': '2026-10-02', 'unit': 'Emergency', 'arrivals': 135, 'completed_visits': 120, 'staffed_beds': 40, 'occupied_beds': 40, 'avg_wait_minutes': 68, 'cancellations': 0},
+      {'ops_date': '2026-10-02', 'unit': 'Outpatient', 'arrivals': 170, 'completed_visits': 160, 'staffed_beds': 0, 'occupied_beds': 0, 'avg_wait_minutes': 28, 'cancellations': 10},
+      {'ops_date': '2026-10-03', 'unit': 'Emergency', 'arrivals': 110, 'completed_visits': 104, 'staffed_beds': 40, 'occupied_beds': 36, 'avg_wait_minutes': 44, 'cancellations': 0},
+      {'ops_date': '2026-10-03', 'unit': 'Outpatient', 'arrivals': 190, 'completed_visits': 172, 'staffed_beds': 0, 'occupied_beds': 0, 'avg_wait_minutes': 35, 'cancellations': 18},
+      {'ops_date': '2026-10-04', 'unit': 'Emergency', 'arrivals': 145, 'completed_visits': 128, 'staffed_beds': 40, 'occupied_beds': 39, 'avg_wait_minutes': 72, 'cancellations': 0},
+      {'ops_date': '2026-10-04', 'unit': 'Outpatient', 'arrivals': 160, 'completed_visits': 152, 'staffed_beds': 0, 'occupied_beds': 0, 'avg_wait_minutes': 26, 'cancellations': 8},
+    ];
+
+    final forecast = <Map<String, Object?>>[
+      {'day_name': 'Monday', 'expected_arrivals': 130, 'planned_capacity': 140},
+      {'day_name': 'Tuesday', 'expected_arrivals': 135, 'planned_capacity': 140},
+      {'day_name': 'Wednesday', 'expected_arrivals': 140, 'planned_capacity': 140},
+      {'day_name': 'Thursday', 'expected_arrivals': 150, 'planned_capacity': 145},
+      {'day_name': 'Friday', 'expected_arrivals': 165, 'planned_capacity': 150},
+      {'day_name': 'Saturday', 'expected_arrivals': 180, 'planned_capacity': 155},
+      {'day_name': 'Sunday', 'expected_arrivals': 155, 'planned_capacity': 150},
+    ];
+
+    final batch = db.batch();
+    for (final row in operations) {
+      batch.insert(
+        'hospital_daily_ops',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in forecast) {
+      batch.insert(
+        'hospital_capacity_forecast',
         row,
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
