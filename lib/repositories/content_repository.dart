@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import '../models/analyst_task.dart';
+import '../models/boss_case.dart';
 import '../models/placement_question.dart';
 
 class ContentRepository {
@@ -13,6 +14,7 @@ class ContentRepository {
     for (final asset in const [
       'assets/content/phase1_tasks.json',
       'assets/content/phase2_tasks.json',
+      'assets/content/phase3_tasks.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -42,5 +44,13 @@ class ContentRepository {
           ),
         )
         .toList();
+  }
+
+  Future<BossCaseDefinition> loadBossCase() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/boss_case_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    return BossCaseDefinition.fromJson(decoded);
   }
 }

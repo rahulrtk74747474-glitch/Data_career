@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "ecommerce-executive-review-001",
+  "title": "Executive Revenue Review",
+  "company": "E-commerce Co. • Weekly Boss Case",
+  "context": "The CEO wants a concise revenue readout before the Monday meeting. You must protect the analysis from dirty data, join the customer and order tables, calculate a KPI, select the right visual, and make a defensible recommendation.",
+  "datasetName": "customer_dirty + customers + orders",
+  "cleaningPrompt": "Before using the vendor customer export, which issues must be handled? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm and remove the exact duplicate O-1002 record with an audit trail.",
+    "Standardize North, north and NORTH to one category.",
+    "Parse mixed date formats into one validated date type.",
+    "Replace every missing customer name with Asha.",
+    "Delete all rows with any unusual value without investigation."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm and remove the exact duplicate O-1002 record with an audit trail.",
+    "Standardize North, north and NORTH to one category.",
+    "Parse mixed date formats into one validated date type."
+  ],
+  "sqlPrompt": "Using customers and orders, return segment and total_revenue for completed orders only. One row per segment.",
+  "sqlExpectedRows": [
+    {"segment": "Consumer", "total_revenue": 3100},
+    {"segment": "Enterprise", "total_revenue": 8000},
+    {"segment": "SMB", "total_revenue": 2300}
+  ],
+  "kpiPrompt": "Enterprise contributes 8000 of 13400 completed revenue. What percentage of completed revenue comes from Enterprise? Round to one decimal.",
+  "kpiExpected": 59.7,
+  "kpiTolerance": 0.1,
+  "chartPrompt": "Which chart best communicates completed revenue across the three customer segments?",
+  "chartOptions": [
+    "Bar chart with segment on the axis and completed revenue as bar length",
+    "Pie chart with dozens of unrelated order IDs",
+    "Line chart with segment names treated as time",
+    "Scatter plot of row number versus customer name"
+  ],
+  "chartExpected": "Bar chart with segment on the axis and completed revenue as bar length",
+  "recommendationPrompt": "Which executive recommendation is most defensible from this analysis?",
+  "recommendationOptions": [
+    "Protect Enterprise revenue while investigating growth tests for Consumer and SMB; do not claim segment membership causes spending.",
+    "Stop serving Consumer customers immediately because Enterprise revenue is larger.",
+    "Tell the board Enterprise membership causes customers to spend more.",
+    "Ignore refunds and cancellations in all future reporting."
+  ],
+  "recommendationExpected": "Protect Enterprise revenue while investigating growth tests for Consumer and SMB; do not claim segment membership causes spending.",
+  "rubric": {
+    "cleaning": 20,
+    "sql": 30,
+    "kpi": 20,
+    "chart": 10,
+    "recommendation": 20
+  }
+}

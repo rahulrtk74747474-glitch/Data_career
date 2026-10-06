@@ -10,9 +10,11 @@ class TaskScreen extends ConsumerStatefulWidget {
   const TaskScreen({
     super.key,
     required this.task,
+    this.reviewMode = false,
   });
 
   final AnalystTask task;
+  final bool reviewMode;
 
   @override
   ConsumerState<TaskScreen> createState() => _TaskScreenState();
@@ -41,17 +43,27 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     final progress = ref.watch(gameProgressProvider);
-    final alreadyCompleted = progress.completedTaskIds.contains(task.id);
+    final alreadyCompleted = !widget.reviewMode &&
+        progress.completedTaskIds.contains(task.id);
 
     return Scaffold(
-      appBar: AppBar(title: Text(task.department)),
+      appBar: AppBar(
+        title: Text(widget.reviewMode ? 'Practice Review' : task.department),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(task.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 4),
-            Text('${task.skill} • Up to ${task.xp} XP'),
+            Text(
+              task.skill +
+                  ' • ' +
+                  task.difficulty +
+                  ' • Up to ' +
+                  task.xp.toString() +
+                  ' XP',
+            ),
             const SizedBox(height: 18),
             _InfoBlock(
               title: 'Business context',
@@ -70,7 +82,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             ),
             if (task.rows.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(task.datasetName, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                task.datasetName,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               _DatasetPreview(rows: task.rows),
             ],
@@ -125,7 +140,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
               ),
             const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: alreadyCompleted || _solved || _submitting ? null : _submit,
+              onPressed:
+                  alreadyCompleted || _solved || _submitting ? null : _submit,
               icon: _submitting
                   ? const SizedBox(
                       width: 18,
@@ -140,12 +156,17 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                         ? 'Completed'
                         : _isSql
                             ? 'Run SQL & grade'
-                            : 'Submit analysis',
+                            : widget.reviewMode
+                                ? 'Submit review'
+                                : 'Submit analysis',
               ),
             ),
             if (_sqlRows.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text('SQLite result', style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                'SQLite result',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               _SqlResultTable(columns: _sqlColumns, rows: _sqlRows),
             ],
@@ -174,7 +195,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Why this works', style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        'Why this works',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 8),
                       Text(task.explanation),
                     ],
@@ -193,7 +217,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
 
     GradeResult grade;
     if (_isSql) {
-      final run = await ref.read(sqlRunnerProvider).runReadOnly(_answerController.text);
+      final run =
+          await ref.read(sqlRunnerProvider).runReadOnly(_answerController.text);
       if (!run.isSuccess) {
         if (!mounted) return;
         setState(() {
@@ -245,15 +270,28 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
           task,
           score: score,
         );
-    await ref.read(masteryRepositoryProvider).recordAttempt(task.skillKey, score);
+    await ref
+        .read(masteryRepositoryProvider)
+        .recordAttempt(task.skillKey, score);
     ref.invalidate(skillProfileProvider);
+    ref.invalidate(reviewQueueProvider);
+    ref.invalidate(adaptiveRecommendationsProvider);
 
     if (!mounted) return;
     setState(() {
       _submitting = false;
       _solved = true;
-      _feedback =
-          '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
+      _feedback = widget.reviewMode
+          ? grade.feedback +
+              '\nReview score: ' +
+              score.toString() +
+              '/100. Mastery and next review date updated.'
+          : grade.feedback +
+              '\nScore: ' +
+              score.toString() +
+              '/100. XP, company metrics and ' +
+              task.skill +
+              ' mastery updated.';
     });
   }
 }
@@ -315,7 +353,7 @@ class _DatasetPreview extends StatelessWidget {
               DataRow(
                 cells: [
                   for (final column in columns)
-                    DataCell(Text('${row[column] ?? 'NULL'}')),
+                    DataCell(Text((row[column] ?? 'NULL').toString())),
                 ],
               ),
           ],
@@ -350,7 +388,7 @@ class _SqlResultTable extends StatelessWidget {
               DataRow(
                 cells: [
                   for (final column in columns)
-                    DataCell(Text('${row[column] ?? 'NULL'}')),
+                    DataCell(Text((row[column] ?? 'NULL').toString())),
                 ],
               ),
           ],
@@ -446,7 +484,10 @@ class _HintPanel extends StatelessWidget {
             ),
             for (var index = 0; index < revealedHints; index++) ...[
               const SizedBox(height: 10),
-              Text('Hint ${index + 1}: ${hints[index]}'),
+              Text('Hint ' +
+                  (index + 1).toString() +
+                  ': ' +
+                  hints[index]),
             ],
             const SizedBox(height: 10),
             OutlinedButton.icon(
@@ -456,7 +497,7 @@ class _HintPanel extends StatelessWidget {
                 revealedHints == 0
                     ? 'Reveal hint 1'
                     : revealedHints < hints.length
-                        ? 'Reveal hint ${revealedHints + 1}'
+                        ? 'Reveal hint ' + (revealedHints + 1).toString()
                         : 'All hints revealed',
               ),
             ),

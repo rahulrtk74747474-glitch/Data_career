@@ -3,10 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
 import '../../models/skill_mastery.dart';
+import '../boss_case/boss_case_screen.dart';
 import '../game/game_progress.dart';
 import '../game/game_providers.dart';
 import '../placement/placement_screen.dart';
+import '../practice/practice_gym_screen.dart';
+import '../review/review_queue_screen.dart';
 import '../skills/skills_screen.dart';
+import '../sql_workspace/sql_workspace_screen.dart';
 import '../task/task_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -18,6 +22,8 @@ class HomeScreen extends ConsumerWidget {
     final tasks = ref.watch(tasksProvider);
     final placementComplete = ref.watch(placementCompletedProvider);
     final skillProfile = ref.watch(skillProfileProvider);
+    final recommendations = ref.watch(adaptiveRecommendationsProvider);
+    final reviewQueue = ref.watch(reviewQueueProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,7 +31,7 @@ class HomeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: 'Skill radar',
-            onPressed: () => _openSkills(context),
+            onPressed: () => _open(context, const SkillsScreen()),
             icon: const Icon(Icons.radar),
           ),
           IconButton(
@@ -41,6 +47,8 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(tasksProvider);
             ref.invalidate(skillProfileProvider);
             ref.invalidate(placementCompletedProvider);
+            ref.invalidate(reviewQueueProvider);
+            ref.invalidate(adaptiveRecommendationsProvider);
             await Future.wait([
               ref.read(tasksProvider.future),
               ref.read(skillProfileProvider.future),
@@ -56,8 +64,9 @@ class HomeScreen extends ConsumerWidget {
                 error: (error, stackTrace) => const SizedBox.shrink(),
                 data: (complete) => _PlacementCard(
                   complete: complete,
-                  onPlacement: () => _openPlacement(context),
-                  onSkills: () => _openSkills(context),
+                  onPlacement: () =>
+                      _open(context, const PlacementScreen()),
+                  onSkills: () => _open(context, const SkillsScreen()),
                 ),
               ),
               const SizedBox(height: 12),
@@ -65,6 +74,29 @@ class HomeScreen extends ConsumerWidget {
                 loading: () => const SizedBox.shrink(),
                 error: (error, stackTrace) => const SizedBox.shrink(),
                 data: (skills) => _SkillSummaryCard(skills: skills),
+              ),
+              const SizedBox(height: 16),
+              _FeatureGrid(
+                reviewCount: reviewQueue.valueOrNull?.length ?? 0,
+                onGym: () => _open(context, const PracticeGymScreen()),
+                onReview: () =>
+                    _open(context, const ReviewQueueScreen()),
+                onWorkspace: () =>
+                    _open(context, const SqlWorkspaceScreen()),
+                onBoss: () => _open(context, const BossCaseScreen()),
+              ),
+              recommendations.when(
+                loading: () => const SizedBox.shrink(),
+                error: (error, stackTrace) => const SizedBox.shrink(),
+                data: (items) => items.isEmpty
+                    ? const SizedBox.shrink()
+                    : _Recommendations(
+                        tasks: items,
+                        onOpen: (task) => _open(
+                          context,
+                          TaskScreen(task: task),
+                        ),
+                      ),
               ),
               const SizedBox(height: 20),
               Text(
@@ -82,7 +114,8 @@ class HomeScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
-                  Text('${progress.completedTaskIds.length} completed'),
+                  Text(progress.completedTaskIds.length.toString() +
+                      ' completed'),
                 ],
               ),
               const SizedBox(height: 8),
@@ -92,7 +125,8 @@ class HomeScreen extends ConsumerWidget {
                     for (final task in items)
                       _TaskCard(
                         task: task,
-                        completed: progress.completedTaskIds.contains(task.id),
+                        completed:
+                            progress.completedTaskIds.contains(task.id),
                       ),
                   ],
                 ),
@@ -103,7 +137,9 @@ class HomeScreen extends ConsumerWidget {
                 error: (error, stackTrace) => Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text('Could not load the offline task packs.\n$error'),
+                    child: Text(
+                      'Could not load the offline task packs.\n$error',
+                    ),
                   ),
                 ),
               ),
@@ -114,19 +150,9 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _openPlacement(BuildContext context) {
+  void _open(BuildContext context, Widget screen) {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const PlacementScreen(),
-      ),
-    );
-  }
-
-  void _openSkills(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const SkillsScreen(),
-      ),
+      MaterialPageRoute<void>(builder: (_) => screen),
     );
   }
 
@@ -137,7 +163,7 @@ class HomeScreen extends ConsumerWidget {
         return AlertDialog(
           title: const Text('Reset career progress?'),
           content: const Text(
-            'This removes completed tickets, XP, placement results and skill mastery stored on this device.',
+            'This removes completed tickets, XP, placement results, skill mastery and Boss Case scores stored on this device.',
           ),
           actions: [
             TextButton(
@@ -156,9 +182,121 @@ class HomeScreen extends ConsumerWidget {
     if (shouldReset == true) {
       await ref.read(gameProgressProvider.notifier).reset();
       await ref.read(masteryRepositoryProvider).resetAll();
+      await ref.read(bossCaseResultRepositoryProvider).resetAll();
       ref.invalidate(skillProfileProvider);
       ref.invalidate(placementCompletedProvider);
+      ref.invalidate(reviewQueueProvider);
+      ref.invalidate(adaptiveRecommendationsProvider);
     }
+  }
+}
+
+class _FeatureGrid extends StatelessWidget {
+  const _FeatureGrid({
+    required this.reviewCount,
+    required this.onGym,
+    required this.onReview,
+    required this.onWorkspace,
+    required this.onBoss,
+  });
+
+  final int reviewCount;
+  final VoidCallback onGym;
+  final VoidCallback onReview;
+  final VoidCallback onWorkspace;
+  final VoidCallback onBoss;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      ('Practice Gym', 'Skills + difficulty', Icons.fitness_center, onGym),
+      (
+        'Review Queue',
+        reviewCount == 0
+            ? 'Nothing due'
+            : reviewCount.toString() + ' priority reviews',
+        Icons.replay,
+        onReview,
+      ),
+      ('SQL Workstation', 'Schemas + scratchpad', Icons.storage, onWorkspace),
+      ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.55,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return Card(
+          child: InkWell(
+            onTap: item.$4,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(item.$3),
+                  const SizedBox(height: 8),
+                  Text(
+                    item.$1,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(item.$2),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _Recommendations extends StatelessWidget {
+  const _Recommendations({
+    required this.tasks,
+    required this.onOpen,
+  });
+
+  final List<AnalystTask> tasks;
+  final ValueChanged<AnalystTask> onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recommended for you',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 6),
+          const Text('Chosen from your weakest unfinished skills.'),
+          const SizedBox(height: 8),
+          for (final task in tasks.take(2))
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.auto_awesome),
+                title: Text(task.title),
+                subtitle:
+                    Text(task.skill + ' • ' + task.difficulty),
+                onTap: () => onOpen(task),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 
@@ -213,7 +351,11 @@ class _SkillSummaryCard extends StatelessWidget {
         leading: const Icon(Icons.psychology_alt_outlined),
         title: const Text('Adaptive learning'),
         subtitle: Text(
-          'Weakest now: ${weakest.displayName} (${weakest.mastery.toStringAsFixed(0)}%). Completing tickets updates this automatically.',
+          'Weakest now: ' +
+              weakest.displayName +
+              ' (' +
+              weakest.mastery.toStringAsFixed(0) +
+              '%).',
         ),
       ),
     );
@@ -247,8 +389,12 @@ class _CareerCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               progress.xp >= 2000
-                  ? '${progress.xp} XP • Top career level reached'
-                  : '${progress.xp} / ${progress.nextRoleXp} XP to next role',
+                  ? progress.xp.toString() +
+                      ' XP • Top career level reached'
+                  : progress.xp.toString() +
+                      ' / ' +
+                      progress.nextRoleXp.toString() +
+                      ' XP to next role',
             ),
           ],
         ),
@@ -272,7 +418,7 @@ class _MetricGrid extends StatelessWidget {
       ),
       (
         label: 'Churn',
-        value: '${progress.churnRate.toStringAsFixed(1)}%',
+        value: progress.churnRate.toStringAsFixed(1) + '%',
         icon: Icons.person_remove_alt_1,
       ),
       (
@@ -282,7 +428,7 @@ class _MetricGrid extends StatelessWidget {
       ),
       (
         label: 'Satisfaction',
-        value: '${progress.satisfaction.toStringAsFixed(0)}%',
+        value: progress.satisfaction.toStringAsFixed(0) + '%',
         icon: Icons.sentiment_satisfied_alt,
       ),
     ];
@@ -348,7 +494,16 @@ class _TaskCard extends StatelessWidget {
               : Text(task.department.substring(0, 1)),
         ),
         title: Text(task.title),
-        subtitle: Text('${task.department} • ${task.skill} • ${task.xp} XP'),
+        subtitle: Text(
+          task.department +
+              ' • ' +
+              task.skill +
+              ' • ' +
+              task.difficulty +
+              ' • ' +
+              task.xp.toString() +
+              ' XP',
+        ),
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
           Navigator.of(context).push(

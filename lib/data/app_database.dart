@@ -22,13 +22,24 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 1,
-        onCreate: _createSchema,
+        version: 2,
+        onCreate: (db, version) async {
+          await _createCoreSchema(db);
+          await _seedCore(db);
+          await _createPhaseThreeSchema(db);
+          await _seedPhaseThree(db);
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          if (oldVersion < 2) {
+            await _createPhaseThreeSchema(db);
+            await _seedPhaseThree(db);
+          }
+        },
       ),
     );
   }
 
-  Future<void> _createSchema(Database db, int version) async {
+  Future<void> _createCoreSchema(Database db) async {
     await db.execute('''
       CREATE TABLE campaign_performance (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,7 +79,43 @@ class AppDatabase {
         total_score INTEGER NOT NULL
       )
     ''');
+  }
 
+  Future<void> _createPhaseThreeSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS customers (
+        customer_id TEXT PRIMARY KEY,
+        customer_name TEXT NOT NULL,
+        segment TEXT NOT NULL,
+        region TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS orders (
+        order_id TEXT PRIMARY KEY,
+        customer_id TEXT NOT NULL,
+        order_date TEXT NOT NULL,
+        revenue REAL NOT NULL,
+        status TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS boss_case_results (
+        case_id TEXT PRIMARY KEY,
+        completed_at TEXT NOT NULL,
+        total_score INTEGER NOT NULL,
+        cleaning_score INTEGER NOT NULL,
+        sql_score INTEGER NOT NULL,
+        kpi_score INTEGER NOT NULL,
+        chart_score INTEGER NOT NULL,
+        recommendation_score INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  Future<void> _seedCore(Database db) async {
     final campaignRows = <Map<String, Object?>>[
       {'date': '2026-09-28', 'channel': 'Search', 'spend': 12000, 'conversions': 84},
       {'date': '2026-09-28', 'channel': 'Social', 'spend': 9000, 'conversions': 45},
@@ -101,6 +148,45 @@ class AppDatabase {
       'business',
     ]) {
       batch.insert('skill_mastery', {'skill_key': skill});
+    }
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> _seedPhaseThree(Database db) async {
+    final customers = <Map<String, Object?>>[
+      {'customer_id': 'C001', 'customer_name': 'Asha', 'segment': 'Consumer', 'region': 'North'},
+      {'customer_id': 'C002', 'customer_name': 'Ravi', 'segment': 'SMB', 'region': 'North'},
+      {'customer_id': 'C003', 'customer_name': 'Meena', 'segment': 'Enterprise', 'region': 'West'},
+      {'customer_id': 'C004', 'customer_name': 'Kabir', 'segment': 'Consumer', 'region': 'South'},
+      {'customer_id': 'C005', 'customer_name': 'Sana', 'segment': 'Enterprise', 'region': 'East'},
+    ];
+
+    final orders = <Map<String, Object?>>[
+      {'order_id': 'O2001', 'customer_id': 'C001', 'order_date': '2026-09-20', 'revenue': 1200, 'status': 'completed'},
+      {'order_id': 'O2002', 'customer_id': 'C001', 'order_date': '2026-09-21', 'revenue': 800, 'status': 'completed'},
+      {'order_id': 'O2003', 'customer_id': 'C002', 'order_date': '2026-09-21', 'revenue': 2300, 'status': 'completed'},
+      {'order_id': 'O2004', 'customer_id': 'C003', 'order_date': '2026-09-22', 'revenue': 3200, 'status': 'completed'},
+      {'order_id': 'O2005', 'customer_id': 'C003', 'order_date': '2026-09-23', 'revenue': 2000, 'status': 'completed'},
+      {'order_id': 'O2006', 'customer_id': 'C004', 'order_date': '2026-09-23', 'revenue': 1400, 'status': 'refunded'},
+      {'order_id': 'O2007', 'customer_id': 'C005', 'order_date': '2026-09-24', 'revenue': 2800, 'status': 'completed'},
+      {'order_id': 'O2008', 'customer_id': 'C005', 'order_date': '2026-09-25', 'revenue': 900, 'status': 'cancelled'},
+      {'order_id': 'O2009', 'customer_id': 'C004', 'order_date': '2026-09-26', 'revenue': 1100, 'status': 'completed'},
+    ];
+
+    final batch = db.batch();
+    for (final row in customers) {
+      batch.insert(
+        'customers',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in orders) {
+      batch.insert(
+        'orders',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
     await batch.commit(noResult: true);
   }

@@ -2,28 +2,26 @@
 
 DataQuest is an offline-first Flutter game that trains a student for real data-analyst work by simulating company tickets, datasets, analysis, decisions and career progression.
 
-## Current build: Phase 2
+## Current build: Phase 3
 
-The app now includes:
-- Career dashboard with company metrics, role and XP
-- JSON-driven ticket packs with progressive 3-level hints
-- Spreadsheet and statistics/business reasoning tickets
-- A real local SQLite analyst workstation
-- SQL queries executed on-device and graded from their result sets
-- A messy data-cleaning case covering nulls, duplicates, formats, categories and outliers
-- 5-question placement test
-- Persistent per-skill mastery and review scheduling
-- Skill radar chart
-- Offline saved career progress
-- GitHub Actions analysis, unit tests and Android debug APK build
+Phase 3 adds the first adaptive practice loop and end-to-end analyst case:
+
+- Practice Gym organized by skill and difficulty
+- Adaptive review queue driven by mastery and spaced-review due dates
+- Home-screen task recommendations from weakest unfinished skills
+- SQL schema/table browser
+- Reusable read-only SQL scratchpad
+- Real SQLite JOIN and filtering/aggregation tickets
+- Versioned SQLite migration that preserves Phase 2 data
+- Weekly Boss Case: cleaning → SQL → KPI → chart choice → executive recommendation
+- Weighted Boss Case rubric and persistent performance record
+- Boss Case performance feeds back into skill mastery
+- Full offline operation
+- Automated tests for review prioritization, recommendations, SQL workspace, Boss Case scoring and saved results
 
 Read `PROGRESS_LOG.md` before making future changes.
 
 ## Run locally
-
-1. Install Flutter stable and Android Studio.
-2. Clone this repository.
-3. From the repository root run:
 
 ```bash
 flutter create --platforms=android --project-name dataquest_analyst_career --org com.dataquest .
@@ -44,27 +42,19 @@ flutter test
 flutter build apk --release
 ```
 
-Output:
-`build/app/outputs/flutter-apk/app-release.apk`
+GitHub Actions also analyzes, tests and builds a debug APK on every push to `main`.
 
-GitHub Actions builds a debug APK automatically on pushes to `main`.
+## Offline analyst database
 
-## Architecture
+Learning tables:
+- `campaign_performance`
+- `customer_dirty`
+- `customers`
+- `orders`
 
-- `lib/data`: SQLite database and seeded analyst datasets
-- `lib/core`: app theme/infrastructure
-- `lib/features`: career, placement, skills and task UI/state
-- `lib/models`: task, placement and mastery models
-- `lib/repositories`: content and mastery persistence
-- `lib/services`: grading and safe SQL execution
-- `assets/content`: versioned data-driven content packs
-- `test`: grading, SQLite, mastery and widget tests
+Adaptive state:
+- `skill_mastery`
+- `placement_results`
+- `boss_case_results`
 
-## Offline data
-
-SQLite seeds:
-- `campaign_performance` for real SQL practice
-- `customer_dirty` for cleaning practice
-- `skill_mastery` and `placement_results` for adaptive learning state
-
-The full core learning loop works without internet.
+The SQL workstation is read-only for learners; mutation statements remain blocked.

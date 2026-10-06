@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 3,
+  "migrationNote": "v3 adds optional difficulty. v1/v2 packs remain readable and default to Beginner.",
+  "packId": "career-ecommerce-sql-practice-v1",
+  "tasks": [
+    {
+      "id": "sql-join-segment-revenue-001",
+      "title": "Revenue by Customer Segment",
+      "department": "Finance",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "context": "Finance wants to know which customer segments generate completed revenue. Customer attributes and order facts live in separate tables.",
+      "goal": "Join customers to orders and aggregate completed revenue by segment.",
+      "deliverable": "Return segment and total completed revenue, one row per segment.",
+      "answerType": "sql_result",
+      "prompt": "Write the SQL query using customers and orders.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"segment": "Consumer", "total_revenue": 3100},
+        {"segment": "Enterprise", "total_revenue": 8000},
+        {"segment": "SMB", "total_revenue": 2300}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "The shared key is customer_id.",
+        "Filter orders to status = completed before interpreting revenue.",
+        "JOIN customers c to orders o ON c.customer_id = o.customer_id, then GROUP BY c.segment."
+      ],
+      "explanation": "The JOIN brings the customer segment onto each order. Filtering removes refunded/cancelled revenue, and GROUP BY segment produces the decision-ready grain.",
+      "xp": 150,
+      "datasetName": "customers + orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-filter-aggregate-001",
+      "title": "Large Orders by Status",
+      "department": "Operations",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "context": "Operations is reviewing high-value orders of at least 1000. They want counts and revenue totals by status.",
+      "goal": "Filter high-value orders and aggregate count and revenue by status.",
+      "deliverable": "Return status, order_count and total_revenue for orders with revenue >= 1000.",
+      "answerType": "sql_result",
+      "prompt": "Write the SQL query against orders.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"status": "completed", "order_count": 6, "total_revenue": 12600},
+        {"status": "refunded", "order_count": 1, "total_revenue": 1400}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Filter rows before grouping.",
+        "Use COUNT(*) and SUM(revenue).",
+        "WHERE revenue >= 1000 GROUP BY status."
+      ],
+      "explanation": "WHERE defines the qualifying order population; GROUP BY status then calculates metrics at the status level.",
+      "xp": 130,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    }
+  ]
+}

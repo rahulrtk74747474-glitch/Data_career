@@ -20,6 +20,7 @@ class AnalystTask {
     required this.datasetName,
     required this.rows,
     required this.options,
+    this.difficulty = 'Beginner',
   });
 
   final String id;
@@ -42,6 +43,7 @@ class AnalystTask {
   final String datasetName;
   final List<Map<String, dynamic>> rows;
   final List<String> options;
+  final String difficulty;
 
   factory AnalystTask.fromJson(Map<String, dynamic> json) {
     return AnalystTask(
@@ -78,6 +80,7 @@ class AnalystTask {
       options: List<String>.from(
         (json['options'] as List<dynamic>?) ?? const <dynamic>[],
       ),
+      difficulty: (json['difficulty'] as String?) ?? 'Beginner',
     );
   }
 
