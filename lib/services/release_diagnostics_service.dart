@@ -10,6 +10,7 @@ class ReleaseDiagnostics {
     required this.databaseSchema,
     required this.backupSchema,
     required this.weeklyCaseSchema,
+    required this.contentSchemaSummary,
     required this.cloudConfigured,
     required this.weeklyCasesConfigured,
     required this.lastBackupAt,
@@ -19,6 +20,7 @@ class ReleaseDiagnostics {
   final int databaseSchema;
   final int backupSchema;
   final int weeklyCaseSchema;
+  final String contentSchemaSummary;
   final bool cloudConfigured;
   final bool weeklyCasesConfigured;
   final DateTime? lastBackupAt;
@@ -40,6 +42,8 @@ class ReleaseDiagnosticsService {
       databaseSchema: AppDatabase.schemaVersion,
       backupSchema: BackupSnapshot.currentSchemaVersion,
       weeklyCaseSchema: WeeklyCasePack.supportedSchemaVersion,
+      contentSchemaSummary:
+          'career tasks v3 • capstone v1 • interviews v1 • weekly v1',
       cloudConfigured: _cloudConfig.cloudConfigured,
       weeklyCasesConfigured: _cloudConfig.weeklyCasesConfigured,
       lastBackupAt: await _backupService.lastBackupAt(),
