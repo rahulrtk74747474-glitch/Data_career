@@ -50,9 +50,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       };
 
       final navigator = Navigator.of(context);
-      await navigator.pushReplacementNamed(AppRoutes.home);
+      navigator.pushReplacementNamed(AppRoutes.home);
       if (targetRoute != null) {
-        await navigator.pushNamed(targetRoute);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigator.pushNamed(targetRoute);
+        });
       }
     } catch (error) {
       if (!mounted) return;
