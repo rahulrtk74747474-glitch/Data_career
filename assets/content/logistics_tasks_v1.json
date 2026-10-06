@@ -19,10 +19,26 @@
       "expectedAnswer": "",
       "requiredTokens": [],
       "expectedRows": [
-        {"route_code": "NS-1", "shipment_count": 2, "on_time_shipments": 0},
-        {"route_code": "NW-1", "shipment_count": 3, "on_time_shipments": 2},
-        {"route_code": "SN-1", "shipment_count": 2, "on_time_shipments": 1},
-        {"route_code": "WE-1", "shipment_count": 3, "on_time_shipments": 1}
+        {
+          "route_code": "NS-1",
+          "shipment_count": 2,
+          "on_time_shipments": 0
+        },
+        {
+          "route_code": "NW-1",
+          "shipment_count": 3,
+          "on_time_shipments": 2
+        },
+        {
+          "route_code": "SN-1",
+          "shipment_count": 2,
+          "on_time_shipments": 1
+        },
+        {
+          "route_code": "WE-1",
+          "shipment_count": 3,
+          "on_time_shipments": 1
+        }
       ],
       "expectedSelections": [],
       "hints": [
@@ -128,10 +144,22 @@
       "expectedAnswer": "",
       "requiredTokens": [],
       "expectedRows": [
-        {"day_name": "Thursday", "capacity_gap": 10},
-        {"day_name": "Friday", "capacity_gap": 40},
-        {"day_name": "Saturday", "capacity_gap": 70},
-        {"day_name": "Sunday", "capacity_gap": 20}
+        {
+          "day_name": "Thursday",
+          "capacity_gap": 10
+        },
+        {
+          "day_name": "Friday",
+          "capacity_gap": 40
+        },
+        {
+          "day_name": "Saturday",
+          "capacity_gap": 70
+        },
+        {
+          "day_name": "Sunday",
+          "capacity_gap": 20
+        }
       ],
       "expectedSelections": [],
       "hints": [
@@ -162,8 +190,14 @@
       "expectedAnswer": "",
       "requiredTokens": [],
       "expectedRows": [
-        {"warehouse": "WH-North", "peak_utilization_pct": 95.0},
-        {"warehouse": "WH-West", "peak_utilization_pct": 97.8}
+        {
+          "warehouse": "WH-North",
+          "peak_utilization_pct": 95
+        },
+        {
+          "warehouse": "WH-West",
+          "peak_utilization_pct": 97.8
+        }
       ],
       "expectedSelections": [],
       "hints": [
@@ -194,10 +228,22 @@
       "expectedAnswer": "",
       "requiredTokens": [],
       "expectedRows": [
-        {"route_code": "NS-1", "cost_per_kg": 35.4},
-        {"route_code": "NW-1", "cost_per_kg": 35.1},
-        {"route_code": "SN-1", "cost_per_kg": 32.2},
-        {"route_code": "WE-1", "cost_per_kg": 35.7}
+        {
+          "route_code": "NS-1",
+          "cost_per_kg": 35.4
+        },
+        {
+          "route_code": "NW-1",
+          "cost_per_kg": 35.1
+        },
+        {
+          "route_code": "SN-1",
+          "cost_per_kg": 32.2
+        },
+        {
+          "route_code": "WE-1",
+          "cost_per_kg": 35.7
+        }
       ],
       "expectedSelections": [],
       "hints": [
@@ -277,6 +323,74 @@
         "Close the worst route immediately because the route code causes delays",
         "Ignore warehouse utilization because only delivery time matters",
         "Increase every warehouse and route budget without scenario analysis"
+      ]
+    },
+    {
+      "id": "logistics-delay-driver-001",
+      "title": "Investigate Delay Drivers",
+      "department": "Network Performance",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "NS-1 has the weakest observed SLA in the synthetic sample. Leadership asks what is driving the delays.",
+      "goal": "Choose an analysis plan that separates route association from operational drivers.",
+      "deliverable": "Select the strongest delay-driver investigation.",
+      "answerType": "choice",
+      "prompt": "What should the analyst do next?",
+      "expectedAnswer": "Compare late versus on-time shipments on weight, day, origin and destination context, then add hub and capacity signals before testing whether the route effect remains",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "Start with late versus on-time shipments.",
+        "Look for differences in shipment mix and operating context.",
+        "A route label can proxy for several underlying causes."
+      ],
+      "explanation": "Delay-driver analysis should move from a route-level signal to measurable operating factors before recommending a network change.",
+      "xp": 210,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Compare late versus on-time shipments on weight, day, origin and destination context, then add hub and capacity signals before testing whether the route effect remains",
+        "Assume the route code itself is the root cause",
+        "Delete late shipments and recalculate SLA",
+        "Use only average shipping cost to explain delay"
+      ]
+    },
+    {
+      "id": "logistics-forecasting-001",
+      "title": "Forecast Network Throughput",
+      "department": "Capacity Planning",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "Weekend shipment demand is repeatedly higher than early-week demand and planners need next month's throughput input.",
+      "goal": "Choose a defensible first forecasting approach for operations planning.",
+      "deliverable": "Select the strongest forecasting method.",
+      "answerType": "choice",
+      "prompt": "Which approach should the analyst use first?",
+      "expectedAnswer": "Model recurring day-of-week seasonality over multiple comparable weeks, back-test forecast error, and provide base, low and high demand scenarios for capacity planning",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "One busy weekend is not a forecast.",
+        "Repeated day-of-week differences are seasonality.",
+        "Operations planning benefits from forecast error and scenario ranges."
+      ],
+      "explanation": "A useful throughput forecast captures repeatable seasonality, is back-tested, and communicates uncertainty through scenarios.",
+      "xp": 210,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Model recurring day-of-week seasonality over multiple comparable weeks, back-test forecast error, and provide base, low and high demand scenarios for capacity planning",
+        "Use the single busiest Saturday as every future day's forecast",
+        "Assume every day has identical shipment demand",
+        "Increase throughput everywhere without measuring forecast error"
       ]
     }
   ]
