@@ -11,6 +11,11 @@ class SqlWorkspaceRepository {
     'customer_dirty',
     'customers',
     'orders',
+    'bank_accounts',
+    'loan_portfolio',
+    'bank_transactions',
+    'hospital_daily_ops',
+    'hospital_capacity_forecast',
   };
 
   Future<List<SqlTableSchema>> loadSchemas() async {
