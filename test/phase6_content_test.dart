@@ -30,6 +30,7 @@ void main() {
       'ecommerce',
       'saas',
       'bank',
+      'hospital',
     });
   });
 
