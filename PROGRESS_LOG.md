@@ -43,7 +43,7 @@ Implemented:
 
 ## Phase 3 — Practice Gym, adaptive review and Boss Case
 
-Status: **IMPLEMENTED — CI verification pending**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #8)**
 
 Implemented:
 1. Added Practice Gym organized by skill and difficulty.
@@ -58,7 +58,7 @@ Implemented:
 10. Added weighted 100-point Boss Case rubric.
 11. Added persistent `boss_case_results` performance record.
 12. Boss Case component performance updates skill mastery.
-13. Added automated tests for adaptive review priority, recommendations, SQL schemas/queries, Boss Case scoring and Boss Case persistence.
+13. Added automated tests for adaptive review priority, recommendations, SQL schemas/queries, Boss Case scoring and Boss Case persistence.\n14. CI run #8 passed static analysis, all 16 tests, Android debug APK build, and artifact upload.
 
 ### Content schema migration
 
