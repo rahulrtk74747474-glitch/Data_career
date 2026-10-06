@@ -274,7 +274,7 @@ class SupabaseCloudService {
 
   void _requireCloud() {
     if (!config.cloudConfigured) {
-      throw const StateError(
+      throw StateError(
         'Cloud sync is not configured in this build.',
       );
     }
