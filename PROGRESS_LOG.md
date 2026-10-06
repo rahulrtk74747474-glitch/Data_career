@@ -45,11 +45,10 @@ Implemented:
 11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.
 12. CI run #10 passed static analysis, all 23 tests, Android debug APK build, and artifact upload.
 
-### Technical choice
+### Phase 4 technical choice
 
 - Pandas is implemented as a guided simulator: learner code must contain the requested Pandas operation pattern, while equivalent dataframe operations execute locally in Dart.
 - This deliberately avoids shipping CPython/NumPy/Pandas binaries into the Android APK and protects low-end-device performance.
-- Portfolio export is plain structured text copied to the system clipboard, requiring no cloud account or file permission.
 
 ## Phase 5 — Interview Mode, Daily Challenge and career progression
 
@@ -77,35 +76,68 @@ Implemented:
 
 - Free-text interview grading is local rubric/keyword scoring, not cloud/LLM grading, to preserve offline operation.
 - Daily Challenge reuses the production ticket graders rather than maintaining a separate answer engine.
-- Promotion ticket-count gates are bounded to the current content bank so the career ladder cannot dead-end before later company packs are added.
 - Existing XP, completed tickets, mastery, Boss Case results and portfolio evidence are preserved.
 
-## Known Phase 5 limitations
+## Phase 6 — Bank progression, multi-company Boss Cases and evidence export
 
-- Interview free-text grading does not semantically understand arbitrary answers beyond the configured rubrics.
-- Daily Challenge rotation uses a finite bundled content bank.
-- Performance Review currently uses the existing Boss Case score rather than a company-specific multi-case review board.
-- Company progression currently reaches SaaS; bank, hospital and logistics remain future work.
-- Timed interviews use a local countdown and do not prevent app switching.
-- Portfolio export is still clipboard text rather than a file/PDF report.
-- Cloud sync and leaderboards remain optional.
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #94)**
 
-## Exact next step — Phase 6
+Implemented:
+1. Added company progression from SaaS to **NorthStar Bank Analytics** at Lead Analyst.
+2. Added SQLite v5 synthetic banking tables: `bank_accounts`, `loan_portfolio` and `bank_transactions`.
+3. Added advanced bank career tickets for credit exposure SQL, transaction-review operations, review-workload SQL and credit-governance reasoning.
+4. Banking review flags are explicitly treated as prioritization signals, not confirmed fraud labels.
+5. Added separate company-aware Boss Cases for e-commerce, SaaS and banking.
+6. Added company-aware Boss Case selection using career level and current company.
+7. Expanded Daily Challenge rotation with additional SaaS and banking challenges.
+8. Added an advanced Bank Analytics Interview covering SQL, review-signal interpretation and portfolio-delinquency case reasoning.
+9. Final bank-stage promotion readiness uses the dedicated `bank_analytics` interview result.
+10. Added append-only `evidence_attempts` history for successful task/lab, interview and Boss Case attempts.
+11. Existing best/latest summary tables remain intact while repeated attempts are preserved individually.
+12. Evidence rows record source, score, mode, company and completion time.
+13. Explicit full career reset is the only normal in-app path that clears the evidence ledger.
+14. Expanded Portfolio Evidence with attempt count, average attempt score and chronological attempt history.
+15. Added local HTML portfolio export with print CSS and browser **Print → Save as PDF** workflow.
+16. Expanded text portfolio summaries with company and recent attempt history.
+17. Extended Lead Analyst → Head of Analytics ticket gate to the current banking content bank.
+18. Added automated tests for bank unlocks, bank task routing, company-aware Boss Cases, banking SQLite results, immutable task/interview evidence, portfolio export and Phase 6 JSON content.
+19. CI run #94 passed static analysis, all **47 tests**, Android debug APK build, and artifact upload.
 
-**Build bank-company progression + richer portfolio export + expanded Boss/Daily evidence.**
+### Phase 6 technical notes
 
-Phase 6 should:
-1. Add progression from SaaS to a banking analytics company with domain-specific synthetic datasets and tickets.
-2. Add safe risk, fraud, credit and operations analytics scenarios.
-3. Add richer local portfolio export suitable for a file/PDF-ready evidence report.
-4. Add multiple Boss Cases with company-aware Boss Case rotation.
-5. Expand Daily Challenge and advanced interview question banks.
-6. Add immutable attempt history for portfolio and interview evidence.
-7. Add automated tests for bank unlocks, company-aware Boss Cases and evidence history.
-8. Preserve offline-first operation and low-end Android performance.
+- All banking data is synthetic training data; no real customer or financial institution data is bundled.
+- `review_flag` represents items routed for review. It is intentionally not modeled as proof of fraud.
+- Credit-risk exercises focus on aggregation, validation, governance and decision-quality reasoning rather than automatic individual adverse decisions.
+- The portfolio report is generated entirely on-device as HTML and is print-styled for PDF conversion in a browser.
+- Immutable evidence is append-only during normal gameplay; best-score tables remain separate summaries for fast UI access.
+- SQLite v5 adds new tables without deleting Phase 1–5 progress.
 
-Do not start Phase 7 until Phase 6 is explicitly requested or Phase 6 is complete and the user asks to continue.
+## Known Phase 6 limitations
+
+- Company progression currently reaches banking; hospital and logistics chapters remain future work.
+- The career role ladder ends at Head of Analytics, so later company chapters need company progression decoupled from role level.
+- HTML export is PDF-ready but is not yet a native one-tap PDF file.
+- Banking content is an initial compact synthetic pack rather than a full bank analytics curriculum.
+- Free-text interview grading remains local rubric/keyword based.
+- Cloud save, leaderboards and multi-device synchronization remain optional future work.
+
+## Exact next step — Phase 7
+
+**Decouple company chapters from the role ladder and add the Hospital Analytics chapter.**
+
+Phase 7 should:
+1. Add persistent company-chapter progression independent of career role so players can continue after Head of Analytics.
+2. Add bank → hospital chapter unlock requirements without changing the existing role ladder.
+3. Add safe synthetic hospital operations data only—patient-flow, capacity, waiting-time, scheduling and quality metrics; no real PHI and no diagnosis/treatment advice.
+4. Add hospital SQL, cleaning, statistics, operations and executive-communication tickets.
+5. Add a hospital-specific Boss Case, Daily Challenges and interview/case content.
+6. Add richer cohort/forecasting and capacity-planning exercises appropriate to operational analytics.
+7. Add local notification support for Daily Challenge/review reminders with user-controlled settings.
+8. Add automated tests for independent company-chapter unlocks, hospital content, Boss Case routing and notification scheduling abstraction.
+9. Preserve offline-first operation, synthetic data and low-end Android performance.
+
+Do not start Phase 8 until Phase 7 is explicitly requested or Phase 7 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 5: Added offline SQL/stats/case/behavioral interviews, timed practice, deterministic Daily Challenges with streaks, performance-review promotion gates, and e-commerce→SaaS career progression.`
+`2026-10-06 — Phase 6: Added Lead Analyst banking progression, synthetic risk/fraud-review/credit analytics, company-aware Boss Cases, expanded Daily/interview content, immutable attempt history, and local HTML/PDF-ready portfolio export.`
