@@ -26,13 +26,15 @@ class PortfolioDeliveryService {
   Future<ShareResult> share(
     String path, {
     Rect? sharePositionOrigin,
+    String title = 'DataQuest Analyst Portfolio',
+    String text =
+        'DataQuest analyst portfolio evidence report. Open in a browser to print or save as PDF.',
   }) {
     return SharePlus.instance.share(
       ShareParams(
-        title: 'DataQuest Analyst Portfolio',
-        subject: 'DataQuest Analyst Portfolio',
-        text:
-            'DataQuest analyst portfolio evidence report. Open in a browser to print or save as PDF.',
+        title: title,
+        subject: title,
+        text: text,
         files: [XFile(path)],
         sharePositionOrigin: sharePositionOrigin,
       ),
