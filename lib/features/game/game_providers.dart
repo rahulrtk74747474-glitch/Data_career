@@ -10,6 +10,7 @@ import '../../models/interview.dart';
 import '../../models/interview_result.dart';
 import '../../models/pandas_challenge.dart';
 import '../../models/placement_question.dart';
+import '../../models/reminder_settings.dart';
 import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
 import '../../models/sql_table_schema.dart';
@@ -19,6 +20,7 @@ import '../../repositories/evidence_repository.dart';
 import '../../repositories/interview_result_repository.dart';
 import '../../repositories/mastery_repository.dart';
 import '../../repositories/portfolio_repository.dart';
+import '../../repositories/reminder_settings_repository.dart';
 import '../../repositories/sql_workspace_repository.dart';
 import '../../repositories/task_performance_repository.dart';
 import '../../services/adaptive_review_service.dart';
@@ -28,6 +30,7 @@ import '../../services/career_task_service.dart';
 import '../../services/company_chapter_progression_service.dart';
 import '../../services/daily_challenge_service.dart';
 import '../../services/portfolio_export_service.dart';
+import '../../services/reminder_scheduler.dart';
 import '../../services/sql_runner.dart';
 import 'game_progress.dart';
 
@@ -80,6 +83,19 @@ final portfolioExportServiceProvider =
 final interviewResultRepositoryProvider =
     Provider<InterviewResultRepository>((ref) {
   return InterviewResultRepository(ref.watch(appDatabaseProvider));
+});
+
+final reminderSettingsRepositoryProvider =
+    Provider<ReminderSettingsRepository>((ref) {
+  return const ReminderSettingsRepository();
+});
+
+final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
+  return LocalNotificationReminderScheduler();
+});
+
+final reminderSettingsProvider = FutureProvider<ReminderSettings>((ref) {
+  return ref.read(reminderSettingsRepositoryProvider).load();
 });
 
 final tasksProvider = FutureProvider<List<AnalystTask>>((ref) {
