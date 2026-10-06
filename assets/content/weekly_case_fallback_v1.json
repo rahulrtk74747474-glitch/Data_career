@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "caseId": "weekly-fallback-001",
+  "weekKey": "fallback",
+  "title": "Margin Drop Triage",
+  "context": "A synthetic e-commerce business reports that revenue increased but contribution margin fell. Finance wants the analyst to identify the next investigation before leadership changes pricing.",
+  "prompt": "What is the strongest first analysis?",
+  "options": [
+    "Decompose margin change into price, discount, product mix, fulfillment cost and return-rate effects, then compare against a stable baseline before recommending action.",
+    "Increase every product price immediately because revenue already increased.",
+    "Use total revenue alone because margin is a finance-only metric.",
+    "Remove returned orders from the dataset without documenting the change."
+  ],
+  "expectedAnswer": "Decompose margin change into price, discount, product mix, fulfillment cost and return-rate effects, then compare against a stable baseline before recommending action.",
+  "explanation": "A decision-ready margin analysis decomposes the change into measurable drivers and establishes a baseline before recommending pricing or cost action."
+}
