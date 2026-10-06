@@ -248,7 +248,12 @@ class _BossCaseScreenState extends ConsumerState<BossCaseScreen> {
 
     await ref
         .read(bossCaseResultRepositoryProvider)
-        .save(definition.id, score);
+        .save(
+          definition.id,
+          score,
+          title: definition.title,
+          companyKey: definition.companyKey,
+        );
 
     final mastery = ref.read(masteryRepositoryProvider);
     await mastery.recordAttempt(
