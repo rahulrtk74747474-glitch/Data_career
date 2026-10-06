@@ -5,6 +5,9 @@ import '../../models/analyst_task.dart';
 import '../../models/skill_mastery.dart';
 import '../boss_case/boss_case_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
+import '../daily/daily_challenge_screen.dart';
+import '../interview/interview_mode_screen.dart';
+import '../career/performance_review_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
 import '../portfolio/portfolio_screen.dart';
 import '../game/game_progress.dart';
@@ -22,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(gameProgressProvider);
-    final tasks = ref.watch(tasksProvider);
+    final tasks = ref.watch(careerTasksProvider);
     final placementComplete = ref.watch(placementCompletedProvider);
     final skillProfile = ref.watch(skillProfileProvider);
     final recommendations = ref.watch(adaptiveRecommendationsProvider);
@@ -48,6 +51,10 @@ class HomeScreen extends ConsumerWidget {
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(tasksProvider);
+            ref.invalidate(careerTasksProvider);
+            ref.invalidate(dailyChallengeProvider);
+            ref.invalidate(interviewResultsProvider);
+            ref.invalidate(promotionReviewProvider);
             ref.invalidate(skillProfileProvider);
             ref.invalidate(placementCompletedProvider);
             ref.invalidate(reviewQueueProvider);
@@ -93,6 +100,12 @@ class HomeScreen extends ConsumerWidget {
                     _open(context, const DashboardLabScreen()),
                 onPortfolio: () =>
                     _open(context, const PortfolioScreen()),
+                onDaily: () =>
+                    _open(context, const DailyChallengeScreen()),
+                onInterview: () =>
+                    _open(context, const InterviewModeScreen()),
+                onReviewCareer: () =>
+                    _open(context, const PerformanceReviewScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -192,11 +205,16 @@ class HomeScreen extends ConsumerWidget {
       await ref.read(masteryRepositoryProvider).resetAll();
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
       await ref.read(taskPerformanceRepositoryProvider).resetAll();
+      await ref.read(interviewResultRepositoryProvider).resetAll();
       ref.invalidate(skillProfileProvider);
       ref.invalidate(placementCompletedProvider);
       ref.invalidate(reviewQueueProvider);
       ref.invalidate(adaptiveRecommendationsProvider);
       ref.invalidate(portfolioSnapshotProvider);
+      ref.invalidate(interviewResultsProvider);
+      ref.invalidate(promotionReviewProvider);
+      ref.invalidate(careerTasksProvider);
+      ref.invalidate(dailyChallengeProvider);
     }
   }
 }
@@ -211,6 +229,9 @@ class _FeatureGrid extends StatelessWidget {
     required this.onPandas,
     required this.onDashboard,
     required this.onPortfolio,
+    required this.onDaily,
+    required this.onInterview,
+    required this.onReviewCareer,
   });
 
   final int reviewCount;
@@ -221,6 +242,9 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onPandas;
   final VoidCallback onDashboard;
   final VoidCallback onPortfolio;
+  final VoidCallback onDaily;
+  final VoidCallback onInterview;
+  final VoidCallback onReviewCareer;
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +266,9 @@ class _FeatureGrid extends StatelessWidget {
         Icons.dashboard_outlined,
         onDashboard,
       ),
+      ('Daily Challenge', 'Streak + bonus XP', Icons.today_outlined, onDaily),
+      ('Interview Mode', 'SQL + cases', Icons.record_voice_over_outlined, onInterview),
+      ('Performance Review', 'Promotion gates', Icons.workspace_premium_outlined, onReviewCareer),
       ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
       ('Portfolio', 'Strongest evidence', Icons.work_outline, onPortfolio),
     ];
@@ -396,7 +423,7 @@ class _CareerCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'E-commerce Co. • Week 1',
+              progress.companyStageLabel,
               style: Theme.of(context).textTheme.labelLarge,
             ),
             const SizedBox(height: 6),
@@ -408,10 +435,12 @@ class _CareerCard extends StatelessWidget {
             LinearProgressIndicator(value: progress.roleProgress),
             const SizedBox(height: 8),
             Text(
-              progress.xp >= 2000
+              progress.isTopRole
                   ? '${progress.xp} XP • Top career level reached'
-                  : '${progress.xp} / ${progress.nextRoleXp} XP to next role',
+                  : '${progress.xp} / ${progress.nextRoleXp} XP before review',
             ),
+            const SizedBox(height: 4),
+            Text('Daily challenge streak: ${progress.dailyStreak}'),
           ],
         ),
       ),
