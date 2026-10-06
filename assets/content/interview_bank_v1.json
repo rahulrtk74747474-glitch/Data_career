@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "bank_analytics",
+    "title": "Bank Analytics Interview",
+    "description": "Advanced risk, transaction-review and credit-governance interview practice using synthetic data.",
+    "durationSeconds": 600,
+    "questions": [
+      {
+        "id": "bank-interview-sql-1",
+        "context": "The interviewer asks for total synthetic outstanding exposure by risk band.",
+        "prompt": "Using loan_portfolio, return risk_band and total_outstanding.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"risk_band": "High", "total_outstanding": 500000},
+          {"risk_band": "Low", "total_outstanding": 2420000},
+          {"risk_band": "Medium", "total_outstanding": 45000}
+        ],
+        "criteria": [],
+        "explanation": "A strong answer aggregates at risk-band grain and does not confuse exposure with default probability."
+      },
+      {
+        "id": "bank-interview-choice-1",
+        "context": "A monitoring rule flags a transaction for review.",
+        "prompt": "What is the safest interpretation?",
+        "answerType": "choice",
+        "options": [
+          "The flag prioritizes review and should be validated against context and outcomes before customer action",
+          "The flag proves fraud",
+          "Every large transaction should be blocked automatically",
+          "Review systems do not need false-positive monitoring"
+        ],
+        "expectedAnswer": "The flag prioritizes review and should be validated against context and outcomes before customer action",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "Signals and confirmed outcomes are different. Good operations analytics measures both detection value and false-positive cost."
+      },
+      {
+        "id": "bank-interview-case-1",
+        "context": "Portfolio delinquency rose this month and leadership asks whether credit quality is deteriorating.",
+        "prompt": "Describe how you would structure the analysis before recommending a policy change.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Define delinquency and time scope", "weight": 20, "keywords": ["definition", "dpd", "delinquency", "period"]},
+          {"label": "Segment portfolio drivers", "weight": 20, "keywords": ["segment", "product", "vintage", "region", "cohort"]},
+          {"label": "Separate mix from within-segment change", "weight": 20, "keywords": ["mix", "composition", "within", "shift"]},
+          {"label": "Validate data and policy changes", "weight": 20, "keywords": ["validate", "data", "policy", "underwriting", "tracking"]},
+          {"label": "Recommend controlled next action", "weight": 20, "keywords": ["monitor", "test", "review", "action", "scenario"]}
+        ],
+        "explanation": "A strong banking case separates portfolio-mix effects from true within-segment deterioration and validates data or policy changes before recommending action."
+      }
+    ]
+  }]
+}
