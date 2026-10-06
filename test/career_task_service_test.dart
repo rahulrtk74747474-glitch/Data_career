@@ -9,6 +9,7 @@ void main() {
     _task('e-intermediate', 'Intermediate', 'ecommerce', 1),
     _task('s-intermediate', 'Intermediate', 'saas', 2),
     _task('s-advanced', 'Advanced', 'saas', 3),
+    _task('b-advanced', 'Advanced', 'bank', 4),
   ];
 
   test('intern sees only beginner ecommerce tickets', () {
@@ -36,6 +37,15 @@ void main() {
       visible.map((task) => task.id).toSet(),
       {'s-intermediate', 's-advanced'},
     );
+  });
+
+  test('Lead Analyst sees banking tickets', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 4),
+      tasks: tasks,
+    );
+
+    expect(visible.map((task) => task.id).toList(), ['b-advanced']);
   });
 }
 
