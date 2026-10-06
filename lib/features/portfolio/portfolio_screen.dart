@@ -123,8 +123,8 @@ class PortfolioScreen extends ConsumerWidget {
                             : box.localToGlobal(Offset.zero) & box.size;
                         try {
                           final exportResult = await ref
-                              .read(portfolioExportServiceProvider)
-                              .exportHtml(
+                              .read(portfolioPdfExportServiceProvider)
+                              .exportPdf(
                                 snapshot: portfolio,
                                 role: progress.role,
                                 companyName: progress.companyName,
@@ -136,6 +136,9 @@ class PortfolioScreen extends ConsumerWidget {
                               .share(
                                 exportResult.path,
                                 sharePositionOrigin: origin,
+                                title: 'DataQuest Analyst Portfolio PDF',
+                                text:
+                                    'DataQuest analyst portfolio PDF generated from synthetic training evidence.',
                               );
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -159,7 +162,7 @@ class PortfolioScreen extends ConsumerWidget {
                         }
                       },
                       icon: const Icon(Icons.share_outlined),
-                      label: const Text('Share report'),
+                      label: const Text('Share PDF'),
                     ),
                   ),
                 ],
