@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/game/game_progress.dart';
@@ -289,20 +288,15 @@ class _DataContinuityScreenState
   }
 
   Future<void> _restoreBackup() async {
-    final picked = await FilePicker.platform.pickFiles(
+    final picked = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: const ['json'],
-      withData: true,
     );
-    if (picked == null || picked.files.isEmpty) return;
-    final bytes = picked.files.single.bytes;
-    if (bytes == null) {
-      _setStatus('Could not read the selected backup file.');
-      return;
-    }
+    if (picked == null) return;
 
     BackupSnapshot snapshot;
     try {
+      final bytes = await picked.readAsBytes();
       snapshot = ref.read(backupServiceProvider).decode(utf8.decode(bytes));
     } catch (error) {
       _setStatus('Backup rejected before restore: $error');
