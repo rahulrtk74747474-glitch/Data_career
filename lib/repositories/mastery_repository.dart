@@ -31,7 +31,7 @@ class MasteryRepository {
     final db = await _appDatabase.database;
     await db.transaction((txn) async {
       for (final entry in scores.entries) {
-        final score = entry.value.clamp(0, 100);
+        final score = entry.value.clamp(0, 100).toInt();
         await txn.update(
           'skill_mastery',
           {
