@@ -17,6 +17,10 @@ class ReminderApplyResult {
 }
 
 abstract interface class ReminderScheduler {
+  Future<String?> initialize({
+    void Function(String payload)? onPayload,
+  });
+
   Future<ReminderApplyResult> apply(ReminderSettings settings);
 }
 
@@ -27,10 +31,53 @@ class LocalNotificationReminderScheduler implements ReminderScheduler {
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialized = false;
+  void Function(String payload)? _onPayload;
+
+  @override
+  Future<String?> initialize({
+    void Function(String payload)? onPayload,
+  }) async {
+    if (onPayload != null) {
+      _onPayload = onPayload;
+    }
+    if (_initialized) return null;
+
+    tz_data.initializeTimeZones();
+    try {
+      final zone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(zone.identifier));
+    } catch (_) {
+      tz.setLocalLocation(tz.UTC);
+    }
+
+    const settings = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    );
+
+    await _plugin.initialize(
+      settings: settings,
+      onDidReceiveNotificationResponse: (response) {
+        final payload = response.payload;
+        if (payload != null && payload.isNotEmpty) {
+          _onPayload?.call(payload);
+        }
+      },
+    );
+    _initialized = true;
+
+    final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+    if (launchDetails?.didNotificationLaunchApp == true) {
+      final payload = launchDetails?.notificationResponse?.payload;
+      if (payload != null && payload.isNotEmpty) {
+        return payload;
+      }
+    }
+    return null;
+  }
 
   @override
   Future<ReminderApplyResult> apply(ReminderSettings settings) async {
-    await _initialize();
+    await initialize();
 
     for (final id in const [
       ReminderSchedulePlanner.dailyId,
@@ -96,23 +143,5 @@ class LocalNotificationReminderScheduler implements ReminderScheduler {
       permissionGranted: true,
       scheduledCount: plans.length,
     );
-  }
-
-  Future<void> _initialize() async {
-    if (_initialized) return;
-
-    tz_data.initializeTimeZones();
-    try {
-      final zone = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(zone.identifier));
-    } catch (_) {
-      tz.setLocalLocation(tz.UTC);
-    }
-
-    const settings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    );
-    await _plugin.initialize(settings: settings);
-    _initialized = true;
   }
 }
