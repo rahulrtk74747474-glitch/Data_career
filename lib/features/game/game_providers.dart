@@ -47,6 +47,7 @@ import '../../services/graduation_service.dart';
 import '../../services/job_readiness_service.dart';
 import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
+import '../../services/portfolio_pdf_export_service.dart';
 import '../../services/release_diagnostics_service.dart';
 import '../../services/reminder_scheduler.dart';
 import '../../services/sql_runner.dart';
@@ -147,6 +148,11 @@ final evidenceRepositoryProvider = Provider<EvidenceRepository>((ref) {
 final portfolioExportServiceProvider =
     Provider<PortfolioExportService>((ref) {
   return PortfolioExportService(ref.watch(appDatabaseProvider));
+});
+
+final portfolioPdfExportServiceProvider =
+    Provider<PortfolioPdfExportService>((ref) {
+  return PortfolioPdfExportService(ref.watch(appDatabaseProvider));
 });
 
 final certificateExportServiceProvider =
