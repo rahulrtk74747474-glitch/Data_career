@@ -22,6 +22,15 @@ void main() {
     );
   }
 
+  if (!manifestText.contains('android.permission.INTERNET')) {
+    final manifestClose = manifestText.indexOf('>');
+    manifestText = manifestText.replaceRange(
+      manifestClose + 1,
+      manifestClose + 1,
+      '\n    <uses-permission android:name="android.permission.INTERNET"/>',
+    );
+  }
+
   if (!manifestText.contains(
     'com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver',
   )) {
