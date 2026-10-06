@@ -29,6 +29,7 @@ import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
 import '../../services/company_chapter_progression_service.dart';
 import '../../services/daily_challenge_service.dart';
+import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
 import '../../services/reminder_scheduler.dart';
 import '../../services/sql_runner.dart';
@@ -78,6 +79,11 @@ final evidenceRepositoryProvider = Provider<EvidenceRepository>((ref) {
 final portfolioExportServiceProvider =
     Provider<PortfolioExportService>((ref) {
   return PortfolioExportService(ref.watch(appDatabaseProvider));
+});
+
+final portfolioDeliveryServiceProvider =
+    Provider<PortfolioDeliveryService>((ref) {
+  return const PortfolioDeliveryService();
 });
 
 final interviewResultRepositoryProvider =
