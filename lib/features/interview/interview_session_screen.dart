@@ -265,10 +265,12 @@ class _InterviewSessionScreenState
 
     final finalScore =
         (_earnedPoints / widget.round.questions.length).round();
+    final companyKey = ref.read(gameProgressProvider).companyKey;
     await ref.read(interviewResultRepositoryProvider).save(
           roundKey: widget.round.key,
           score: finalScore,
           timed: widget.timed,
+          companyKey: companyKey,
         );
 
     final skillKey = switch (widget.round.key) {
@@ -283,6 +285,7 @@ class _InterviewSessionScreenState
     ref.invalidate(interviewResultsProvider);
     ref.invalidate(skillProfileProvider);
     ref.invalidate(promotionReviewProvider);
+    ref.invalidate(portfolioSnapshotProvider);
 
     if (!mounted) return;
     setState(() {
