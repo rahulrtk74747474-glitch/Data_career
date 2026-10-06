@@ -16,6 +16,7 @@ import '../../models/placement_question.dart';
 import '../../models/reminder_settings.dart';
 import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
+import '../../models/spreadsheet_challenge.dart';
 import '../../models/sql_table_schema.dart';
 import '../../repositories/boss_case_result_repository.dart';
 import '../../repositories/capstone_result_repository.dart';
@@ -206,6 +207,11 @@ final pandasChallengesProvider =
 final dashboardChallengesProvider =
     FutureProvider<List<DashboardChallenge>>((ref) {
   return ref.read(contentRepositoryProvider).loadDashboardChallenges();
+});
+
+final spreadsheetChallengesProvider =
+    FutureProvider<List<SpreadsheetChallenge>>((ref) {
+  return ref.read(contentRepositoryProvider).loadSpreadsheetChallenges();
 });
 
 final dailyChallengeDefinitionsProvider =
