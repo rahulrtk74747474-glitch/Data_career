@@ -207,24 +207,73 @@ Implemented:
 - Cloud save, leaderboards and multi-device synchronization remain optional future work.
 - Resume and graduation/certification workflows are not yet generated from the evidence ledger.
 
-## Exact next step — Phase 9
+## Phase 9 — Graduation & Job Readiness
 
-**Build the Graduation & Job-Readiness system with a final cross-company capstone.**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #209)**
 
-Phase 9 should:
-1. Add a final offline capstone that combines cleaning, SQL, statistics, KPI/dashboard reasoning and executive recommendation across a realistic multi-step analyst case.
-2. Add a transparent Job Readiness Score derived from skill mastery, career/company completion, Boss Cases, interviews and immutable evidence rather than XP alone.
-3. Add readiness breakdowns for SQL, spreadsheets/cleaning, statistics, Python/Pandas, business communication and interviews, with targeted remediation recommendations.
-4. Add an Interview Gauntlet that mixes timed SQL, statistics, analytics case and behavioral questions in one hiring-loop simulation.
-5. Add an offline resume-bullet builder that converts completed evidence into editable achievement bullets without inventing unsupported claims.
-6. Add portfolio project cards summarizing the strongest cross-company cases, skills used, scores and evidence.
-7. Add graduation/certificate eligibility rules tied to the capstone and readiness evidence.
-8. Add a lightweight locally generated completion certificate and improve portfolio/certificate share/open delivery while protecting APK size.
-9. Add automated tests for capstone scoring, readiness calculations, certificate eligibility, evidence-to-resume transformations and mixed interview scoring.
-10. Preserve offline-first operation, synthetic data, immutable attempt history and low-end Android performance.
+Implemented:
+1. Migrated SQLite to version 8 while preserving all Phase 1–8 career, mastery, company, interview, Boss Case and immutable evidence data.
+2. Added a synthetic cross-company `capstone_company_kpis` dataset covering baseline/current service, cost, volume and exception metrics across all five company chapters.
+3. Added the six-part **Board Portfolio Performance Capstone** covering data validation, real SQLite, statistical interpretation, KPI calculation, dashboard choice and executive recommendation.
+4. Added persistent `capstone_results` plus append-only capstone attempts in the immutable evidence ledger.
+5. Capstone component performance updates cleaning, SQL, statistics and business mastery using the existing adaptive skill model.
+6. Added a transparent **Job Readiness Score** that intentionally excludes XP.
+7. Job Readiness weighting is: skill foundation 50%, interviews 15%, Boss Cases 10%, immutable evidence quality/breadth 10%, career/company completion 5%, and final capstone 10%.
+8. Added readiness breakdowns for SQL, spreadsheets/cleaning, statistics, Python/Pandas, business communication and interviews.
+9. Added targeted remediation recommendations when a domain or evidence category is below the readiness target.
+10. Added the 15-minute **Final Interview Gauntlet** mixing real SQLite, statistics, analytics case structure, behavioral ethics, dashboard choice and executive communication.
+11. The Interview Gauntlet is gated to the final company stage and uses the existing offline interview grading/persistence engine.
+12. Added an evidence-backed **Resume Bullet Builder** with editable text and clipboard export.
+13. Resume suggestions describe recorded DataQuest synthetic training exercises and scores only; they do not invent employer impact or unsupported achievements.
+14. Added portfolio project cards generated from strongest Boss Case and capstone evidence, including company, score, skills and attempt count.
+15. Added the project-card section to both the in-app Portfolio screen and exported local HTML portfolio.
+16. Added evidence-based graduation rules requiring the five-company journey, capstone >=80, Job Readiness >=80, Interview Gauntlet >=75 and no core readiness domain below 65%.
+17. Added a lightweight local HTML completion certificate with learner-entered display name, readiness/capstone scores, Open/Share actions and browser Print → Save as PDF support.
+18. Certificate output explicitly states that it is a DataQuest training completion certificate and not an accredited academic credential.
+19. Added the final capstone dataset to SQL Workstation.
+20. Full career reset now also clears capstone summary results while preserving the existing explicit-reset semantics for immutable evidence.
+21. Added automated tests for capstone scoring and SQLite results, Job Readiness calculations, XP exclusion, remediation, graduation gates, capstone persistence/evidence, mixed Interview Gauntlet scoring, resume transformations, project cards, certificate output/escaping and Phase 9 content.
+22. CI run #209 passed Android wrapper generation/configuration, static analysis, all **94 tests**, Android debug APK build and artifact upload.
 
-Do not start Phase 10 until Phase 9 is explicitly requested or Phase 9 is complete and the user asks to continue.
+### Phase 9 technical notes
+
+- Job Readiness is evidence-based; XP does not directly contribute to the score.
+- The largest readiness weight is skill mastery so repeated demonstrated competence matters more than progression points.
+- Immutable evidence scoring uses best score per distinct source plus evidence breadth and company breadth.
+- The final capstone remains fully offline and uses the same read-only SQLite runner as production learning tasks.
+- Resume text is deliberately framed as synthetic training evidence rather than professional-employment claims.
+- The Interview Gauntlet reuses the existing interview engine instead of creating a second scoring system.
+- Certificate generation remains lightweight HTML to protect APK size and low-end-device performance.
+- SQLite v8 preserves all earlier progress through normal migration.
+
+## Known Phase 9 limitations
+
+- Job Readiness is a transparent training heuristic, not a guarantee of employment or an external certification score.
+- Free-text interview answers still use local keyword/rubric scoring rather than semantic LLM grading.
+- The completion certificate is not an accredited academic or professional credential.
+- Resume bullets are locally generated suggestions and still require the learner to tailor them to a real resume.
+- Portfolio/certificate PDF conversion still uses the device browser print workflow.
+- Progress is still device-local unless the user manually preserves the app data; cloud continuity is not implemented yet.
+- Weekly online cases and leaderboards remain optional future capabilities.
+
+## Exact next step — Phase 10
+
+**Production hardening, portable backups and optional cloud continuity.**
+
+Phase 10 should:
+1. Add a versioned local **Backup & Restore** format that exports career progress, mastery, task performance, interviews, Boss Cases, capstone summaries, immutable evidence and reminder preferences without requiring a cloud account.
+2. Validate imported backups before applying them, reject unsupported/newer schemas safely, and preserve atomic restore behavior so a bad import cannot partially overwrite progress.
+3. Add an offline-first sync abstraction so cloud save can remain optional rather than becoming a dependency of the core game.
+4. Implement an optional cloud-save path using a supported backend with explicit sign-in/opt-in and deterministic conflict resolution between local and cloud progress.
+5. Add cached, versioned weekly online case delivery with offline fallback to the last valid pack and schema validation before content becomes playable.
+6. Add an optional privacy-conscious leaderboard using a player-chosen display alias rather than exposing personal evidence details.
+7. Add a Release/Diagnostics screen showing app version, database/content schema versions, backup status and safe troubleshooting information.
+8. Expand Android release hardening: production AAB build verification, accessibility checks, low-memory/performance checks, and APK/AAB size monitoring in CI.
+9. Add automated tests for backup round-trips, invalid-import rollback, sync conflict resolution, cached-content fallback and leaderboard privacy fields.
+10. Preserve the fully offline learning path even when all online features are disabled or unavailable.
+
+Do not start Phase 11 until Phase 10 is explicitly requested or Phase 10 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 8: Completed the Logistics Analytics chapter and five-company journey, added synthetic SLA/capacity/cost/forecast training, Logistics Boss/Daily/Interview content, notification deep-links, and native portfolio open/share delivery.`
+`2026-10-06 — Phase 9: Added the final cross-company capstone, transparent evidence-based Job Readiness Score, timed Interview Gauntlet, evidence-backed resume/project artifacts, and graduation certificate gates/delivery.`
