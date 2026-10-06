@@ -21,6 +21,8 @@ class AnalystTask {
     required this.rows,
     required this.options,
     this.difficulty = 'Beginner',
+    this.companyKey = 'ecommerce',
+    this.minCareerLevel = 0,
   });
 
   final String id;
@@ -44,6 +46,8 @@ class AnalystTask {
   final List<Map<String, dynamic>> rows;
   final List<String> options;
   final String difficulty;
+  final String companyKey;
+  final int minCareerLevel;
 
   factory AnalystTask.fromJson(Map<String, dynamic> json) {
     return AnalystTask(
@@ -81,6 +85,8 @@ class AnalystTask {
         (json['options'] as List<dynamic>?) ?? const <dynamic>[],
       ),
       difficulty: (json['difficulty'] as String?) ?? 'Beginner',
+      companyKey: (json['companyKey'] as String?) ?? 'ecommerce',
+      minCareerLevel: (json['minCareerLevel'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -90,6 +96,9 @@ class AnalystTask {
     if (normalized.contains('sql')) return 'sql';
     if (normalized.contains('clean')) return 'cleaning';
     if (normalized.contains('stat')) return 'statistics';
+    if (normalized.contains('python') || normalized.contains('pandas')) {
+      return 'python';
+    }
     return 'business';
   }
 }
