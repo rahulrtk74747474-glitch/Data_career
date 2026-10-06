@@ -3,14 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
 import '../../models/skill_mastery.dart';
+import '../achievements/achievements_screen.dart';
+import '../analytics/analytics_studio_screen.dart';
 import '../boss_case/boss_case_screen.dart';
 import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
+import '../insight/insight_coach_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../graduation/job_readiness_screen.dart';
 import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
+import '../events/random_events_screen.dart';
 import '../online/weekly_case_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
 import '../portfolio/portfolio_screen.dart';
@@ -19,8 +23,10 @@ import '../game/game_providers.dart';
 import '../placement/placement_screen.dart';
 import '../practice/practice_gym_screen.dart';
 import '../reminders/reminder_settings_screen.dart';
+import '../review/monthly_performance_review_screen.dart';
 import '../review/review_queue_screen.dart';
 import '../skills/skills_screen.dart';
+import '../spreadsheet/spreadsheet_lab_screen.dart';
 import '../sql_workspace/sql_workspace_screen.dart';
 import '../task/task_screen.dart';
 
@@ -35,11 +41,20 @@ class HomeScreen extends ConsumerWidget {
     final skillProfile = ref.watch(skillProfileProvider);
     final recommendations = ref.watch(adaptiveRecommendationsProvider);
     final reviewQueue = ref.watch(reviewQueueProvider);
+    final cloudConfig = ref.watch(cloudRuntimeConfigProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('DataQuest'),
         actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: _RuntimeModeChip(
+              onlineFeaturesConfigured:
+                  cloudConfig.cloudConfigured ||
+                      cloudConfig.weeklyCasesConfigured,
+            ),
+          ),
           IconButton(
             tooltip: 'Skill radar',
             onPressed: () => _open(context, const SkillsScreen()),
@@ -125,6 +140,18 @@ class HomeScreen extends ConsumerWidget {
                     _open(context, const WeeklyCaseScreen()),
                 onContinuity: () =>
                     _open(context, const DataContinuityScreen()),
+                onSpreadsheet: () =>
+                    _open(context, const SpreadsheetLabScreen()),
+                onAnalytics: () =>
+                    _open(context, const AnalyticsStudioScreen()),
+                onInsight: () =>
+                    _open(context, const InsightCoachScreen()),
+                onEvents: () =>
+                    _open(context, const RandomEventsScreen()),
+                onMonthlyReview: () =>
+                    _open(context, const MonthlyPerformanceReviewScreen()),
+                onAchievements: () =>
+                    _open(context, const AchievementsScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -262,6 +289,12 @@ class _FeatureGrid extends StatelessWidget {
     required this.onReadiness,
     required this.onWeeklyCase,
     required this.onContinuity,
+    required this.onSpreadsheet,
+    required this.onAnalytics,
+    required this.onInsight,
+    required this.onEvents,
+    required this.onMonthlyReview,
+    required this.onAchievements,
   });
 
   final int reviewCount;
@@ -280,6 +313,12 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onReadiness;
   final VoidCallback onWeeklyCase;
   final VoidCallback onContinuity;
+  final VoidCallback onSpreadsheet;
+  final VoidCallback onAnalytics;
+  final VoidCallback onInsight;
+  final VoidCallback onEvents;
+  final VoidCallback onMonthlyReview;
+  final VoidCallback onAchievements;
 
   @override
   Widget build(BuildContext context) {
@@ -294,6 +333,7 @@ class _FeatureGrid extends StatelessWidget {
         onReview,
       ),
       ('SQL Workstation', 'Schemas + scratchpad', Icons.storage, onWorkspace),
+      ('Spreadsheet Lab', 'Formula + cleaning work', Icons.table_chart_outlined, onSpreadsheet),
       ('Pandas Lab', 'Guided dataframe work', Icons.code, onPandas),
       (
         'Dashboard Lab',
@@ -301,14 +341,24 @@ class _FeatureGrid extends StatelessWidget {
         Icons.dashboard_outlined,
         onDashboard,
       ),
+      (
+        'Analytics Studio',
+        'Stats + insight grading',
+        Icons.query_stats_outlined,
+        onAnalytics,
+      ),
+      ('Insight Coach', 'Manager-ready writing', Icons.edit_note_outlined, onInsight),
+      ('Random Events', 'Professional judgment', Icons.bolt_outlined, onEvents),
       ('Daily Challenge', 'Streak + bonus XP', Icons.today_outlined, onDaily),
       ('Weekly Case', 'Online + cached fallback', Icons.calendar_month_outlined, onWeeklyCase),
       ('Interview Mode', 'SQL + cases', Icons.record_voice_over_outlined, onInterview),
       ('Job Readiness', 'Capstone + graduation', Icons.school_outlined, onReadiness),
       ('Performance Review', 'Promotion gates', Icons.workspace_premium_outlined, onReviewCareer),
+      ('Monthly Review', 'Manager scorecard', Icons.calendar_view_month_outlined, onMonthlyReview),
       ('Company Chapter', 'Industry unlocks', Icons.business_center_outlined, onCompanyChapter),
-      ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
+      ('Weekly Boss Case', 'End-to-end weekly case', Icons.emoji_events_outlined, onBoss),
       ('Portfolio', 'Strongest evidence', Icons.work_outline, onPortfolio),
+      ('Badges', 'Achievement evidence', Icons.military_tech_outlined, onAchievements),
       ('Data & Cloud', 'Backup + optional sync', Icons.cloud_sync_outlined, onContinuity),
       ('Reminders', 'Daily + review times', Icons.notifications_active_outlined, onReminders),
     ];
@@ -348,6 +398,35 @@ class _FeatureGrid extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _RuntimeModeChip extends StatelessWidget {
+  const _RuntimeModeChip({
+    required this.onlineFeaturesConfigured,
+  });
+
+  final bool onlineFeaturesConfigured;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: onlineFeaturesConfigured
+          ? 'Offline core is active; optional online services are configured.'
+          : 'Offline mode: no cloud or remote weekly feed is configured.',
+      child: Chip(
+        avatar: Icon(
+          onlineFeaturesConfigured
+              ? Icons.cloud_outlined
+              : Icons.cloud_off_outlined,
+          size: 16,
+        ),
+        label: Text(
+          onlineFeaturesConfigured ? 'Online optional' : 'Offline',
+        ),
+        visualDensity: VisualDensity.compact,
+      ),
     );
   }
 }
