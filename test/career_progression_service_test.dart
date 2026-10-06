@@ -61,6 +61,31 @@ void main() {
     expect(progress.companyKey, 'bank');
     expect(progress.companyName, 'NorthStar Bank Analytics');
   });
+
+  test('explicit company chapter is independent from career level', () {
+    final progress = GameProgress(
+      xp: 2200,
+      streak: 0,
+      completedTaskIds: const {},
+      revenueIndex: 100,
+      churnRate: 8,
+      costIndex: 100,
+      satisfaction: 70,
+      careerLevel: 5,
+      dailyStreak: 0,
+      lastDailyDate: null,
+      completedDailyDates: const {},
+      companyChapter: 2,
+    );
+
+    expect(progress.role, 'Head of Analytics');
+    expect(progress.companyKey, 'bank');
+
+    final hospital = progress.copyWith(companyChapter: 3);
+    expect(hospital.role, 'Head of Analytics');
+    expect(hospital.companyKey, 'hospital');
+    expect(hospital.companyName, 'Harborview Hospital Analytics');
+  });
 }
 
 GameProgress _progress({
