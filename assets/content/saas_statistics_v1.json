@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 4,
+  "tasks": [{
+    "id": "saas-retention-experiment-001",
+    "title": "Interpret a Retention Experiment",
+    "department": "Product",
+    "skill": "Statistics",
+    "skillKey": "statistics",
+    "difficulty": "Intermediate",
+    "companyKey": "saas",
+    "minCareerLevel": 2,
+    "context": "A retention experiment shows a positive estimate but a wide confidence interval.",
+    "goal": "Communicate uncertainty without overstating the result.",
+    "deliverable": "Choose the strongest interpretation.",
+    "answerType": "choice",
+    "prompt": "What should you tell the product team?",
+    "expectedAnswer": "The estimate is encouraging but uncertain; report the interval and collect more evidence before treating the lift as established",
+    "requiredTokens": [],
+    "expectedRows": [],
+    "expectedSelections": [],
+    "hints": ["Use the point estimate and interval together.", "A wide interval means substantial uncertainty.", "Do not convert uncertainty into certainty."],
+    "explanation": "Decision-quality experiment reporting combines effect size with uncertainty.",
+    "xp": 135,
+    "datasetName": "",
+    "rows": [],
+    "options": [
+      "The estimate is encouraging but uncertain; report the interval and collect more evidence before treating the lift as established",
+      "The positive estimate guarantees a lift",
+      "The interval can be ignored",
+      "A wide interval proves there is no effect"
+    ]
+  }]
+}
