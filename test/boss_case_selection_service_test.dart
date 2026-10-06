@@ -8,6 +8,7 @@ void main() {
     _case('saas', 'saas', 2),
     _case('bank', 'bank', 4),
     _case('hospital', 'hospital', 5),
+    _case('logistics', 'logistics', 5),
   ];
 
   test('selects ecommerce case for junior career', () {
@@ -48,6 +49,16 @@ void main() {
     );
 
     expect(selected.id, 'hospital');
+  });
+
+  test('selects logistics case for final company chapter', () {
+    final selected = BossCaseSelectionService.select(
+      cases: cases,
+      companyKey: 'logistics',
+      careerLevel: 5,
+    );
+
+    expect(selected.id, 'logistics');
   });
 }
 
