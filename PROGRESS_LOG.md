@@ -112,32 +112,72 @@ Implemented:
 - Immutable evidence is append-only during normal gameplay; best-score tables remain separate summaries for fast UI access.
 - SQLite v5 adds new tables without deleting Phase 1–5 progress.
 
-## Known Phase 6 limitations
+## Phase 7 — Independent company chapters, Hospital Analytics and reminders
 
-- Company progression currently reaches banking; hospital and logistics chapters remain future work.
-- The career role ladder ends at Head of Analytics, so later company chapters need company progression decoupled from role level.
-- HTML export is PDF-ready but is not yet a native one-tap PDF file.
-- Banking content is an initial compact synthetic pack rather than a full bank analytics curriculum.
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #134)**
+
+Implemented:
+1. Decoupled persistent company-chapter progression from the career role ladder.
+2. Existing saves without a company chapter migrate to the company already implied by their Phase 6 role, avoiding regression or demotion.
+3. Added a dedicated **Company Chapter Review** with evidence gates independent of promotion.
+4. Added explicit bank → **Harborview Hospital Analytics** progression while retaining the player's current role, including Head of Analytics.
+5. Reserved Logistics Network Co. for Phase 8 so players cannot enter an empty chapter.
+6. Migrated SQLite to version 6 without deleting previous career, mastery, interview, Boss Case or evidence data.
+7. Added aggregate synthetic `hospital_daily_ops` data for arrivals, completed visits, staffed/occupied capacity, average wait and cancellations.
+8. Added synthetic `hospital_capacity_forecast` data for demand-versus-capacity planning.
+9. Added seven Advanced Hospital Analytics career tickets spanning SQL, cleaning, statistics, forecasting, operational cohorts, capacity planning and executive communication.
+10. Added a hospital-specific end-to-end Boss Case covering data quality, real SQLite grading, wait-time KPI interpretation, visual choice and operational recommendation.
+11. Added five hospital Daily Challenge entries.
+12. Added a company-gated Hospital Operations Analytics Interview with SQL, forecast interpretation and rubric-scored operations case work.
+13. Added company metadata to interview rounds and filtered company-specific interviews by the active chapter.
+14. Expanded the SQL Workstation to expose bank and hospital learning tables.
+15. Added user-controlled local reminders for Daily Challenge and Review Queue.
+16. Reminder preferences and selected clock times persist offline in SharedPreferences.
+17. Added a pure reminder-schedule planner so scheduling behavior can be tested independently of Android notification APIs.
+18. Added local Android notification scheduling with device timezone support and inexact daily scheduling.
+19. Notification permission is requested only when the player enables at least one reminder; disabling all reminders cancels the known schedules.
+20. Added a checked-in Android wrapper configuration script and CI step for scheduled-notification receivers, reboot rescheduling, desugaring, Java 17 and multidex.
+21. Added automated tests for chapter migration/gates, hospital task routing, hospital Boss Case routing, hospital SQLite results, capacity forecasts, hospital content packs, SQL schema exposure and reminder planning.
+22. CI run #134 passed Android wrapper generation/configuration, static analysis, all **62 tests**, Android debug APK build and artifact upload.
+
+### Phase 7 technical notes
+
+- Company chapter is now a separately persisted dimension from `careerLevel`; promotions never silently move the player into a new industry chapter.
+- Bank → hospital requires Head of Analytics, current-bank ticket evidence, mastery, the bank Boss Case and the bank interview.
+- Hospital data is aggregate synthetic operations data only. The app contains no real PHI, patient identifiers, diagnosis data, treatment advice or clinical decision support.
+- Hospital analytics exercises explicitly separate operational signals from clinical conclusions.
+- Reminder scheduling uses the device timezone and Android inexact scheduling; DataQuest does not request exact-alarm access.
+- The Android wrapper remains generated rather than committed, so `tool/configure_android_notifications.dart` must run after `flutter create`.
+- Phase 7 preserves the offline-first design. The notification system is local and does not require cloud services.
+
+## Known Phase 7 limitations
+
+- Logistics Network Co. exists in the chapter model but is intentionally locked until its content is built.
+- Hospital content is an initial compact operations curriculum, not a clinical analytics product.
+- Reminder taps do not yet deep-link directly into the Daily Challenge or Review Queue.
+- Android inexact scheduling can deliver notifications near, rather than exactly at, the selected time.
+- Portfolio export remains local HTML/PDF-ready rather than a native one-tap PDF/share flow.
 - Free-text interview grading remains local rubric/keyword based.
 - Cloud save, leaderboards and multi-device synchronization remain optional future work.
 
-## Exact next step — Phase 7
+## Exact next step — Phase 8
 
-**Decouple company chapters from the role ladder and add the Hospital Analytics chapter.**
+**Build the Logistics Analytics chapter and complete the current company journey.**
 
-Phase 7 should:
-1. Add persistent company-chapter progression independent of career role so players can continue after Head of Analytics.
-2. Add bank → hospital chapter unlock requirements without changing the existing role ladder.
-3. Add safe synthetic hospital operations data only—patient-flow, capacity, waiting-time, scheduling and quality metrics; no real PHI and no diagnosis/treatment advice.
-4. Add hospital SQL, cleaning, statistics, operations and executive-communication tickets.
-5. Add a hospital-specific Boss Case, Daily Challenges and interview/case content.
-6. Add richer cohort/forecasting and capacity-planning exercises appropriate to operational analytics.
-7. Add local notification support for Daily Challenge/review reminders with user-controlled settings.
-8. Add automated tests for independent company-chapter unlocks, hospital content, Boss Case routing and notification scheduling abstraction.
-9. Preserve offline-first operation, synthetic data and low-end Android performance.
+Phase 8 should:
+1. Add hospital → Logistics Network Co. unlock requirements using the independent company-chapter review system.
+2. Add safe synthetic logistics data for shipments, warehouses, routes, SLA performance, delays, inventory flow and operating cost.
+3. Add logistics SQL, cleaning, statistics, forecasting, cohort/route, cost and executive-communication tickets.
+4. Add a logistics-specific Boss Case, Daily Challenges and interview/case content.
+5. Add network-capacity, SLA, delay-driver and demand/throughput forecasting exercises.
+6. Add a company-journey completion experience after Logistics while leaving the career role ladder unchanged.
+7. Add notification-tap routing to the relevant Daily Challenge or Review Queue screen.
+8. Improve portfolio delivery with a share/open workflow and evaluate native PDF export without compromising low-end-device performance.
+9. Add automated tests for hospital→logistics unlocks, logistics datasets/content, Boss Case routing, notification destinations and final company-journey completion.
+10. Preserve offline-first operation, synthetic data and low-end Android performance.
 
-Do not start Phase 8 until Phase 7 is explicitly requested or Phase 7 is complete and the user asks to continue.
+Do not start Phase 9 until Phase 8 is explicitly requested or Phase 8 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 6: Added Lead Analyst banking progression, synthetic risk/fraud-review/credit analytics, company-aware Boss Cases, expanded Daily/interview content, immutable attempt history, and local HTML/PDF-ready portfolio export.`
+`2026-10-06 — Phase 7: Decoupled company chapters from career roles, added synthetic Hospital Analytics operations/capacity training with Boss/Daily/Interview content, and added user-controlled local Daily/Review reminders.`
