@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
+import '../../models/daily_challenge.dart';
 import '../../services/scoring_service.dart';
 import '../../services/sql_result_grader.dart';
 import '../game/game_providers.dart';
@@ -11,10 +12,16 @@ class TaskScreen extends ConsumerStatefulWidget {
     super.key,
     required this.task,
     this.reviewMode = false,
+    this.dailyChallenge,
+    this.dailyDateKey,
   });
 
   final AnalystTask task;
   final bool reviewMode;
+  final DailyChallengeDefinition? dailyChallenge;
+  final String? dailyDateKey;
+
+  bool get isDaily => dailyChallenge != null && dailyDateKey != null;
 
   @override
   ConsumerState<TaskScreen> createState() => _TaskScreenState();
@@ -43,13 +50,18 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   @override
   Widget build(BuildContext context) {
     final progress = ref.watch(gameProgressProvider);
-    final alreadyCompleted = !widget.reviewMode &&
-        progress.completedTaskIds.contains(task.id);
+    final alreadyCompleted = widget.isDaily
+        ? progress.completedDaily(widget.dailyDateKey!)
+        : !widget.reviewMode && progress.completedTaskIds.contains(task.id);
+
+    final title = widget.isDaily
+        ? 'Daily Challenge'
+        : widget.reviewMode
+            ? 'Practice Review'
+            : task.department;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.reviewMode ? 'Practice Review' : task.department),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -59,6 +71,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             Text(
               '${task.skill} • ${task.difficulty} • Up to ${task.xp} XP',
             ),
+            if (widget.isDaily) ...[
+              const SizedBox(height: 4),
+              Text('Daily bonus: +${widget.dailyChallenge!.bonusXp} XP'),
+            ],
             const SizedBox(height: 18),
             _InfoBlock(
               title: 'Business context',
@@ -151,9 +167,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                         ? 'Completed'
                         : _isSql
                             ? 'Run SQL & grade'
-                            : widget.reviewMode
-                                ? 'Submit review'
-                                : 'Submit analysis',
+                            : widget.isDaily
+                                ? 'Submit daily challenge'
+                                : widget.reviewMode
+                                    ? 'Submit review'
+                                    : 'Submit analysis',
               ),
             ),
             if (_sqlRows.isNotEmpty) ...[
@@ -261,10 +279,18 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
         .clamp(40, 100)
         .toInt();
 
-    await ref.read(gameProgressProvider.notifier).completeTask(
-          task,
-          score: score,
-        );
+    if (widget.isDaily) {
+      await ref.read(gameProgressProvider.notifier).completeDailyChallenge(
+            dateKey: widget.dailyDateKey!,
+            score: score,
+            bonusXp: widget.dailyChallenge!.bonusXp,
+          );
+    } else {
+      await ref.read(gameProgressProvider.notifier).completeTask(
+            task,
+            score: score,
+          );
+    }
     await ref
         .read(masteryRepositoryProvider)
         .recordAttempt(task.skillKey, score);
@@ -273,14 +299,21 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     ref.invalidate(reviewQueueProvider);
     ref.invalidate(adaptiveRecommendationsProvider);
     ref.invalidate(portfolioSnapshotProvider);
+    ref.invalidate(promotionReviewProvider);
+    if (widget.isDaily) {
+      ref.invalidate(dailyChallengeProvider);
+    }
 
     if (!mounted) return;
+    final progress = ref.read(gameProgressProvider);
     setState(() {
       _submitting = false;
       _solved = true;
-      _feedback = widget.reviewMode
-          ? '${grade.feedback}\nReview score: $score/100. Mastery and next review date updated.'
-          : '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
+      _feedback = widget.isDaily
+          ? '${grade.feedback}\nDaily score: $score/100. Streak: ${progress.dailyStreak} day(s). Bonus XP awarded.'
+          : widget.reviewMode
+              ? '${grade.feedback}\nReview score: $score/100. Mastery and next review date updated.'
+              : '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
     });
   }
 }
