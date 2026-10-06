@@ -64,11 +64,32 @@ class SqlRunner {
         error: null,
       );
     } catch (error) {
+      final raw = error.toString();
       return SqlRunResult(
         columns: const [],
         rows: const [],
-        error: 'SQLite says: $error',
+        error: _plainLanguageError(raw),
       );
     }
+  }
+
+  static String _plainLanguageError(String raw) {
+    final normalized = raw.toLowerCase();
+    if (normalized.contains('no such table')) {
+      return 'SQL error: that table name does not exist in the learning database. Check the Schema browser and copy the table name exactly.';
+    }
+    if (normalized.contains('no such column')) {
+      return 'SQL error: one of the column names is not available in the selected table or join. Check the Schema browser and any table aliases.';
+    }
+    if (normalized.contains('ambiguous column name')) {
+      return 'SQL error: the same column name exists in more than one joined table. Prefix it with the table name or alias, for example o.customer_id.';
+    }
+    if (normalized.contains('misuse of aggregate')) {
+      return 'SQL error: an aggregate such as SUM, AVG or COUNT is being used at the wrong query level. Check GROUP BY, HAVING and nested-query logic.';
+    }
+    if (normalized.contains('syntax error') || normalized.contains('near')) {
+      return 'SQL syntax error: check commas, parentheses, aliases, quotes and clause order (SELECT → FROM/JOIN → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT).';
+    }
+    return 'SQLite could not run the query. Review the schema, clause order and aliases. Technical detail: $raw';
   }
 }
