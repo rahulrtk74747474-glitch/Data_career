@@ -18,11 +18,21 @@ void main() {
 
   tearDown(() => database.close());
 
-  test('schema browser exposes phase 3 learning tables', () async {
+  test('schema browser exposes career learning tables', () async {
     final schemas = await SqlWorkspaceRepository(database).loadSchemas();
     final names = schemas.map((schema) => schema.name).toSet();
 
-    expect(names, containsAll({'customers', 'orders'}));
+    expect(
+      names,
+      containsAll({
+        'customers',
+        'orders',
+        'loan_portfolio',
+        'bank_transactions',
+        'hospital_daily_ops',
+        'hospital_capacity_forecast',
+      }),
+    );
   });
 
   test('join ticket returns expected completed revenue by segment', () async {
