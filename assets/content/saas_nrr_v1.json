@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 4,
+  "tasks": [{
+    "id": "saas-nrr-001",
+    "title": "Choose a Net Revenue Retention Design",
+    "department": "Finance",
+    "skill": "Business Analytics",
+    "skillKey": "business",
+    "difficulty": "Advanced",
+    "companyKey": "saas",
+    "minCareerLevel": 3,
+    "context": "Leadership wants a recurring-revenue KPI for the existing customer base.",
+    "goal": "Include expansion and losses while excluding new-customer revenue.",
+    "deliverable": "Select the correct structure.",
+    "answerType": "choice",
+    "prompt": "Which NRR definition is strongest?",
+    "expectedAnswer": "(Starting recurring revenue + expansion - contraction - lost revenue) divided by starting recurring revenue",
+    "requiredTokens": [],
+    "expectedRows": [],
+    "expectedSelections": [],
+    "hints": ["Start with the existing cohort.", "Include expansion and losses.", "Exclude brand-new customers."],
+    "explanation": "NRR isolates how the starting recurring-revenue base changes over time.",
+    "xp": 160,
+    "datasetName": "",
+    "rows": [],
+    "options": [
+      "(Starting recurring revenue + expansion - contraction - lost revenue) divided by starting recurring revenue",
+      "All revenue divided by visits",
+      "New bookings divided by employees",
+      "Maximum account revenue divided by customers"
+    ]
+  }]
+}
