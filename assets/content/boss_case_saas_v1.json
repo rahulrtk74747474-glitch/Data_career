@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "id": "saas-retention-review-001",
+  "title": "Retention Revenue Review",
+  "company": "SaaS Growth Co. • Weekly Boss Case",
+  "companyKey": "saas",
+  "minCareerLevel": 2,
+  "context": "Leadership wants a concise recurring-revenue review. You must protect the analysis from bad cohort logic, aggregate completed billing by region, calculate concentration, select the right visual, and recommend the next diagnostic step.",
+  "datasetName": "customers + orders",
+  "cleaningPrompt": "Which controls are required before building a retention/revenue review? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm one consistent customer identifier before joining billing data.",
+    "Validate that cancelled and refunded orders are not counted as completed revenue.",
+    "Keep one documented definition for the reporting period and cohort.",
+    "Mix new customers into every retention denominator.",
+    "Silently recode missing values to the largest observed category."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm one consistent customer identifier before joining billing data.",
+    "Validate that cancelled and refunded orders are not counted as completed revenue.",
+    "Keep one documented definition for the reporting period and cohort."
+  ],
+  "sqlPrompt": "Using customers and orders, return region and total_revenue for completed orders only. One row per region.",
+  "sqlExpectedRows": [
+    {"region": "East", "total_revenue": 2800},
+    {"region": "North", "total_revenue": 4300},
+    {"region": "South", "total_revenue": 1100},
+    {"region": "West", "total_revenue": 5200}
+  ],
+  "kpiPrompt": "North contributes 4300 of 13400 completed revenue. What percentage comes from North? Round to one decimal.",
+  "kpiExpected": 32.1,
+  "kpiTolerance": 0.1,
+  "chartPrompt": "Which chart best compares completed revenue across regions?",
+  "chartOptions": [
+    "Bar chart with region and completed revenue",
+    "Line chart treating region names as time",
+    "Scatter plot of customer name versus row number",
+    "Gauge chart for every individual order"
+  ],
+  "chartExpected": "Bar chart with region and completed revenue",
+  "recommendationPrompt": "Which recommendation is most defensible?",
+  "recommendationOptions": [
+    "Investigate why West and North differ by segment and cohort, while avoiding a causal claim from regional totals alone.",
+    "Conclude West geography causes higher revenue.",
+    "Stop serving South customers immediately.",
+    "Count cancelled orders as revenue to stabilize the chart."
+  ],
+  "recommendationExpected": "Investigate why West and North differ by segment and cohort, while avoiding a causal claim from regional totals alone.",
+  "rubric": {
+    "cleaning": 20,
+    "sql": 30,
+    "kpi": 20,
+    "chart": 10,
+    "recommendation": 20
+  }
+}
