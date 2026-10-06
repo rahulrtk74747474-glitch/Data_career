@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "id": "hospital-capacity-review-001",
+  "title": "Hospital Operations Capacity Review",
+  "company": "Harborview Hospital Analytics • Weekly Boss Case",
+  "companyKey": "hospital",
+  "minCareerLevel": 5,
+  "context": "The operations committee wants a synthetic capacity and waiting-time review. Use aggregate unit-day data only. Do not make diagnosis, treatment, or patient-level claims.",
+  "datasetName": "hospital_daily_ops + hospital_capacity_forecast",
+  "cleaningPrompt": "Which controls are required before presenting the operations review? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm unit-date uniqueness before aggregating.",
+    "Validate arrivals, completed visits, waits and capacity fields are non-negative.",
+    "Check completed visits do not exceed arrivals and occupied beds do not exceed staffed beds where bed capacity applies.",
+    "Infer missing diagnoses from waiting time.",
+    "Treat every long wait as proof of poor clinical care."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm unit-date uniqueness before aggregating.",
+    "Validate arrivals, completed visits, waits and capacity fields are non-negative.",
+    "Check completed visits do not exceed arrivals and occupied beds do not exceed staffed beds where bed capacity applies."
+  ],
+  "sqlPrompt": "Using hospital_daily_ops, return unit and ROUND(AVG(avg_wait_minutes), 1) AS avg_wait_minutes grouped by unit.",
+  "sqlExpectedRows": [
+    {"unit": "Emergency", "avg_wait_minutes": 59.0},
+    {"unit": "Outpatient", "avg_wait_minutes": 30.0}
+  ],
+  "kpiPrompt": "Emergency average wait exceeded 60 minutes on 2 of 4 observed days. What percentage of observed Emergency days exceeded 60 minutes?",
+  "kpiExpected": 50.0,
+  "kpiTolerance": 0.1,
+  "chartPrompt": "Which visual best shows how waiting time changed across dates for each unit?",
+  "chartOptions": [
+    "Line chart with date on the x-axis and one wait-time series per unit",
+    "Pie chart with each date as a slice",
+    "Scatter plot of unit names against text labels only",
+    "A gauge for every unit-day row"
+  ],
+  "chartExpected": "Line chart with date on the x-axis and one wait-time series per unit",
+  "recommendationPrompt": "Which recommendation is most defensible?",
+  "recommendationOptions": [
+    "Validate the high-wait pattern over more comparable weeks, investigate demand and capacity drivers, and test staffing or scheduling scenarios before operational rollout.",
+    "Change treatment protocols because wait time proves a clinical problem.",
+    "Use patient-level diagnosis assumptions even though the data is aggregate.",
+    "Ignore forecast capacity gaps because they are not actual arrivals yet."
+  ],
+  "recommendationExpected": "Validate the high-wait pattern over more comparable weeks, investigate demand and capacity drivers, and test staffing or scheduling scenarios before operational rollout.",
+  "rubric": {
+    "cleaning": 20,
+    "sql": 30,
+    "kpi": 20,
+    "chart": 10,
+    "recommendation": 20
+  }
+}
