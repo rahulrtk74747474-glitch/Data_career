@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/app_database.dart';
+import '../../models/achievement_badge.dart';
 import '../../models/analyst_task.dart';
 import '../../models/analytics_challenge.dart';
 import '../../models/boss_case.dart';
@@ -20,6 +21,7 @@ import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
 import '../../models/spreadsheet_challenge.dart';
 import '../../models/sql_table_schema.dart';
+import '../../repositories/achievement_repository.dart';
 import '../../repositories/boss_case_result_repository.dart';
 import '../../repositories/capstone_result_repository.dart';
 import '../../repositories/content_repository.dart';
@@ -31,6 +33,7 @@ import '../../repositories/reminder_settings_repository.dart';
 import '../../repositories/sql_workspace_repository.dart';
 import '../../repositories/task_performance_repository.dart';
 import '../../services/adaptive_review_service.dart';
+import '../../services/achievement_service.dart';
 import '../../services/backup_service.dart';
 import '../../services/cloud_sync_service.dart';
 import '../../services/boss_case_selection_service.dart';
@@ -38,6 +41,7 @@ import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
 import '../../services/certificate_export_service.dart';
 import '../../services/company_chapter_progression_service.dart';
+import '../../services/content_pack_loader.dart';
 import '../../services/daily_challenge_service.dart';
 import '../../services/graduation_service.dart';
 import '../../services/job_readiness_service.dart';
@@ -57,6 +61,14 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();
   ref.onDispose(database.close);
   return database;
+});
+
+final contentPackLoaderProvider = Provider<ContentPackLoader>((ref) {
+  return ContentPackLoader(ref.watch(appDatabaseProvider));
+});
+
+final achievementRepositoryProvider = Provider<AchievementRepository>((ref) {
+  return AchievementRepository(ref.watch(appDatabaseProvider));
 });
 
 final backupServiceProvider = Provider<BackupService>((ref) {
@@ -452,6 +464,35 @@ final graduationEligibilityProvider =
     capstone: capstone,
     gauntlet: gauntlet,
   );
+});
+
+final achievementsProvider =
+    FutureProvider<List<AchievementBadge>>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final skills = await ref.watch(skillProfileProvider.future);
+  final portfolio = await ref.watch(portfolioSnapshotProvider.future);
+  final interviews = await ref.watch(interviewResultsProvider.future);
+  final graduation = await ref.watch(graduationEligibilityProvider.future);
+
+  final badges = AchievementService.evaluate(
+    progress: progress,
+    skills: skills,
+    portfolio: portfolio,
+    interviews: interviews,
+    graduated: graduation.eligible,
+  );
+  await ref.read(achievementRepositoryProvider).sync(badges);
+  final persisted = await ref.read(achievementRepositoryProvider).loadUnlocked();
+
+  return [
+    for (final badge in badges)
+      AchievementBadge(
+        id: badge.id,
+        title: badge.title,
+        description: badge.description,
+        unlocked: badge.unlocked || persisted.contains(badge.id),
+      ),
+  ];
 });
 
 final reviewQueueProvider = FutureProvider<List<ReviewItem>>((ref) async {
