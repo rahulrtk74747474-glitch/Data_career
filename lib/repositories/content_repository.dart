@@ -32,6 +32,7 @@ class ContentRepository {
       'assets/content/logistics_tasks_v1.json',
       'assets/content/sql_lab_core_v2.json',
       'assets/content/generated_sql_advanced_25_v1.json',
+      'assets/content/business_metrics_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -93,18 +94,23 @@ class ContentRepository {
   }
 
   Future<List<PandasChallenge>> loadPandasChallenges() async {
-    final raw = await rootBundle.loadString(
+    final all = <PandasChallenge>[];
+    for (final asset in const [
       'assets/content/pandas_challenges_v1.json',
-    );
-    final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    final challenges = decoded['challenges'] as List<dynamic>;
-    return challenges
-        .map(
+      'assets/content/pandas_expansion_v1.json',
+    ]) {
+      final raw = await rootBundle.loadString(asset);
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      final challenges = decoded['challenges'] as List<dynamic>;
+      all.addAll(
+        challenges.map(
           (item) => PandasChallenge.fromJson(
             Map<String, dynamic>.from(item as Map),
           ),
-        )
-        .toList();
+        ),
+      );
+    }
+    return all;
   }
 
   Future<List<SpreadsheetChallenge>> loadSpreadsheetChallenges() async {
