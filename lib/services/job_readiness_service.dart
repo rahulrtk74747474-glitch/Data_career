@@ -102,7 +102,7 @@ class JobReadinessService {
       evidenceScore * 0.10 +
       completionScore * 0.05 +
       capstoneScore * 0.10
-    ).round().clamp(0, 100);
+    ).round().clamp(0, 100).toInt();
 
     final remediation = <String>[
       for (final domain in domains)
@@ -163,7 +163,8 @@ class JobReadinessService {
     final companyBreadth = (companies.length * 20).clamp(0, 100).toDouble();
 
     return (quality * 0.60 + breadth * 0.25 + companyBreadth * 0.15)
-        .clamp(0, 100);
+        .clamp(0, 100)
+        .toDouble();
   }
 
   static double _completionScore(GameProgress progress) {
@@ -173,6 +174,8 @@ class JobReadinessService {
         (progress.resolvedCompanyChapter / (GameProgress.companyKeys.length - 1)) *
             40;
     final journeyPart = progress.companyJourneyCompleted ? 10.0 : 0.0;
-    return (rolePart + companyPart + journeyPart).clamp(0, 100);
+    return (rolePart + companyPart + journeyPart)
+        .clamp(0, 100)
+        .toDouble();
   }
 }
