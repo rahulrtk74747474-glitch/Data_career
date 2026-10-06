@@ -16,62 +16,63 @@ class CompanyChapterReviewScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Company Chapter Review')),
       body: SafeArea(
-        child: review.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => Center(
-            child: Text('Could not calculate company review.\n$error'),
-          ),
-          data: (result) => ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                result.finalAvailableChapter
-                    ? progress.companyName
-                    : '${progress.companyName} → '
-                        '${GameProgress.companyNames[result.targetChapter]}',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                result.finalAvailableChapter
-                    ? 'Hospital Analytics is the final company chapter available in Phase 7. Your role remains ${progress.role}; later company chapters can continue independently.'
-                    : 'Company progression is separate from promotions. Meet every evidence gate to unlock the next industry chapter while keeping your current career role.',
-              ),
-              const SizedBox(height: 16),
-              if (!result.finalAvailableChapter)
-                for (final criterion in result.criteria)
-                  _CriterionCard(criterion: criterion),
-              if (!result.finalAvailableChapter) ...[
-                const SizedBox(height: 12),
-                FilledButton.icon(
-                  onPressed: result.passed
-                      ? () => _advance(context, ref, progress)
-                      : null,
-                  icon: const Icon(Icons.business_center_outlined),
-                  label: Text(
-                    'Unlock ${GameProgress.companyNames[result.targetChapter]}',
+        child: progress.companyJourneyCompleted
+            ? _JourneyCompleteView(progress: progress)
+            : review.when(
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) => Center(
+                  child: Text(
+                    'Could not calculate company review.\n$error',
                   ),
                 ),
-                if (!result.passed) ...[
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Incomplete items above are the exact company-unlock blockers.',
-                  ),
-                ],
-              ] else ...[
-                const Card(
-                  child: ListTile(
-                    leading: Icon(Icons.lock_clock_outlined),
-                    title: Text('Next chapter: Logistics Network Co.'),
-                    subtitle: Text(
-                      'Reserved for Phase 8 so you cannot enter an empty chapter.',
+                data: (result) => ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Text(
+                      result.isJourneyCompletionReview
+                          ? 'Final company journey review'
+                          : '${progress.companyName} → '
+                              '${GameProgress.companyNames[result.targetChapter]}',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      result.isJourneyCompletionReview
+                          ? 'Logistics is the final company chapter in the current journey. Meet the final evidence gates to complete all five companies while keeping your role as ${progress.role}.'
+                          : 'Company progression is separate from promotions. Meet every evidence gate to unlock the next industry chapter while keeping your current career role.',
+                    ),
+                    const SizedBox(height: 16),
+                    for (final criterion in result.criteria)
+                      _CriterionCard(criterion: criterion),
+                    const SizedBox(height: 12),
+                    if (result.isJourneyCompletionReview)
+                      FilledButton.icon(
+                        onPressed: result.passed
+                            ? () => _completeJourney(context, ref)
+                            : null,
+                        icon: const Icon(Icons.emoji_events_outlined),
+                        label: const Text('Complete company journey'),
+                      )
+                    else
+                      FilledButton.icon(
+                        onPressed: result.passed
+                            ? () => _advance(context, ref, progress)
+                            : null,
+                        icon: const Icon(Icons.business_center_outlined),
+                        label: Text(
+                          'Unlock ${GameProgress.companyNames[result.targetChapter]}',
+                        ),
+                      ),
+                    if (!result.passed) ...[
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Incomplete items above are the exact company-review blockers.',
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-            ],
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -83,12 +84,7 @@ class CompanyChapterReviewScreen extends ConsumerWidget {
   ) async {
     await ref.read(gameProgressProvider.notifier).advanceCompanyChapter();
 
-    ref.invalidate(companyChapterReviewProvider);
-    ref.invalidate(careerTasksProvider);
-    ref.invalidate(dailyChallengeProvider);
-    ref.invalidate(bossCaseProvider);
-    ref.invalidate(promotionReviewProvider);
-    ref.invalidate(adaptiveRecommendationsProvider);
+    _invalidateCompanyState(ref);
 
     if (!context.mounted) return;
     final after = ref.read(gameProgressProvider);
@@ -102,6 +98,80 @@ class CompanyChapterReviewScreen extends ConsumerWidget {
               : 'No additional company chapter is available yet.',
         ),
       ),
+    );
+  }
+
+  Future<void> _completeJourney(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    await ref.read(gameProgressProvider.notifier).completeCompanyJourney();
+    _invalidateCompanyState(ref);
+
+    if (!context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(Icons.emoji_events, size: 42),
+        title: const Text('Company journey complete'),
+        content: const Text(
+          'You completed the current five-company analytics journey: e-commerce, SaaS, banking, hospital operations and logistics. Your role remains Head of Analytics and all practice modes stay available.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Continue practicing'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _invalidateCompanyState(WidgetRef ref) {
+    ref.invalidate(companyChapterReviewProvider);
+    ref.invalidate(careerTasksProvider);
+    ref.invalidate(dailyChallengeProvider);
+    ref.invalidate(bossCaseProvider);
+    ref.invalidate(promotionReviewProvider);
+    ref.invalidate(adaptiveRecommendationsProvider);
+    ref.invalidate(availableInterviewRoundsProvider);
+  }
+}
+
+class _JourneyCompleteView extends StatelessWidget {
+  const _JourneyCompleteView({required this.progress});
+
+  final GameProgress progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        const Icon(Icons.emoji_events, size: 72),
+        const SizedBox(height: 12),
+        Text(
+          'Five-company journey complete',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'You remain ${progress.role}. Company chapters are complete, but Practice Gym, Daily Challenge, Interviews, Boss Cases, Review Queue and Portfolio remain available.',
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 18),
+        for (var index = 0;
+            index < GameProgress.companyNames.length;
+            index++)
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.verified_outlined),
+              title: Text(GameProgress.companyNames[index]),
+              subtitle: Text('Chapter ${index + 1} completed'),
+            ),
+          ),
+      ],
     );
   }
 }
