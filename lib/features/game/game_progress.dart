@@ -59,7 +59,7 @@ class GameProgress {
   final String? lastDailyDate;
   final Set<String> completedDailyDates;
 
-  String get role => roleNames[careerLevel.clamp(0, 5)];
+  String get role => roleNames[careerLevel.clamp(0, 5).toInt()];
 
   String get companyKey => careerLevel >= 2 ? 'saas' : 'ecommerce';
 
@@ -146,7 +146,7 @@ class GameProgress {
       churnRate: (json['churnRate'] as num?)?.toDouble() ?? 8,
       costIndex: (json['costIndex'] as num?)?.toDouble() ?? 100,
       satisfaction: (json['satisfaction'] as num?)?.toDouble() ?? 70,
-      careerLevel: (savedLevel ?? _legacyLevelFromXp(xp)).clamp(0, 5),
+      careerLevel: (savedLevel ?? _legacyLevelFromXp(xp)).clamp(0, 5).toInt(),
       dailyStreak: (json['dailyStreak'] as num?)?.toInt() ?? 0,
       lastDailyDate: json['lastDailyDate'] as String?,
       completedDailyDates: Set<String>.from(
