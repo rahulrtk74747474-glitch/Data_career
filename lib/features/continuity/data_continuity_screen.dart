@@ -123,10 +123,21 @@ class _DataContinuityScreenState
               ),
               const SizedBox(height: 10),
               if (_session == null)
-                FilledButton.icon(
-                  onPressed: _busy ? null : _signIn,
-                  icon: const Icon(Icons.login),
-                  label: const Text('Sign in for this session'),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _busy ? null : _signIn,
+                      icon: const Icon(Icons.login),
+                      label: const Text('Sign in for this session'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _signUp,
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: const Text('Create cloud account'),
+                    ),
+                  ],
                 )
               else ...[
                 Card(
@@ -339,6 +350,26 @@ class _DataContinuityScreenState
       _setStatus(
         'Signed in for this app session. Credentials were not saved.',
       );
+    });
+  }
+
+  Future<void> _signUp() async {
+    await _runBusy(() async {
+      final result = await ref.read(cloudSyncServiceProvider).signUp(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+      if (!mounted) return;
+      setState(() {
+        _session = result.session;
+        if (result.session != null) {
+          _passwordController.clear();
+        }
+      });
+      if (result.session != null) {
+        await _refreshLeaderboard();
+      }
+      _setStatus(result.message);
     });
   }
 
