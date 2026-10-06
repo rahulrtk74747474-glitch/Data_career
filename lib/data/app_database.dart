@@ -22,7 +22,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 3,
+        version: 4,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -30,6 +30,7 @@ class AppDatabase {
           await _seedPhaseThree(db);
           await _createPhaseFourSchema(db);
           await _seedPhaseFour(db);
+          await _createPhaseFiveSchema(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -39,6 +40,9 @@ class AppDatabase {
           if (oldVersion < 3) {
             await _createPhaseFourSchema(db);
             await _seedPhaseFour(db);
+          }
+          if (oldVersion < 4) {
+            await _createPhaseFiveSchema(db);
           }
         },
       ),
@@ -131,6 +135,19 @@ class AppDatabase {
         best_score INTEGER NOT NULL,
         attempts INTEGER NOT NULL,
         last_completed_at TEXT NOT NULL
+      )
+    ''');
+  }
+
+  Future<void> _createPhaseFiveSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS interview_results (
+        round_key TEXT PRIMARY KEY,
+        completed_at TEXT NOT NULL,
+        best_score INTEGER NOT NULL,
+        latest_score INTEGER NOT NULL,
+        attempts INTEGER NOT NULL,
+        last_mode TEXT NOT NULL
       )
     ''');
   }
