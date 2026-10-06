@@ -448,7 +448,9 @@ class _CareerCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Company chapter ${progress.resolvedCompanyChapter + 1} • role and company now progress independently',
+              progress.companyJourneyCompleted
+                  ? 'Five-company journey complete • role remains independent'
+                  : 'Company chapter ${progress.resolvedCompanyChapter + 1} • role and company progress independently',
             ),
             const SizedBox(height: 12),
             LinearProgressIndicator(value: progress.roleProgress),
