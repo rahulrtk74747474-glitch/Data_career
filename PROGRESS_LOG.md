@@ -42,7 +42,8 @@ Implemented:
 8. Added offline portfolio summary export via clipboard.
 9. Expanded Practice Gym with skill filtering and additional Beginner/Intermediate/Advanced tasks.
 10. Migrated SQLite schema to version 3 without deleting prior career, mastery or Boss Case data.
-11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.\n12. CI run #10 passed static analysis, all 23 tests, Android debug APK build, and artifact upload.
+11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.
+12. CI run #10 passed static analysis, all 23 tests, Android debug APK build, and artifact upload.
 
 ### Technical choice
 
@@ -50,31 +51,61 @@ Implemented:
 - This deliberately avoids shipping CPython/NumPy/Pandas binaries into the Android APK and protects low-end-device performance.
 - Portfolio export is plain structured text copied to the system clipboard, requiring no cloud account or file permission.
 
-## Known Phase 4 limitations
+## Phase 5 — Interview Mode, Daily Challenge and career progression
 
-- The Pandas Lab is not an arbitrary Python interpreter; unsupported Python syntax is not executed.
-- Portfolio export is text/clipboard rather than PDF or DOCX.
-- Only the best/latest evidence is stored, not a full immutable attempt history.
-- Dashboard lab uses decision challenges rather than a freeform drag-and-drop dashboard builder.
-- Daily Challenge and Interview Mode are not implemented yet.
-- Company progression beyond the first e-commerce company is still future work.
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #56)**
+
+Implemented:
+1. Added offline Interview Mode with SQL, statistics, analytics case and behavioral rounds.
+2. Added timed and untimed interview practice using the same question banks and scoring rules.
+3. SQL interview answers execute against the real local SQLite database and use result-set grading.
+4. Case and behavioral answers use weighted offline rubrics with criterion-level feedback.
+5. Added persistent interview performance: best score, latest score, attempts and last mode.
+6. Added deterministic, data-driven Daily Challenge rotation.
+7. Added consecutive-day Daily Challenge streaks and one-time daily bonus XP.
+8. Changed promotion behavior so XP makes the player eligible but does not automatically promote new progress.
+9. Added transparent Performance Review gates using XP, completed career tickets, average attempted-skill mastery, Boss Case evidence and later interview readiness.
+10. Legacy saves without a career level migrate from their previous XP-derived role to avoid demotion.
+11. Promotion to Data Analyst unlocks SaaS Growth Co.
+12. Added SaaS-specific retention, SQL/MRR-proxy, experiment and NRR practice.
+13. Added company/role-aware Career Mode ticket filtering and difficulty mixes.
+14. Migrated SQLite schema to version 4 with `interview_results` while preserving earlier progress.
+15. Added automated tests for promotion gates, Daily Challenge selection, company/role task routing, interview scoring and interview-result persistence.
+16. CI run #56 passed static analysis, all 35 tests, Android debug APK build, and artifact upload.
+
+### Phase 5 technical notes
+
+- Free-text interview grading is local rubric/keyword scoring, not cloud/LLM grading, to preserve offline operation.
+- Daily Challenge reuses the production ticket graders rather than maintaining a separate answer engine.
+- Promotion ticket-count gates are bounded to the current content bank so the career ladder cannot dead-end before later company packs are added.
+- Existing XP, completed tickets, mastery, Boss Case results and portfolio evidence are preserved.
+
+## Known Phase 5 limitations
+
+- Interview free-text grading does not semantically understand arbitrary answers beyond the configured rubrics.
+- Daily Challenge rotation uses a finite bundled content bank.
+- Performance Review currently uses the existing Boss Case score rather than a company-specific multi-case review board.
+- Company progression currently reaches SaaS; bank, hospital and logistics remain future work.
+- Timed interviews use a local countdown and do not prevent app switching.
+- Portfolio export is still clipboard text rather than a file/PDF report.
 - Cloud sync and leaderboards remain optional.
 
-## Exact next step — Phase 5
+## Exact next step — Phase 6
 
-**Build Interview Mode + Daily Challenge + career/company progression.**
+**Build bank-company progression + richer portfolio export + expanded Boss/Daily evidence.**
 
-Phase 5 should:
-1. Add SQL, statistics, case and behavioral interview rounds with timed/untimed practice.
-2. Add data-driven Daily Challenge rotation and streak integration.
-3. Add performance-review gates for promotion and progression from e-commerce to SaaS.
-4. Add role-specific difficulty and ticket mixes as the player progresses.
-5. Add interview feedback rubrics and saved interview performance.
-6. Add automated tests for promotion gates, daily challenge selection and interview scoring.
-7. Preserve full offline functionality.
+Phase 6 should:
+1. Add progression from SaaS to a banking analytics company with domain-specific synthetic datasets and tickets.
+2. Add safe risk, fraud, credit and operations analytics scenarios.
+3. Add richer local portfolio export suitable for a file/PDF-ready evidence report.
+4. Add multiple Boss Cases with company-aware Boss Case rotation.
+5. Expand Daily Challenge and advanced interview question banks.
+6. Add immutable attempt history for portfolio and interview evidence.
+7. Add automated tests for bank unlocks, company-aware Boss Cases and evidence history.
+8. Preserve offline-first operation and low-end Android performance.
 
-Do not start Phase 6 until Phase 5 is explicitly requested or Phase 5 is complete and the user asks to continue.
+Do not start Phase 7 until Phase 6 is explicitly requested or Phase 6 is complete and the user asks to continue.
 
 ## Ready progress-log line for this phase
 
-`2026-10-06 — Phase 4: Added guided offline Pandas workflows, dashboard/KPI decision practice, persistent strongest-score evidence, portfolio summary export, and expanded multi-level Practice Gym content.`
+`2026-10-06 — Phase 5: Added offline SQL/stats/case/behavioral interviews, timed practice, deterministic Daily Challenges with streaks, performance-review promotion gates, and e-commerce→SaaS career progression.`
