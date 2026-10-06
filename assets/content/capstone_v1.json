@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "id": "final-cross-company-capstone-001",
+  "title": "Board Portfolio Performance Capstone",
+  "context": "DataQuest Holdings asks you to review standardized synthetic KPI snapshots from its e-commerce, SaaS, banking, hospital-operations and logistics businesses. Build a decision-ready comparison without pretending that cross-company associations prove causation.",
+  "datasetName": "capstone_company_kpis",
+  "cleaningPrompt": "Which controls should be completed before comparing companies? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm company_key + period is unique.",
+    "Validate service_score and exception_rate are plausible percentages and operating/volume indexes are positive.",
+    "Standardize company and period labels before grouping.",
+    "Delete the lowest-performing company so it does not distort the portfolio average.",
+    "Replace every high operating-cost index with 100."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm company_key + period is unique.",
+    "Validate service_score and exception_rate are plausible percentages and operating/volume indexes are positive.",
+    "Standardize company and period labels before grouping."
+  ],
+  "sqlPrompt": "Using capstone_company_kpis, return company_key and ROUND(MAX(CASE WHEN period = 'Current' THEN service_score END) - MAX(CASE WHEN period = 'Baseline' THEN service_score END), 1) AS service_change grouped by company_key.",
+  "sqlExpectedRows": [
+    {"company_key": "bank", "service_change": 2.0},
+    {"company_key": "ecommerce", "service_change": 4.0},
+    {"company_key": "hospital", "service_change": 5.0},
+    {"company_key": "logistics", "service_change": 6.0},
+    {"company_key": "saas", "service_change": 3.0}
+  ],
+  "statisticsPrompt": "Hospital and logistics show larger service-score gains while also showing larger operating-cost increases. What is the strongest statistical interpretation?",
+  "statisticsOptions": [
+    "The pattern is an association worth investigating, but it does not prove higher operating cost caused the service improvement; company mix and operating changes may confound the relationship.",
+    "Higher operating cost definitely caused every service-score improvement.",
+    "The relationship should be ignored because descriptive comparisons are never useful.",
+    "Remove hospital and logistics before analysis because their changes are larger."
+  ],
+  "statisticsExpected": "The pattern is an association worth investigating, but it does not prove higher operating cost caused the service improvement; company mix and operating changes may confound the relationship.",
+  "kpiPrompt": "The current service scores are 88, 91, 89, 86 and 84. What is the portfolio average current service score?",
+  "kpiExpected": 87.6,
+  "kpiTolerance": 0.1,
+  "dashboardPrompt": "Which executive visual best compares baseline versus current service score across all five companies?",
+  "dashboardOptions": [
+    "Grouped bar or dumbbell chart with company on the axis and baseline/current service score clearly paired",
+    "Five separate pie charts with service score as a slice",
+    "A single gauge that hides company-level variation",
+    "A scatter plot with company names treated as numeric time"
+  ],
+  "dashboardExpected": "Grouped bar or dumbbell chart with company on the axis and baseline/current service score clearly paired",
+  "recommendationPrompt": "Which board recommendation is most defensible from this synthetic portfolio review?",
+  "recommendationOptions": [
+    "Preserve the broad service improvements, prioritize logistics and hospital for deeper cost/exception driver analysis, and test targeted operating changes before scaling because the portfolio comparison does not establish causality.",
+    "Cut every company to the same operating-cost index immediately.",
+    "Invest only in the company with the highest current service score and ignore volume or exception rates.",
+    "Claim that higher cost caused better service across the portfolio."
+  ],
+  "recommendationExpected": "Preserve the broad service improvements, prioritize logistics and hospital for deeper cost/exception driver analysis, and test targeted operating changes before scaling because the portfolio comparison does not establish causality.",
+  "rubric": {
+    "cleaning": 15,
+    "sql": 25,
+    "statistics": 15,
+    "kpi": 15,
+    "dashboard": 10,
+    "recommendation": 20
+  }
+}
