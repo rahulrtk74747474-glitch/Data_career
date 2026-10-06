@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/app_database.dart';
 import '../../models/analyst_task.dart';
+import '../../models/analytics_challenge.dart';
 import '../../models/boss_case.dart';
 import '../../models/boss_case_result.dart';
 import '../../models/capstone.dart';
@@ -202,6 +203,11 @@ final bossCaseProvider = FutureProvider<BossCaseDefinition>((ref) async {
 final pandasChallengesProvider =
     FutureProvider<List<PandasChallenge>>((ref) {
   return ref.read(contentRepositoryProvider).loadPandasChallenges();
+});
+
+final analyticsChallengesProvider =
+    FutureProvider<List<AnalyticsChallenge>>((ref) {
+  return ref.read(contentRepositoryProvider).loadAnalyticsChallenges();
 });
 
 final dashboardChallengesProvider =
