@@ -58,6 +58,9 @@ final contentRepositoryProvider = Provider<ContentRepository>(
   (ref) => const ContentRepository(),
 );
 
+final pendingLaunchNotificationPayloadProvider =
+    StateProvider<String?>((ref) => null);
+
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();
   ref.onDispose(database.close);
