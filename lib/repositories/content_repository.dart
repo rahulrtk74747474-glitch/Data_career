@@ -9,6 +9,7 @@ import '../models/capstone.dart';
 import '../models/dashboard_challenge.dart';
 import '../models/daily_challenge.dart';
 import '../models/interview.dart';
+import '../models/narrative_content.dart';
 import '../models/pandas_challenge.dart';
 import '../models/placement_question.dart';
 import '../models/spreadsheet_challenge.dart';
@@ -46,6 +47,50 @@ class ContentRepository {
       );
     }
     return allTasks;
+  }
+
+  Future<List<InsightScenario>> loadInsightScenarios() async {
+    final decoded = await _loadNarrative();
+    final items = decoded['insightScenarios'] as List<dynamic>;
+    return items
+        .map(
+          (item) => InsightScenario.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<ManagerDialogue>> loadManagerDialogues() async {
+    final decoded = await _loadNarrative();
+    final items = decoded['managerDialogues'] as List<dynamic>;
+    return items
+        .map(
+          (item) => ManagerDialogue.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList()
+      ..sort((a, b) => b.minScore.compareTo(a.minScore));
+  }
+
+  Future<List<RandomEventDefinition>> loadRandomEvents() async {
+    final decoded = await _loadNarrative();
+    final items = decoded['events'] as List<dynamic>;
+    return items
+        .map(
+          (item) => RandomEventDefinition.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<Map<String, dynamic>> _loadNarrative() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/narrative_v1.json',
+    );
+    return jsonDecode(raw) as Map<String, dynamic>;
   }
 
   Future<List<PlacementQuestion>> loadPlacementQuestions() async {
