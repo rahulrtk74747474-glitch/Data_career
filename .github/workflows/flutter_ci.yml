@@ -51,9 +51,28 @@ jobs:
       - name: Build debug APK
         run: flutter build apk --debug
 
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Check release budgets
+        run: dart run tool/check_release_budgets.dart
+
+      - name: Report artifact sizes
+        run: |
+          echo "## Android artifact sizes" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Debug APK: $(du -h build/app/outputs/flutter-apk/app-debug.apk | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Release AAB: $(du -h build/app/outputs/bundle/release/app-release.aab | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: dataquest-android-debug
           path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
+      - name: Upload release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataquest-android-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
