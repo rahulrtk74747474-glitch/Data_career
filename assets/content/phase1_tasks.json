@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 1,
-  "packId": "career-ecommerce-week1-v1",
+  "schemaVersion": 2,
+  "migrationNote": "v2 adds optional skillKey, expectedRows and expectedSelections. Existing v1 task fields remain readable.",
+  "packId": "career-ecommerce-week1-v2",
   "tasks": [
     {
       "id": "sales-net-revenue-001",
       "title": "Fix the Sales Revenue Sheet",
       "department": "Sales",
       "skill": "Spreadsheets",
+      "skillKey": "spreadsheets",
       "context": "The Sales Manager says the dashboard is overstating revenue because discounts are ignored. You receive a small extract from the order sheet.",
       "goal": "Calculate net revenue for row 2 after the discount.",
       "deliverable": "Write the spreadsheet formula for cell E2 using Quantity (B2), Unit Price (C2), and Discount Rate (D2).",
@@ -14,6 +16,8 @@
       "prompt": "What formula should go in E2?",
       "expectedAnswer": "=B2*C2*(1-D2)",
       "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
       "hints": [
         "Start with gross revenue: quantity × unit price.",
         "A 10% discount means the company keeps 90%, which is 1 - discount rate.",
@@ -34,26 +38,26 @@
       "title": "Which Marketing Channel Converts?",
       "department": "Marketing",
       "skill": "SQL",
+      "skillKey": "sql",
       "context": "Marketing has campaign rows split across multiple dates. The manager wants total conversions per channel before tomorrow's budget meeting.",
       "goal": "Aggregate conversions by marketing channel.",
-      "deliverable": "Write a SQL query returning channel and the sum of conversions from campaign_performance, grouped by channel.",
-      "answerType": "sql_tokens",
-      "prompt": "Write the SQL query.",
+      "deliverable": "Write and run a SQL query returning one row per channel with total conversions from campaign_performance.",
+      "answerType": "sql_result",
+      "prompt": "Write the SQL query. It will run against the real local SQLite table.",
       "expectedAnswer": "",
-      "requiredTokens": [
-        "select",
-        "channel",
-        "sum(conversions)",
-        "from campaign_performance",
-        "group by channel"
+      "requiredTokens": [],
+      "expectedRows": [
+        {"channel": "Search", "total_conversions": 163},
+        {"channel": "Social", "total_conversions": 93}
       ],
+      "expectedSelections": [],
       "hints": [
         "You need one output row per channel, so this is an aggregation problem.",
         "Use SUM() on conversions and GROUP BY the non-aggregated channel column.",
-        "The structure is SELECT channel, SUM(conversions) FROM campaign_performance GROUP BY channel."
+        "Try: SELECT channel, SUM(conversions) AS total_conversions FROM campaign_performance GROUP BY channel."
       ],
-      "explanation": "GROUP BY collapses many campaign rows into one row per channel. SUM(conversions) then gives the total conversions for each channel, which is the correct level for a channel budget comparison.",
-      "xp": 100,
+      "explanation": "The app executes your query in SQLite and compares the returned result set. Search totals 163 conversions and Social totals 93. GROUP BY changes the grain from daily campaign rows to one row per channel.",
+      "xp": 120,
       "datasetName": "campaign_performance",
       "rows": [
         {"date": "2026-09-28", "channel": "Search", "spend": 12000, "conversions": 84},
@@ -68,6 +72,7 @@
       "title": "Stop a Bad Executive Conclusion",
       "department": "CEO",
       "skill": "Communication & Statistics",
+      "skillKey": "statistics",
       "context": "The CEO notices that customers who use the mobile app more often also spend more money. He wants to tell the board that increasing app opens will cause revenue to rise.",
       "goal": "Communicate what the data supports without confusing correlation with causation.",
       "deliverable": "Choose the most defensible recommendation.",
@@ -75,6 +80,8 @@
       "prompt": "What should you recommend to the CEO?",
       "expectedAnswer": "Report the correlation, avoid claiming causation, and propose an experiment to test whether increasing app engagement changes spending.",
       "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
       "hints": [
         "Two variables moving together does not prove that one causes the other.",
         "High-value customers may simply be more likely to use the app often.",

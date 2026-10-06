@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
 import '../../services/scoring_service.dart';
+import '../../services/sql_result_grader.dart';
 import '../game/game_providers.dart';
 
 class TaskScreen extends ConsumerStatefulWidget {
@@ -19,12 +20,17 @@ class TaskScreen extends ConsumerStatefulWidget {
 
 class _TaskScreenState extends ConsumerState<TaskScreen> {
   final _answerController = TextEditingController();
+  final Set<String> _selectedOptions = {};
   int _revealedHints = 0;
   int _failedAttempts = 0;
   String? _feedback;
   bool _solved = false;
+  bool _submitting = false;
+  List<String> _sqlColumns = const [];
+  List<Map<String, Object?>> _sqlRows = const [];
 
   AnalystTask get task => widget.task;
+  bool get _isSql => task.answerType == 'sql_result';
 
   @override
   void dispose() {
@@ -38,17 +44,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     final alreadyCompleted = progress.completedTaskIds.contains(task.id);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(task.department),
-      ),
+      appBar: AppBar(title: Text(task.department)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              task.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text(task.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 4),
             Text('${task.skill} • Up to ${task.xp} XP'),
             const SizedBox(height: 18),
@@ -69,18 +70,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             ),
             if (task.rows.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text(
-                task.datasetName,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text(task.datasetName, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               _DatasetPreview(rows: task.rows),
             ],
             const SizedBox(height: 20),
-            Text(
-              task.prompt,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(task.prompt, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             if (task.answerType == 'choice')
               _ChoiceAnswer(
@@ -93,20 +88,33 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                   });
                 },
               )
+            else if (task.answerType == 'multi_select')
+              _MultiSelectAnswer(
+                options: task.options,
+                selected: _selectedOptions,
+                onChanged: (option, selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedOptions.add(option);
+                    } else {
+                      _selectedOptions.remove(option);
+                    }
+                    _feedback = null;
+                  });
+                },
+              )
             else
               TextField(
                 controller: _answerController,
-                minLines: task.answerType == 'sql_tokens' ? 5 : 1,
-                maxLines: task.answerType == 'sql_tokens' ? 10 : 3,
+                minLines: _isSql ? 5 : 1,
+                maxLines: _isSql ? 12 : 3,
                 autocorrect: false,
                 enableSuggestions: false,
                 decoration: InputDecoration(
                   labelText: task.answerType == 'formula'
                       ? 'Your spreadsheet formula'
                       : 'Your SQL query',
-                  hintText: task.answerType == 'formula'
-                      ? '=...'
-                      : 'SELECT ...',
+                  hintText: task.answerType == 'formula' ? '=...' : 'SELECT ...',
                   alignLabelWithHint: true,
                 ),
                 onChanged: (_) {
@@ -117,16 +125,30 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
               ),
             const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: alreadyCompleted || _solved ? null : _submit,
-              icon: const Icon(Icons.play_arrow),
+              onPressed: alreadyCompleted || _solved || _submitting ? null : _submit,
+              icon: _submitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.play_arrow),
               label: Text(
                 alreadyCompleted
                     ? 'Already completed'
                     : _solved
                         ? 'Completed'
-                        : 'Submit analysis',
+                        : _isSql
+                            ? 'Run SQL & grade'
+                            : 'Submit analysis',
               ),
             ),
+            if (_sqlRows.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('SQLite result', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              _SqlResultTable(columns: _sqlColumns, rows: _sqlRows),
+            ],
             if (_feedback != null) ...[
               const SizedBox(height: 12),
               Card(
@@ -152,10 +174,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Why this works',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
+                      Text('Why this works', style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
                       Text(task.explanation),
                     ],
@@ -170,12 +189,50 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   }
 
   Future<void> _submit() async {
-    final result = ScoringService.grade(task, _answerController.text);
+    setState(() => _submitting = true);
 
-    if (!result.isCorrect) {
+    GradeResult grade;
+    if (_isSql) {
+      final run = await ref.read(sqlRunnerProvider).runReadOnly(_answerController.text);
+      if (!run.isSuccess) {
+        if (!mounted) return;
+        setState(() {
+          _submitting = false;
+          _failedAttempts++;
+          _feedback = run.error;
+          _sqlRows = const [];
+          _sqlColumns = const [];
+        });
+        return;
+      }
+
+      final result = SqlResultGrader.grade(
+        actualRows: run.rows,
+        expectedRows: task.expectedRows,
+      );
+      grade = GradeResult(
+        isCorrect: result.isCorrect,
+        feedback: result.feedback,
+      );
+
+      if (mounted) {
+        setState(() {
+          _sqlRows = run.rows;
+          _sqlColumns = run.columns;
+        });
+      }
+    } else if (task.answerType == 'multi_select') {
+      grade = ScoringService.gradeSelections(task, _selectedOptions);
+    } else {
+      grade = ScoringService.grade(task, _answerController.text);
+    }
+
+    if (!grade.isCorrect) {
+      if (!mounted) return;
       setState(() {
+        _submitting = false;
         _failedAttempts++;
-        _feedback = result.feedback;
+        _feedback = grade.feedback;
       });
       return;
     }
@@ -188,12 +245,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
           task,
           score: score,
         );
+    await ref.read(masteryRepositoryProvider).recordAttempt(task.skillKey, score);
+    ref.invalidate(skillProfileProvider);
 
     if (!mounted) return;
     setState(() {
+      _submitting = false;
       _solved = true;
       _feedback =
-          '${result.feedback}\nScore: $score/100. XP and company metrics updated.';
+          '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
     });
   }
 }
@@ -222,10 +282,7 @@ class _InfoBlock extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
+                Text(title, style: Theme.of(context).textTheme.labelLarge),
                 const SizedBox(height: 2),
                 Text(body),
               ],
@@ -245,7 +302,6 @@ class _DatasetPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final columns = rows.first.keys.toList();
-
     return Card(
       clipBehavior: Clip.antiAlias,
       child: SingleChildScrollView(
@@ -259,7 +315,42 @@ class _DatasetPreview extends StatelessWidget {
               DataRow(
                 cells: [
                   for (final column in columns)
-                    DataCell(Text('${row[column] ?? ''}')),
+                    DataCell(Text('${row[column] ?? 'NULL'}')),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SqlResultTable extends StatelessWidget {
+  const _SqlResultTable({
+    required this.columns,
+    required this.rows,
+  });
+
+  final List<String> columns;
+  final List<Map<String, Object?>> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    if (rows.isEmpty) return const Text('Query returned 0 rows.');
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columns: [
+            for (final column in columns) DataColumn(label: Text(column)),
+          ],
+          rows: [
+            for (final row in rows)
+              DataRow(
+                cells: [
+                  for (final column in columns)
+                    DataCell(Text('${row[column] ?? 'NULL'}')),
                 ],
               ),
           ],
@@ -302,6 +393,33 @@ class _ChoiceAnswer extends StatelessWidget {
   }
 }
 
+class _MultiSelectAnswer extends StatelessWidget {
+  const _MultiSelectAnswer({
+    required this.options,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final List<String> options;
+  final Set<String> selected;
+  final void Function(String option, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (final option in options)
+          CheckboxListTile(
+            value: selected.contains(option),
+            title: Text(option),
+            controlAffinity: ListTileControlAffinity.leading,
+            onChanged: (value) => onChanged(option, value ?? false),
+          ),
+      ],
+    );
+  }
+}
+
 class _HintPanel extends StatelessWidget {
   const _HintPanel({
     required this.hints,
@@ -321,10 +439,7 @@ class _HintPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hints',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Hints', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
             const Text(
               'Hints get more specific. Using them reduces the score, but learning is more important than guessing.',

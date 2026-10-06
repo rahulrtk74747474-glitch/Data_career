@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "packId": "placement-v1",
+  "questions": [
+    {
+      "id": "placement-sheets-1",
+      "skillKey": "spreadsheets",
+      "question": "Cell B2 contains quantity and C2 contains unit price. Which formula calculates row revenue?",
+      "options": ["=B2+C2", "=B2*C2", "=SUM(B2:C2)", "=B2/C2"],
+      "correctOption": "=B2*C2",
+      "explanation": "Revenue for a line item is quantity multiplied by unit price."
+    },
+    {
+      "id": "placement-sql-1",
+      "skillKey": "sql",
+      "question": "You need one row per region showing the number of orders. Which pattern is correct?",
+      "options": [
+        "SELECT region, COUNT(*) FROM orders GROUP BY region",
+        "SELECT * FROM orders ORDER BY region",
+        "SELECT DISTINCT order_id FROM orders",
+        "UPDATE orders SET region = COUNT(*)"
+      ],
+      "correctOption": "SELECT region, COUNT(*) FROM orders GROUP BY region",
+      "explanation": "COUNT aggregates rows and GROUP BY defines one group per region."
+    },
+    {
+      "id": "placement-cleaning-1",
+      "skillKey": "cleaning",
+      "question": "Two rows are exactly identical, including the same order_id. What is the best first action?",
+      "options": [
+        "Confirm the duplication rule, then remove the duplicate with an audit trail.",
+        "Always keep both rows.",
+        "Replace both rows with averages.",
+        "Delete every row with that customer."
+      ],
+      "correctOption": "Confirm the duplication rule, then remove the duplicate with an audit trail.",
+      "explanation": "Analysts validate the business key and document the deduplication rule before deletion."
+    },
+    {
+      "id": "placement-stats-1",
+      "skillKey": "statistics",
+      "question": "An A/B test has p = 0.03 with alpha = 0.05. Which statement is safest?",
+      "options": [
+        "The observed difference is statistically significant, but effect size and business impact still matter.",
+        "Variant B is guaranteed to make more money forever.",
+        "There is a 97% chance the hypothesis is true.",
+        "The result proves causation in every future population."
+      ],
+      "correctOption": "The observed difference is statistically significant, but effect size and business impact still matter.",
+      "explanation": "Statistical significance is not the same as practical significance or certainty."
+    },
+    {
+      "id": "placement-business-1",
+      "skillKey": "business",
+      "question": "A checkout funnel falls from 10,000 product views to 4,000 carts to 1,000 purchases. Where is the largest absolute drop?",
+      "options": [
+        "Product view → cart",
+        "Cart → purchase",
+        "There is no drop",
+        "It cannot be calculated"
+      ],
+      "correctOption": "Product view → cart",
+      "explanation": "The first transition loses 6,000 users versus 3,000 in the second transition."
+    }
+  ]
+}

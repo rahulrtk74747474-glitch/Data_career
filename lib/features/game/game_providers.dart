@@ -1,15 +1,47 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/app_database.dart';
 import '../../models/analyst_task.dart';
+import '../../models/placement_question.dart';
+import '../../models/skill_mastery.dart';
 import '../../repositories/content_repository.dart';
+import '../../repositories/mastery_repository.dart';
+import '../../services/sql_runner.dart';
 import 'game_progress.dart';
 
 final contentRepositoryProvider = Provider<ContentRepository>(
   (ref) => const ContentRepository(),
 );
 
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
+  final database = AppDatabase();
+  ref.onDispose(database.close);
+  return database;
+});
+
+final masteryRepositoryProvider = Provider<MasteryRepository>((ref) {
+  return MasteryRepository(ref.watch(appDatabaseProvider));
+});
+
+final sqlRunnerProvider = Provider<SqlRunner>((ref) {
+  return SqlRunner(ref.watch(appDatabaseProvider));
+});
+
 final tasksProvider = FutureProvider<List<AnalystTask>>((ref) {
-  return ref.read(contentRepositoryProvider).loadPhaseOneTasks();
+  return ref.read(contentRepositoryProvider).loadCareerTasks();
+});
+
+final placementQuestionsProvider =
+    FutureProvider<List<PlacementQuestion>>((ref) {
+  return ref.read(contentRepositoryProvider).loadPlacementQuestions();
+});
+
+final skillProfileProvider = FutureProvider<List<SkillMastery>>((ref) {
+  return ref.read(masteryRepositoryProvider).loadSkills();
+});
+
+final placementCompletedProvider = FutureProvider<bool>((ref) {
+  return ref.read(masteryRepositoryProvider).hasCompletedPlacement();
 });
 
 final gameProgressProvider =

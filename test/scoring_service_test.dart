@@ -7,12 +7,14 @@ void main() {
     required String answerType,
     String expectedAnswer = '',
     List<String> requiredTokens = const [],
+    List<String> expectedSelections = const [],
   }) {
     return AnalystTask(
       id: 'test',
       title: 'Test',
       department: 'Sales',
       skill: 'Test',
+      skillKey: 'business',
       context: 'Context',
       goal: 'Goal',
       deliverable: 'Deliverable',
@@ -20,6 +22,8 @@ void main() {
       prompt: 'Prompt',
       expectedAnswer: expectedAnswer,
       requiredTokens: requiredTokens,
+      expectedRows: const [],
+      expectedSelections: expectedSelections,
       hints: const ['h1', 'h2', 'h3'],
       explanation: 'Explanation',
       xp: 100,
@@ -35,13 +39,13 @@ void main() {
         answerType: 'formula',
         expectedAnswer: '=B2*C2*(1-D2)',
       ),
-      '= B2 * C2 * (1 - $D2)',
+      r'= B2 * C2 * (1 - $D2)',
     );
 
     expect(result.isCorrect, isTrue);
   });
 
-  test('SQL token grader accepts required SQL logic', () {
+  test('legacy SQL token grader remains backward compatible', () {
     final result = ScoringService.grade(
       task(
         answerType: 'sql_tokens',
@@ -63,18 +67,15 @@ void main() {
     expect(result.isCorrect, isTrue);
   });
 
-  test('SQL token grader rejects incomplete aggregation', () {
-    final result = ScoringService.grade(
+  test('multi-select grader requires the exact cleaning set', () {
+    final result = ScoringService.gradeSelections(
       task(
-        answerType: 'sql_tokens',
-        requiredTokens: const [
-          'sum(conversions)',
-          'group by channel',
-        ],
+        answerType: 'multi_select',
+        expectedSelections: const ['A', 'B'],
       ),
-      'SELECT channel FROM campaign_performance;',
+      {'B', 'A'},
     );
 
-    expect(result.isCorrect, isFalse);
+    expect(result.isCorrect, isTrue);
   });
 }

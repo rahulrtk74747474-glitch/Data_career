@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
+import '../../models/skill_mastery.dart';
 import '../game/game_progress.dart';
 import '../game/game_providers.dart';
+import '../placement/placement_screen.dart';
+import '../skills/skills_screen.dart';
 import '../task/task_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -13,11 +16,18 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(gameProgressProvider);
     final tasks = ref.watch(tasksProvider);
+    final placementComplete = ref.watch(placementCompletedProvider);
+    final skillProfile = ref.watch(skillProfileProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('DataQuest'),
         actions: [
+          IconButton(
+            tooltip: 'Skill radar',
+            onPressed: () => _openSkills(context),
+            icon: const Icon(Icons.radar),
+          ),
           IconButton(
             tooltip: 'Reset progress',
             onPressed: () => _confirmReset(context, ref),
@@ -29,13 +39,34 @@ class HomeScreen extends ConsumerWidget {
         child: RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(tasksProvider);
-            await ref.read(tasksProvider.future);
+            ref.invalidate(skillProfileProvider);
+            ref.invalidate(placementCompletedProvider);
+            await Future.wait([
+              ref.read(tasksProvider.future),
+              ref.read(skillProfileProvider.future),
+            ]);
           },
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               _CareerCard(progress: progress),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              placementComplete.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (error, stackTrace) => const SizedBox.shrink(),
+                data: (complete) => _PlacementCard(
+                  complete: complete,
+                  onPlacement: () => _openPlacement(context),
+                  onSkills: () => _openSkills(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+              skillProfile.when(
+                loading: () => const SizedBox.shrink(),
+                error: (error, stackTrace) => const SizedBox.shrink(),
+                data: (skills) => _SkillSummaryCard(skills: skills),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Company pulse',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -72,15 +103,29 @@ class HomeScreen extends ConsumerWidget {
                 error: (error, stackTrace) => Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(
-                      'Could not load the offline task pack.\n$error',
-                    ),
+                    child: Text('Could not load the offline task packs.\n$error'),
                   ),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _openPlacement(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const PlacementScreen(),
+      ),
+    );
+  }
+
+  void _openSkills(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const SkillsScreen(),
       ),
     );
   }
@@ -92,7 +137,7 @@ class HomeScreen extends ConsumerWidget {
         return AlertDialog(
           title: const Text('Reset career progress?'),
           content: const Text(
-            'This removes completed tickets and XP stored on this device.',
+            'This removes completed tickets, XP, placement results and skill mastery stored on this device.',
           ),
           actions: [
             TextButton(
@@ -110,7 +155,68 @@ class HomeScreen extends ConsumerWidget {
 
     if (shouldReset == true) {
       await ref.read(gameProgressProvider.notifier).reset();
+      await ref.read(masteryRepositoryProvider).resetAll();
+      ref.invalidate(skillProfileProvider);
+      ref.invalidate(placementCompletedProvider);
     }
+  }
+}
+
+class _PlacementCard extends StatelessWidget {
+  const _PlacementCard({
+    required this.complete,
+    required this.onPlacement,
+    required this.onSkills,
+  });
+
+  final bool complete;
+  final VoidCallback onPlacement;
+  final VoidCallback onSkills;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          complete ? Icons.verified_outlined : Icons.fact_check_outlined,
+        ),
+        title: Text(
+          complete ? 'Placement test completed' : 'Take the placement test',
+        ),
+        subtitle: Text(
+          complete
+              ? 'Your starting mastery is saved offline.'
+              : '5 questions • about 3 minutes • no pass/fail',
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: complete ? onSkills : onPlacement,
+      ),
+    );
+  }
+}
+
+class _SkillSummaryCard extends StatelessWidget {
+  const _SkillSummaryCard({required this.skills});
+
+  final List<SkillMastery> skills;
+
+  @override
+  Widget build(BuildContext context) {
+    if (skills.isEmpty) return const SizedBox.shrink();
+
+    final sorted = [...skills]
+      ..sort((a, b) => a.mastery.compareTo(b.mastery));
+    final weakest = sorted.first;
+
+    return Card(
+      child: ListTile(
+        leading: const Icon(Icons.psychology_alt_outlined),
+        title: const Text('Adaptive learning'),
+        subtitle: Text(
+          'Weakest now: ${weakest.displayName} (${weakest.mastery.toStringAsFixed(0)}%). Completing tickets updates this automatically.',
+        ),
+      ),
+    );
   }
 }
 

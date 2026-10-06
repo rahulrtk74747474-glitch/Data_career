@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "packId": "career-ecommerce-cleaning-v1",
+  "tasks": [
+    {
+      "id": "operations-cleaning-001",
+      "title": "Clean the Broken Customer Export",
+      "department": "Operations",
+      "skill": "Data Cleaning",
+      "skillKey": "cleaning",
+      "context": "Operations received a vendor export that will feed a customer KPI report. The file contains missing values, duplicates, inconsistent categories, mixed date formats and suspicious numeric values.",
+      "goal": "Choose every cleaning action that should happen before analysis.",
+      "deliverable": "Select the complete defensible cleaning plan. Do not invent replacements for unknown values.",
+      "answerType": "multi_select",
+      "prompt": "Which actions should you take? Select all that apply.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [
+        "Remove the exact duplicate O-1002 row after confirming it is a duplicate.",
+        "Treat blank or non-numeric ages as invalid/missing and flag them for a defined remediation rule.",
+        "Standardize north, North and NORTH into one canonical region value.",
+        "Parse the mixed date strings into one validated date format.",
+        "Investigate the -999 amount as an invalid value or outlier before using it in KPIs."
+      ],
+      "hints": [
+        "Look for repeated business keys, missing/invalid fields, inconsistent labels, mixed formats and implausible numbers.",
+        "Cleaning should preserve uncertainty. Do not silently guess a missing customer name or age.",
+        "There are five valid actions: duplicate handling, age validation, region standardization, date parsing and negative-amount investigation."
+      ],
+      "explanation": "A robust cleaning workflow identifies the issue, applies a documented rule, validates the result and preserves an audit trail. Guessing missing values or deleting every unusual row can create bias.",
+      "xp": 110,
+      "datasetName": "customer_dirty",
+      "rows": [
+        {"row_id": 1, "order_id": "O-1001", "customer_name": "Asha", "age": "29", "region": "North", "order_date": "2026-09-01", "amount": 1250},
+        {"row_id": 2, "order_id": "O-1002", "customer_name": "Ravi", "age": "", "region": "north", "order_date": "01/09/2026", "amount": 840},
+        {"row_id": 3, "order_id": "O-1002", "customer_name": "Ravi", "age": "", "region": "north", "order_date": "01/09/2026", "amount": 840},
+        {"row_id": 4, "order_id": "O-1003", "customer_name": "Meena", "age": "34", "region": "NORTH", "order_date": "2026/09/02", "amount": 1500},
+        {"row_id": 5, "order_id": "O-1004", "customer_name": null, "age": "41", "region": "South", "order_date": "2026-09-03", "amount": 2100},
+        {"row_id": 6, "order_id": "O-1005", "customer_name": "Kabir", "age": "27", "region": "West", "order_date": "2026-09-04", "amount": -999},
+        {"row_id": 7, "order_id": "O-1006", "customer_name": "Sana", "age": "thirty", "region": "East", "order_date": "2026-09-05", "amount": 1900}
+      ],
+      "options": [
+        "Remove the exact duplicate O-1002 row after confirming it is a duplicate.",
+        "Treat blank or non-numeric ages as invalid/missing and flag them for a defined remediation rule.",
+        "Standardize north, North and NORTH into one canonical region value.",
+        "Parse the mixed date strings into one validated date format.",
+        "Investigate the -999 amount as an invalid value or outlier before using it in KPIs.",
+        "Replace every missing customer name with the most common customer name.",
+        "Delete every row that looks unusual without documenting why."
+      ]
+    }
+  ]
+}
