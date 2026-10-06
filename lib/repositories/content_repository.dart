@@ -30,6 +30,7 @@ class ContentRepository {
       'assets/content/bank_tasks_v1.json',
       'assets/content/hospital_tasks_v1.json',
       'assets/content/logistics_tasks_v1.json',
+      'assets/content/sql_lab_core_v2.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
