@@ -13,7 +13,14 @@ class PortfolioSnapshot {
   final List<BossCaseResult> bossCases;
   final List<EvidenceAttempt> attempts;
 
-  int get evidenceCount => taskPerformances.length + bossCases.length;
+  int get capstoneCount => attempts
+      .where((item) => item.sourceType == 'capstone')
+      .map((item) => item.sourceId)
+      .toSet()
+      .length;
+
+  int get evidenceCount =>
+      taskPerformances.length + bossCases.length + capstoneCount;
 
   int get attemptCount => attempts.length;
 
