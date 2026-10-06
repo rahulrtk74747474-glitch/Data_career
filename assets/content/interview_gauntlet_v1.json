@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "job_readiness_gauntlet",
+    "title": "Final Interview Gauntlet",
+    "description": "A timed mixed hiring loop covering SQL, statistics, analytics case structure and behavioral communication.",
+    "companyKey": "general",
+    "minCompanyChapter": 0,
+    "durationSeconds": 900,
+    "questions": [
+      {
+        "id": "gauntlet-sql-1",
+        "context": "The hiring panel gives you the cross-company capstone KPI table and asks for current exception rates.",
+        "prompt": "Using capstone_company_kpis, return company_key and exception_rate for Current rows ordered by exception_rate descending.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"company_key": "logistics", "exception_rate": 7.9},
+          {"company_key": "hospital", "exception_rate": 6.7},
+          {"company_key": "saas", "exception_rate": 5.8},
+          {"company_key": "ecommerce", "exception_rate": 5.1},
+          {"company_key": "bank", "exception_rate": 4.1}
+        ],
+        "criteria": [],
+        "explanation": "A strong SQL answer filters to the requested period and returns the exact company-level metric in descending order."
+      },
+      {
+        "id": "gauntlet-statistics-1",
+        "context": "Two business units improved service score after spending more, while three had smaller cost changes.",
+        "prompt": "Which statement is statistically defensible?",
+        "answerType": "choice",
+        "options": [
+          "The pattern can motivate further analysis, but it does not prove additional cost caused service improvement because business mix and other operational changes may confound the comparison.",
+          "The higher cost definitely caused the service improvement.",
+          "Correlation and causation are the same when the sample contains five companies.",
+          "The two higher-cost companies should be removed as outliers before interpretation."
+        ],
+        "expectedAnswer": "The pattern can motivate further analysis, but it does not prove additional cost caused service improvement because business mix and other operational changes may confound the comparison.",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "Interview-ready analysis separates observed association from causal claims and calls out plausible confounding."
+      },
+      {
+        "id": "gauntlet-case-1",
+        "context": "A product leader asks why a KPI fell 8% this month and wants a recommendation by tomorrow.",
+        "prompt": "Describe the analysis structure you would use before making a recommendation.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Confirm metric definition and data quality", "weight": 20, "keywords": ["definition", "quality", "validate", "metric"]},
+          {"label": "Segment the change", "weight": 20, "keywords": ["segment", "cohort", "channel", "region", "product"]},
+          {"label": "Compare baseline and time pattern", "weight": 20, "keywords": ["baseline", "trend", "period", "season"]},
+          {"label": "Test plausible drivers", "weight": 20, "keywords": ["driver", "hypothesis", "test", "cause"]},
+          {"label": "Recommend bounded next action", "weight": 20, "keywords": ["recommend", "pilot", "monitor", "next"]}
+        ],
+        "explanation": "A strong case answer starts with definition and data quality, then segments, compares, tests hypotheses and ends with a bounded action."
+      },
+      {
+        "id": "gauntlet-behavioral-1",
+        "context": "A manager asks you to change a dashboard number because it looks bad before an executive review.",
+        "prompt": "How would you respond?",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Protect metric integrity", "weight": 25, "keywords": ["integrity", "definition", "accurate", "truth"]},
+          {"label": "Clarify the concern", "weight": 20, "keywords": ["clarify", "concern", "why", "context"]},
+          {"label": "Offer transparent alternatives", "weight": 25, "keywords": ["context", "annotation", "explain", "alternative"]},
+          {"label": "Document or escalate if needed", "weight": 15, "keywords": ["document", "escalate", "record"]},
+          {"label": "Communicate respectfully", "weight": 15, "keywords": ["respect", "professional", "calm", "manager"]}
+        ],
+        "explanation": "A professional analyst protects metric integrity while clarifying the business concern and offering transparent context instead of manipulating the number."
+      },
+      {
+        "id": "gauntlet-dashboard-1",
+        "context": "The panel wants to compare baseline and current service scores across five businesses.",
+        "prompt": "Which visual is strongest?",
+        "answerType": "choice",
+        "options": [
+          "Grouped bar or dumbbell chart showing baseline and current score side by side for each company",
+          "Five separate pie charts",
+          "One overall gauge",
+          "A 3D pie chart with every period as a slice"
+        ],
+        "expectedAnswer": "Grouped bar or dumbbell chart showing baseline and current score side by side for each company",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "A paired comparison chart makes direction and magnitude visible without hiding company-level variation."
+      },
+      {
+        "id": "gauntlet-executive-1",
+        "context": "You have 60 seconds with an executive who asks what to do with mixed service, cost and exception-rate results.",
+        "prompt": "Write the structure of your executive answer.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Lead with the decision-relevant finding", "weight": 25, "keywords": ["finding", "signal", "result", "trend"]},
+          {"label": "Quantify the evidence", "weight": 20, "keywords": ["percent", "score", "rate", "number"]},
+          {"label": "State uncertainty or limitation", "weight": 20, "keywords": ["uncertain", "limitation", "caus", "sample"]},
+          {"label": "Recommend a concrete next action", "weight": 25, "keywords": ["recommend", "test", "pilot", "action"]},
+          {"label": "Define monitoring", "weight": 10, "keywords": ["monitor", "track", "measure"]}
+        ],
+        "explanation": "Executive communication should move from finding to evidence, limitation, action and monitoring."
+      }
+    ]
+  }]
+}
