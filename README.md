@@ -2,25 +2,23 @@
 
 DataQuest is an offline-first Flutter game that trains a student for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews and career progression.
 
-## Current build: Phase 5
+## Current build: Phase 6
 
-Phase 5 adds the career loop around the technical training:
+Phase 6 extends the career and evidence system into banking analytics:
 
-- Interview Mode with SQL, statistics, analytics case and behavioral rounds
-- Timed and untimed interview practice
-- Real local SQLite grading for SQL interview questions
-- Weighted offline rubrics for case and behavioral answers
-- Persistent best/latest interview scores and attempt counts
-- Data-driven Daily Challenge rotation
-- Consecutive-day Daily Challenge streaks and one-time daily bonus XP
-- Performance Review promotion gates instead of XP-only promotion
-- E-commerce → SaaS company progression at Data Analyst level
-- SaaS-specific retention, MRR-proxy, experiment and NRR tickets
-- Role/company-aware Career Mode ticket difficulty
-- SQLite v4 migration preserving earlier progress
-- 35-test verified regression suite
+- Lead Analyst unlocks **NorthStar Bank Analytics**
+- Synthetic banking datasets for accounts, loans and transaction-review workload
+- Advanced credit-risk, fraud-operations, SQL and credit-governance tickets
+- Company-aware Boss Cases for e-commerce, SaaS and banking
+- Expanded Daily Challenge rotation through the banking stage
+- Advanced Bank Analytics Interview round
+- Immutable append-only attempt history for tickets, labs, interviews and Boss Cases
+- Strongest-score summary tables remain available alongside full history
+- Local HTML portfolio report with print styling for browser **Print → Save as PDF**
+- SQLite v5 migration preserving earlier career, mastery, interview, Boss Case and portfolio data
+- 47-test verified regression suite
 
-Phase 4 features remain available: Practice Gym, adaptive review, SQL workstation, Boss Case, Python/Pandas Lab, Dashboard Decision Lab and Portfolio Evidence.
+Earlier systems remain available: Practice Gym, adaptive review, real SQLite workstation, Python/Pandas Lab, Dashboard Decision Lab, Interview Mode, Daily Challenge and Performance Reviews.
 
 Read `PROGRESS_LOG.md` before making future changes.
 
@@ -49,4 +47,8 @@ GitHub Actions analyzes, tests and builds a debug APK on pushes to `main`.
 
 ## Offline design
 
-The core career game, interviews, Daily Challenges, SQLite SQL execution, guided Pandas simulator, mastery, performance reviews and portfolio systems work entirely on-device. No cloud account is required.
+The core career game, company progression, banking datasets, interviews, Daily Challenges, SQLite SQL execution, guided Pandas simulator, mastery, Boss Cases, evidence history and portfolio export work entirely on-device.
+
+Banking content uses synthetic training data only. Transaction `review_flag` values represent items requiring review, not confirmed fraud.
+
+The portfolio HTML file is generated locally. Open it in a browser and use **Print → Save as PDF** when a PDF copy is needed.
