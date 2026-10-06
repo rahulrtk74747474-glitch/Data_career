@@ -7,6 +7,7 @@ import '../boss_case/boss_case_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
 import '../interview/interview_mode_screen.dart';
+import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
 import '../portfolio/portfolio_screen.dart';
@@ -14,6 +15,7 @@ import '../game/game_progress.dart';
 import '../game/game_providers.dart';
 import '../placement/placement_screen.dart';
 import '../practice/practice_gym_screen.dart';
+import '../reminders/reminder_settings_screen.dart';
 import '../review/review_queue_screen.dart';
 import '../skills/skills_screen.dart';
 import '../sql_workspace/sql_workspace_screen.dart';
@@ -55,6 +57,7 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(dailyChallengeProvider);
             ref.invalidate(interviewResultsProvider);
             ref.invalidate(promotionReviewProvider);
+            ref.invalidate(companyChapterReviewProvider);
             ref.invalidate(skillProfileProvider);
             ref.invalidate(placementCompletedProvider);
             ref.invalidate(reviewQueueProvider);
@@ -106,6 +109,10 @@ class HomeScreen extends ConsumerWidget {
                     _open(context, const InterviewModeScreen()),
                 onReviewCareer: () =>
                     _open(context, const PerformanceReviewScreen()),
+                onCompanyChapter: () =>
+                    _open(context, const CompanyChapterReviewScreen()),
+                onReminders: () =>
+                    _open(context, const ReminderSettingsScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -214,6 +221,7 @@ class HomeScreen extends ConsumerWidget {
       ref.invalidate(portfolioSnapshotProvider);
       ref.invalidate(interviewResultsProvider);
       ref.invalidate(promotionReviewProvider);
+      ref.invalidate(companyChapterReviewProvider);
       ref.invalidate(careerTasksProvider);
       ref.invalidate(dailyChallengeProvider);
     }
@@ -233,6 +241,8 @@ class _FeatureGrid extends StatelessWidget {
     required this.onDaily,
     required this.onInterview,
     required this.onReviewCareer,
+    required this.onCompanyChapter,
+    required this.onReminders,
   });
 
   final int reviewCount;
@@ -246,6 +256,8 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onDaily;
   final VoidCallback onInterview;
   final VoidCallback onReviewCareer;
+  final VoidCallback onCompanyChapter;
+  final VoidCallback onReminders;
 
   @override
   Widget build(BuildContext context) {
@@ -270,8 +282,10 @@ class _FeatureGrid extends StatelessWidget {
       ('Daily Challenge', 'Streak + bonus XP', Icons.today_outlined, onDaily),
       ('Interview Mode', 'SQL + cases', Icons.record_voice_over_outlined, onInterview),
       ('Performance Review', 'Promotion gates', Icons.workspace_premium_outlined, onReviewCareer),
+      ('Company Chapter', 'Industry unlocks', Icons.business_center_outlined, onCompanyChapter),
       ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
       ('Portfolio', 'Strongest evidence', Icons.work_outline, onPortfolio),
+      ('Reminders', 'Daily + review times', Icons.notifications_active_outlined, onReminders),
     ];
 
     return GridView.builder(
@@ -431,6 +445,10 @@ class _CareerCard extends StatelessWidget {
             Text(
               progress.role,
               style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Company chapter ${progress.resolvedCompanyChapter + 1} • role and company now progress independently',
             ),
             const SizedBox(height: 12),
             LinearProgressIndicator(value: progress.roleProgress),
