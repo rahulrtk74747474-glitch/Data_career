@@ -14,7 +14,22 @@ class GameProgress {
     required this.churnRate,
     required this.costIndex,
     required this.satisfaction,
+    required this.careerLevel,
+    required this.dailyStreak,
+    required this.lastDailyDate,
+    required this.completedDailyDates,
   });
+
+  static const roleNames = [
+    'Data Analyst Intern',
+    'Junior Data Analyst',
+    'Data Analyst',
+    'Senior Analyst',
+    'Lead Analyst',
+    'Head of Analytics',
+  ];
+
+  static const xpThresholds = [200, 500, 900, 1400, 2000];
 
   factory GameProgress.initial() {
     return const GameProgress(
@@ -25,6 +40,10 @@ class GameProgress {
       churnRate: 8.0,
       costIndex: 100,
       satisfaction: 70,
+      careerLevel: 0,
+      dailyStreak: 0,
+      lastDailyDate: null,
+      completedDailyDates: <String>{},
     );
   }
 
@@ -35,39 +54,38 @@ class GameProgress {
   final double churnRate;
   final double costIndex;
   final double satisfaction;
+  final int careerLevel;
+  final int dailyStreak;
+  final String? lastDailyDate;
+  final Set<String> completedDailyDates;
 
-  String get role {
-    if (xp >= 2000) return 'Head of Analytics';
-    if (xp >= 1400) return 'Lead Analyst';
-    if (xp >= 900) return 'Senior Analyst';
-    if (xp >= 500) return 'Data Analyst';
-    if (xp >= 200) return 'Junior Data Analyst';
-    return 'Data Analyst Intern';
-  }
+  String get role => roleNames[careerLevel.clamp(0, 5)];
+
+  String get companyKey => careerLevel >= 2 ? 'saas' : 'ecommerce';
+
+  String get companyName =>
+      companyKey == 'saas' ? 'SaaS Growth Co.' : 'E-commerce Co.';
+
+  String get companyStageLabel => companyKey == 'saas'
+      ? 'SaaS Growth Co. • Growth team'
+      : 'E-commerce Co. • Week 1';
+
+  bool get isTopRole => careerLevel >= roleNames.length - 1;
 
   int get nextRoleXp {
-    if (xp < 200) return 200;
-    if (xp < 500) return 500;
-    if (xp < 900) return 900;
-    if (xp < 1400) return 1400;
-    if (xp < 2000) return 2000;
-    return 2000;
+    if (isTopRole) return xpThresholds.last;
+    return xpThresholds[careerLevel];
   }
 
   double get roleProgress {
-    if (xp >= 2000) return 1;
-    final previous = xp < 200
-        ? 0
-        : xp < 500
-            ? 200
-            : xp < 900
-                ? 500
-                : xp < 1400
-                    ? 900
-                    : 1400;
-    final next = nextRoleXp;
-    return (xp - previous) / (next - previous);
+    if (isTopRole) return 1;
+    final previous = careerLevel == 0 ? 0 : xpThresholds[careerLevel - 1];
+    final span = nextRoleXp - previous;
+    if (span <= 0) return 1;
+    return ((xp - previous) / span).clamp(0, 1).toDouble();
   }
+
+  bool completedDaily(String dateKey) => completedDailyDates.contains(dateKey);
 
   GameProgress copyWith({
     int? xp,
@@ -77,6 +95,11 @@ class GameProgress {
     double? churnRate,
     double? costIndex,
     double? satisfaction,
+    int? careerLevel,
+    int? dailyStreak,
+    String? lastDailyDate,
+    bool clearLastDailyDate = false,
+    Set<String>? completedDailyDates,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -86,6 +109,11 @@ class GameProgress {
       churnRate: churnRate ?? this.churnRate,
       costIndex: costIndex ?? this.costIndex,
       satisfaction: satisfaction ?? this.satisfaction,
+      careerLevel: careerLevel ?? this.careerLevel,
+      dailyStreak: dailyStreak ?? this.dailyStreak,
+      lastDailyDate:
+          clearLastDailyDate ? null : (lastDailyDate ?? this.lastDailyDate),
+      completedDailyDates: completedDailyDates ?? this.completedDailyDates,
     );
   }
 
@@ -98,12 +126,18 @@ class GameProgress {
       'churnRate': churnRate,
       'costIndex': costIndex,
       'satisfaction': satisfaction,
+      'careerLevel': careerLevel,
+      'dailyStreak': dailyStreak,
+      'lastDailyDate': lastDailyDate,
+      'completedDailyDates': completedDailyDates.toList(),
     };
   }
 
   factory GameProgress.fromJson(Map<String, dynamic> json) {
+    final xp = (json['xp'] as num?)?.toInt() ?? 0;
+    final savedLevel = (json['careerLevel'] as num?)?.toInt();
     return GameProgress(
-      xp: (json['xp'] as num?)?.toInt() ?? 0,
+      xp: xp,
       streak: (json['streak'] as num?)?.toInt() ?? 0,
       completedTaskIds: Set<String>.from(
         (json['completedTaskIds'] as List<dynamic>?) ?? const <dynamic>[],
@@ -112,7 +146,23 @@ class GameProgress {
       churnRate: (json['churnRate'] as num?)?.toDouble() ?? 8,
       costIndex: (json['costIndex'] as num?)?.toDouble() ?? 100,
       satisfaction: (json['satisfaction'] as num?)?.toDouble() ?? 70,
+      careerLevel: (savedLevel ?? _legacyLevelFromXp(xp)).clamp(0, 5),
+      dailyStreak: (json['dailyStreak'] as num?)?.toInt() ?? 0,
+      lastDailyDate: json['lastDailyDate'] as String?,
+      completedDailyDates: Set<String>.from(
+        (json['completedDailyDates'] as List<dynamic>?) ??
+            const <dynamic>[],
+      ),
     );
+  }
+
+  static int _legacyLevelFromXp(int xp) {
+    if (xp >= 2000) return 5;
+    if (xp >= 1400) return 4;
+    if (xp >= 900) return 3;
+    if (xp >= 500) return 2;
+    if (xp >= 200) return 1;
+    return 0;
   }
 }
 
@@ -175,13 +225,53 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
       satisfaction: satisfaction.clamp(0, 100).toDouble(),
     );
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_storageKey, jsonEncode(state.toJson()));
+    await _save();
+  }
+
+  Future<void> completeDailyChallenge({
+    required String dateKey,
+    required int score,
+    required int bonusXp,
+  }) async {
+    if (state.completedDaily(dateKey)) return;
+
+    final currentDate = DateTime.tryParse(dateKey);
+    final previousDate = state.lastDailyDate == null
+        ? null
+        : DateTime.tryParse(state.lastDailyDate!);
+    var nextDailyStreak = 1;
+
+    if (currentDate != null && previousDate != null) {
+      final difference = currentDate.difference(previousDate).inDays;
+      if (difference == 1) {
+        nextDailyStreak = state.dailyStreak + 1;
+      }
+    }
+
+    final earnedXp = (bonusXp * score / 100).round();
+    state = state.copyWith(
+      xp: state.xp + earnedXp,
+      dailyStreak: nextDailyStreak,
+      lastDailyDate: dateKey,
+      completedDailyDates: <String>{...state.completedDailyDates, dateKey},
+    );
+    await _save();
+  }
+
+  Future<void> promote() async {
+    if (state.isTopRole) return;
+    state = state.copyWith(careerLevel: state.careerLevel + 1);
+    await _save();
   }
 
   Future<void> reset() async {
     state = GameProgress.initial();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_storageKey);
+  }
+
+  Future<void> _save() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_storageKey, jsonEncode(state.toJson()));
   }
 }
