@@ -50,6 +50,17 @@ void main() {
     expect(progress.companyKey, 'saas');
     expect(progress.companyName, 'SaaS Growth Co.');
   });
+
+  test('Lead Analyst level unlocks banking company', () {
+    final progress = _progress(
+      xp: 1400,
+      level: 4,
+      completed: 10,
+    );
+
+    expect(progress.companyKey, 'bank');
+    expect(progress.companyName, 'NorthStar Bank Analytics');
+  });
 }
 
 GameProgress _progress({
