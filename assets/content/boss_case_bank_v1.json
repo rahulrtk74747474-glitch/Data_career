@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "id": "bank-risk-review-001",
+  "title": "Credit Risk Portfolio Review",
+  "company": "NorthStar Bank Analytics • Weekly Boss Case",
+  "companyKey": "bank",
+  "minCareerLevel": 4,
+  "context": "The risk committee wants a synthetic portfolio review. You must validate risk inputs, aggregate outstanding exposure by risk band, calculate concentration, choose an executive visual, and recommend a controlled review action.",
+  "datasetName": "loan_portfolio + bank_accounts",
+  "cleaningPrompt": "Which checks are required before using the loan portfolio? Select all required actions.",
+  "cleaningOptions": [
+    "Confirm loan_id uniqueness and investigate duplicates before aggregation.",
+    "Validate days-past-due values are non-negative and plausible.",
+    "Check risk-band assignments against the documented policy logic.",
+    "Automatically reject every High risk-band customer without review.",
+    "Replace all missing risk fields with Low."
+  ],
+  "cleaningExpectedSelections": [
+    "Confirm loan_id uniqueness and investigate duplicates before aggregation.",
+    "Validate days-past-due values are non-negative and plausible.",
+    "Check risk-band assignments against the documented policy logic."
+  ],
+  "sqlPrompt": "Using loan_portfolio, return risk_band and total_outstanding. Sum outstanding by risk_band.",
+  "sqlExpectedRows": [
+    {"risk_band": "High", "total_outstanding": 500000},
+    {"risk_band": "Low", "total_outstanding": 2420000},
+    {"risk_band": "Medium", "total_outstanding": 45000}
+  ],
+  "kpiPrompt": "High-risk exposure is 500000 of 2965000 total outstanding. What percentage is High risk? Round to one decimal.",
+  "kpiExpected": 16.9,
+  "kpiTolerance": 0.1,
+  "chartPrompt": "Which chart best communicates outstanding exposure by risk band?",
+  "chartOptions": [
+    "Bar chart with risk band and outstanding exposure",
+    "Line chart using risk bands as dates",
+    "Scatter plot of loan_id versus product text",
+    "A separate gauge for every loan"
+  ],
+  "chartExpected": "Bar chart with risk band and outstanding exposure",
+  "recommendationPrompt": "Which committee recommendation is most defensible?",
+  "recommendationOptions": [
+    "Prioritize review of High-risk exposure, validate policy consistency, and investigate drivers before changing credit decisions.",
+    "Treat every review flag or High band as proof of wrongdoing.",
+    "Approve all Low-band loans without any controls.",
+    "Hide Medium-band exposure because it is small."
+  ],
+  "recommendationExpected": "Prioritize review of High-risk exposure, validate policy consistency, and investigate drivers before changing credit decisions.",
+  "rubric": {
+    "cleaning": 20,
+    "sql": 30,
+    "kpi": 20,
+    "chart": 10,
+    "recommendation": 20
+  }
+}
