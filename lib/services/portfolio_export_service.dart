@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import '../data/app_database.dart';
 import '../models/portfolio_snapshot.dart';
 import '../models/skill_mastery.dart';
+import 'career_artifact_service.dart';
 
 class PortfolioExportResult {
   const PortfolioExportResult({
@@ -80,6 +81,13 @@ class PortfolioExportService {
         )
         .join();
 
+    final projectRows = CareerArtifactService.buildProjectCards(snapshot)
+        .map(
+          (project) =>
+              '<tr><td>${e(project.title)}</td><td>${e(project.company)}</td><td>${project.score}/100</td><td>${e(project.skills.join(', '))}</td><td>${project.attempts}</td></tr>',
+        )
+        .join();
+
     final taskRows = snapshot.taskPerformances
         .take(12)
         .map(
@@ -132,6 +140,9 @@ th{background:#f3f4f6}
 
 <h2>Skill profile</h2>
 <table><tr><th>Skill</th><th>Mastery</th><th>Attempts</th></tr>$skillRows</table>
+
+<h2>Portfolio projects</h2>
+<table><tr><th>Project</th><th>Company</th><th>Score</th><th>Skills</th><th>Attempts</th></tr>$projectRows</table>
 
 <h2>Strongest ticket and lab evidence</h2>
 <table><tr><th>Evidence</th><th>Skill</th><th>Difficulty</th><th>Best score</th><th>Attempts</th></tr>$taskRows</table>
