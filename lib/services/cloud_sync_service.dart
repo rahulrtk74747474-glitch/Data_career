@@ -111,7 +111,6 @@ abstract interface class CloudSyncGateway {
     required BackupSnapshot local,
   });
 
-  @override
   Future<void> publishLeaderboard({
     required CloudSession session,
     required String alias,
@@ -119,7 +118,6 @@ abstract interface class CloudSyncGateway {
     required bool graduated,
   });
 
-  @override
   Future<List<LeaderboardEntry>> loadLeaderboard({
     required CloudSession session,
     int limit = 25,
@@ -291,6 +289,7 @@ class SupabaseCloudService implements CloudSyncGateway {
     );
   }
 
+  @override
   Future<void> publishLeaderboard({
     required CloudSession session,
     required String alias,
@@ -327,6 +326,7 @@ class SupabaseCloudService implements CloudSyncGateway {
     }
   }
 
+  @override
   Future<List<LeaderboardEntry>> loadLeaderboard({
     required CloudSession session,
     int limit = 25,
