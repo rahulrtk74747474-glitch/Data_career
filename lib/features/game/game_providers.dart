@@ -189,9 +189,14 @@ final promotionReviewProvider = FutureProvider<PromotionReview>((ref) async {
   final bossResult =
       await ref.read(bossCaseResultRepositoryProvider).load(boss.id);
   final interviews = await ref.watch(interviewResultsProvider.future);
-  final bestInterviewScore = interviews.isEmpty
+  final relevantInterviews = progress.companyKey == 'bank'
+      ? interviews
+          .where((result) => result.roundKey == 'bank_analytics')
+          .toList()
+      : interviews;
+  final bestInterviewScore = relevantInterviews.isEmpty
       ? null
-      : interviews
+      : relevantInterviews
           .map((result) => result.bestScore)
           .reduce((a, b) => a > b ? a : b);
 
