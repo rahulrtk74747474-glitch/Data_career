@@ -25,6 +25,7 @@ import '../../services/adaptive_review_service.dart';
 import '../../services/boss_case_selection_service.dart';
 import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
+import '../../services/company_chapter_progression_service.dart';
 import '../../services/daily_challenge_service.dart';
 import '../../services/portfolio_export_service.dart';
 import '../../services/sql_runner.dart';
@@ -156,6 +157,20 @@ final interviewRoundsProvider =
   return ref.read(contentRepositoryProvider).loadInterviewRounds();
 });
 
+final availableInterviewRoundsProvider =
+    FutureProvider<List<InterviewRoundDefinition>>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final rounds = await ref.watch(interviewRoundsProvider.future);
+  return rounds
+      .where(
+        (round) =>
+            round.companyKey == 'general' ||
+            (round.companyKey == progress.companyKey &&
+                round.minCompanyChapter <= progress.resolvedCompanyChapter),
+      )
+      .toList();
+});
+
 final interviewResultsProvider =
     FutureProvider<List<InterviewResult>>((ref) {
   return ref.read(interviewResultRepositoryProvider).loadAll();
@@ -205,6 +220,60 @@ final promotionReviewProvider = FutureProvider<PromotionReview>((ref) async {
     skills: skills,
     bossCaseScore: bossResult?.totalScore,
     bestInterviewScore: bestInterviewScore,
+  );
+});
+
+final companyChapterReviewProvider =
+    FutureProvider<CompanyChapterReview>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final skills = await ref.watch(skillProfileProvider.future);
+  final tasks = await ref.watch(tasksProvider.future);
+  final boss = await ref.watch(bossCaseProvider.future);
+  final bossResult =
+      await ref.read(bossCaseResultRepositoryProvider).load(boss.id);
+  final interviews = await ref.watch(interviewResultsProvider.future);
+
+  final currentCompanyTasks = tasks
+      .where((task) => task.companyKey == progress.companyKey)
+      .toList();
+  final completedCurrentCompanyTickets = currentCompanyTasks
+      .where((task) => progress.completedTaskIds.contains(task.id))
+      .length;
+
+  int? interviewScore;
+  switch (progress.companyKey) {
+    case 'bank':
+      final bankResults = interviews
+          .where((result) => result.roundKey == 'bank_analytics')
+          .toList();
+      if (bankResults.isNotEmpty) {
+        interviewScore = bankResults
+            .map((result) => result.bestScore)
+            .reduce((a, b) => a > b ? a : b);
+      }
+      break;
+    case 'saas':
+      final generalResults = interviews
+          .where(
+            (result) =>
+                result.roundKey != 'bank_analytics' &&
+                result.roundKey != 'hospital_analytics',
+          )
+          .toList();
+      if (generalResults.isNotEmpty) {
+        interviewScore = generalResults
+            .map((result) => result.bestScore)
+            .reduce((a, b) => a > b ? a : b);
+      }
+      break;
+  }
+
+  return CompanyChapterProgressionService.evaluate(
+    progress: progress,
+    completedCurrentCompanyTickets: completedCurrentCompanyTickets,
+    skills: skills,
+    bossCaseScore: bossResult?.totalScore,
+    interviewScore: interviewScore,
   );
 });
 
