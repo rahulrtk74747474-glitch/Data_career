@@ -64,6 +64,41 @@ class _SqlWorkspaceScreenState extends ConsumerState<SqlWorkspaceScreen> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
+            Text(
+              'Keyword shortcuts',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 6),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final keyword in const [
+                    'SELECT ',
+                    'FROM ',
+                    'WHERE ',
+                    'JOIN ',
+                    'ON ',
+                    'GROUP BY ',
+                    'HAVING ',
+                    'ORDER BY ',
+                    'WITH ',
+                    'CASE ',
+                    'OVER (',
+                    'PARTITION BY ',
+                    'LIMIT ',
+                  ])
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ActionChip(
+                        label: Text(keyword.trim()),
+                        onPressed: () => _insertKeyword(keyword),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
             TextField(
               controller: _queryController,
               minLines: 6,
@@ -97,6 +132,23 @@ class _SqlWorkspaceScreenState extends ConsumerState<SqlWorkspaceScreen> {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  void _insertKeyword(String keyword) {
+    final value = _queryController.value;
+    final start = value.selection.start < 0
+        ? value.text.length
+        : value.selection.start;
+    final end = value.selection.end < 0
+        ? start
+        : value.selection.end;
+    final nextText = value.text.replaceRange(start, end, keyword);
+    _queryController.value = TextEditingValue(
+      text: nextText,
+      selection: TextSelection.collapsed(
+        offset: start + keyword.length,
       ),
     );
   }
