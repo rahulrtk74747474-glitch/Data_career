@@ -7,6 +7,7 @@ import '../boss_case/boss_case_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
 import '../interview/interview_mode_screen.dart';
+import '../graduation/job_readiness_screen.dart';
 import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
@@ -58,6 +59,9 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(interviewResultsProvider);
             ref.invalidate(promotionReviewProvider);
             ref.invalidate(companyChapterReviewProvider);
+            ref.invalidate(jobReadinessProvider);
+            ref.invalidate(graduationEligibilityProvider);
+            ref.invalidate(capstoneResultProvider);
             ref.invalidate(skillProfileProvider);
             ref.invalidate(placementCompletedProvider);
             ref.invalidate(reviewQueueProvider);
@@ -113,6 +117,8 @@ class HomeScreen extends ConsumerWidget {
                     _open(context, const CompanyChapterReviewScreen()),
                 onReminders: () =>
                     _open(context, const ReminderSettingsScreen()),
+                onReadiness: () =>
+                    _open(context, const JobReadinessScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -213,6 +219,7 @@ class HomeScreen extends ConsumerWidget {
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
       await ref.read(taskPerformanceRepositoryProvider).resetAll();
       await ref.read(interviewResultRepositoryProvider).resetAll();
+      await ref.read(capstoneResultRepositoryProvider).resetAll();
       await ref.read(evidenceRepositoryProvider).resetAll();
       ref.invalidate(skillProfileProvider);
       ref.invalidate(placementCompletedProvider);
@@ -222,6 +229,9 @@ class HomeScreen extends ConsumerWidget {
       ref.invalidate(interviewResultsProvider);
       ref.invalidate(promotionReviewProvider);
       ref.invalidate(companyChapterReviewProvider);
+      ref.invalidate(capstoneResultProvider);
+      ref.invalidate(jobReadinessProvider);
+      ref.invalidate(graduationEligibilityProvider);
       ref.invalidate(careerTasksProvider);
       ref.invalidate(dailyChallengeProvider);
     }
@@ -243,6 +253,7 @@ class _FeatureGrid extends StatelessWidget {
     required this.onReviewCareer,
     required this.onCompanyChapter,
     required this.onReminders,
+    required this.onReadiness,
   });
 
   final int reviewCount;
@@ -258,6 +269,7 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onReviewCareer;
   final VoidCallback onCompanyChapter;
   final VoidCallback onReminders;
+  final VoidCallback onReadiness;
 
   @override
   Widget build(BuildContext context) {
@@ -281,6 +293,7 @@ class _FeatureGrid extends StatelessWidget {
       ),
       ('Daily Challenge', 'Streak + bonus XP', Icons.today_outlined, onDaily),
       ('Interview Mode', 'SQL + cases', Icons.record_voice_over_outlined, onInterview),
+      ('Job Readiness', 'Capstone + graduation', Icons.school_outlined, onReadiness),
       ('Performance Review', 'Promotion gates', Icons.workspace_premium_outlined, onReviewCareer),
       ('Company Chapter', 'Industry unlocks', Icons.business_center_outlined, onCompanyChapter),
       ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
