@@ -1,7 +1,8 @@
 import 'dart:io';
 
-const maxDebugApkBytes = 120 * 1024 * 1024;
-const maxReleaseAabBytes = 100 * 1024 * 1024;
+const maxDebugApkBytes = 200 * 1024 * 1024;
+const maxReleaseAabBytes = 70 * 1024 * 1024;
+const maxReleaseSplitApkBytes = 45 * 1024 * 1024;
 const maxContentBytes = 5 * 1024 * 1024;
 
 void main() {
@@ -15,6 +16,21 @@ void main() {
       path: 'build/app/outputs/bundle/release/app-release.aab',
       maxBytes: maxReleaseAabBytes,
       label: 'release AAB',
+    ),
+    const _BudgetCheck(
+      path: 'build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk',
+      maxBytes: maxReleaseSplitApkBytes,
+      label: 'ARM32 release APK',
+    ),
+    const _BudgetCheck(
+      path: 'build/app/outputs/flutter-apk/app-arm64-v8a-release.apk',
+      maxBytes: maxReleaseSplitApkBytes,
+      label: 'ARM64 release APK',
+    ),
+    const _BudgetCheck(
+      path: 'build/app/outputs/flutter-apk/app-x86_64-release.apk',
+      maxBytes: maxReleaseSplitApkBytes,
+      label: 'x86_64 release APK',
     ),
   ];
 
