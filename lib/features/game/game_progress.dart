@@ -61,14 +61,33 @@ class GameProgress {
 
   String get role => roleNames[careerLevel.clamp(0, 5).toInt()];
 
-  String get companyKey => careerLevel >= 2 ? 'saas' : 'ecommerce';
+  String get companyKey {
+    if (careerLevel >= 4) return 'bank';
+    if (careerLevel >= 2) return 'saas';
+    return 'ecommerce';
+  }
 
-  String get companyName =>
-      companyKey == 'saas' ? 'SaaS Growth Co.' : 'E-commerce Co.';
+  String get companyName {
+    switch (companyKey) {
+      case 'bank':
+        return 'NorthStar Bank Analytics';
+      case 'saas':
+        return 'SaaS Growth Co.';
+      default:
+        return 'E-commerce Co.';
+    }
+  }
 
-  String get companyStageLabel => companyKey == 'saas'
-      ? 'SaaS Growth Co. • Growth team'
-      : 'E-commerce Co. • Week 1';
+  String get companyStageLabel {
+    switch (companyKey) {
+      case 'bank':
+        return 'NorthStar Bank Analytics • Risk & Operations';
+      case 'saas':
+        return 'SaaS Growth Co. • Growth team';
+      default:
+        return 'E-commerce Co. • Week 1';
+    }
+  }
 
   bool get isTopRole => careerLevel >= roleNames.length - 1;
 
