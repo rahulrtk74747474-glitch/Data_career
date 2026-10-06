@@ -1,0 +1,1002 @@
+{
+  "schemaVersion": 4,
+  "packId": "sql-lab-core-v2",
+  "tasks": [
+    {
+      "id": "sql-core-01",
+      "title": "List Completed Orders",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. List Completed Orders is the next ticket.",
+      "goal": "SELECT order_id and revenue for completed orders.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "SELECT order_id and revenue for completed orders.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_id": "O2001",
+          "revenue": 1200
+        },
+        {
+          "order_id": "O2002",
+          "revenue": 800
+        },
+        {
+          "order_id": "O2003",
+          "revenue": 2300
+        },
+        {
+          "order_id": "O2004",
+          "revenue": 3200
+        },
+        {
+          "order_id": "O2005",
+          "revenue": 2000
+        },
+        {
+          "order_id": "O2007",
+          "revenue": 2800
+        },
+        {
+          "order_id": "O2009",
+          "revenue": 1100
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Start with SELECT order_id, revenue.",
+        "Filter status to completed.",
+        "Use WHERE status = 'completed'."
+      ],
+      "explanation": "A basic WHERE filter isolates the business population before analysis.",
+      "xp": 80,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-02",
+      "title": "Find High-Value Orders",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. Find High-Value Orders is the next ticket.",
+      "goal": "Return order_id and revenue for orders with revenue >= 2000.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return order_id and revenue for orders with revenue >= 2000.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_id": "O2003",
+          "revenue": 2300
+        },
+        {
+          "order_id": "O2004",
+          "revenue": 3200
+        },
+        {
+          "order_id": "O2005",
+          "revenue": 2000
+        },
+        {
+          "order_id": "O2007",
+          "revenue": 2800
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use a numeric WHERE condition.",
+        "The threshold is inclusive.",
+        "Use revenue >= 2000."
+      ],
+      "explanation": "Threshold filters are common for prioritization and exception analysis.",
+      "xp": 80,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-03",
+      "title": "Top Three Orders",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. Top Three Orders is the next ticket.",
+      "goal": "Return the three largest orders by revenue.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return the three largest orders by revenue.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_id": "O2004",
+          "revenue": 3200
+        },
+        {
+          "order_id": "O2007",
+          "revenue": 2800
+        },
+        {
+          "order_id": "O2003",
+          "revenue": 2300
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Sort revenue descending.",
+        "Use ORDER BY before LIMIT.",
+        "LIMIT 3 returns the top three rows."
+      ],
+      "explanation": "ORDER BY plus LIMIT produces a top-N view without changing the underlying data.",
+      "xp": 80,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-04",
+      "title": "Count Orders by Status",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. Count Orders by Status is the next ticket.",
+      "goal": "Return status and COUNT(*) AS order_count grouped by status.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return status and COUNT(*) AS order_count grouped by status.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "status": "cancelled",
+          "order_count": 1
+        },
+        {
+          "status": "completed",
+          "order_count": 7
+        },
+        {
+          "status": "refunded",
+          "order_count": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use COUNT(*).",
+        "Group by status.",
+        "Name the count order_count."
+      ],
+      "explanation": "Grouped counts summarize workload or business state by category.",
+      "xp": 80,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-05",
+      "title": "Revenue by Status",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. Revenue by Status is the next ticket.",
+      "goal": "Return status and SUM(revenue) AS revenue grouped by status.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return status and SUM(revenue) AS revenue grouped by status.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "status": "cancelled",
+          "revenue": 900
+        },
+        {
+          "status": "completed",
+          "revenue": 13400
+        },
+        {
+          "status": "refunded",
+          "revenue": 1400
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use SUM(revenue).",
+        "Group by status.",
+        "Keep the alias revenue."
+      ],
+      "explanation": "Grouped sums convert row-level transactions into business totals.",
+      "xp": 80,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-06",
+      "title": "Marketing Conversions by Channel",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "context": "You are working in the e-commerce analyst SQL lab. Marketing Conversions by Channel is the next ticket.",
+      "goal": "Return channel and total conversions from campaign_performance.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return channel and total conversions from campaign_performance.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "channel": "Search",
+          "conversions": 163
+        },
+        {
+          "channel": "Social",
+          "conversions": 93
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate conversions.",
+        "Group by channel.",
+        "Use SUM(conversions)."
+      ],
+      "explanation": "Channel aggregation supports apples-to-apples campaign comparison.",
+      "xp": 80,
+      "datasetName": "campaign_performance",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-07",
+      "title": "Completed Revenue by Segment",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Completed Revenue by Segment is the next ticket.",
+      "goal": "Join orders to customers and return completed revenue by segment.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Join orders to customers and return completed revenue by segment.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "revenue": 3100
+        },
+        {
+          "segment": "Enterprise",
+          "revenue": 8000
+        },
+        {
+          "segment": "SMB",
+          "revenue": 2300
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Join on customer_id.",
+        "Filter completed orders.",
+        "Group by customer segment."
+      ],
+      "explanation": "Joins combine transactional facts with customer dimensions.",
+      "xp": 120,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-08",
+      "title": "Conditional Order Counts",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Conditional Order Counts is the next ticket.",
+      "goal": "Return completed_orders, refunded_orders and cancelled_orders using CASE inside aggregates.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return completed_orders, refunded_orders and cancelled_orders using CASE inside aggregates.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "completed_orders": 7,
+          "refunded_orders": 1,
+          "cancelled_orders": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use SUM(CASE WHEN ... THEN 1 ELSE 0 END).",
+        "Create one conditional aggregate per status.",
+        "No GROUP BY is needed for one summary row."
+      ],
+      "explanation": "Conditional aggregation creates multiple business KPIs in one scan.",
+      "xp": 120,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-09",
+      "title": "Segments Above Revenue Threshold",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Segments Above Revenue Threshold is the next ticket.",
+      "goal": "Return completed-revenue segments with SUM(revenue) > 3000.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return completed-revenue segments with SUM(revenue) > 3000.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "revenue": 3100
+        },
+        {
+          "segment": "Enterprise",
+          "revenue": 8000
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate first.",
+        "Use HAVING after GROUP BY.",
+        "Filter completed orders before grouping."
+      ],
+      "explanation": "HAVING filters aggregated groups, unlike WHERE which filters source rows.",
+      "xp": 120,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-10",
+      "title": "Customers Above Average Revenue",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Customers Above Average Revenue is the next ticket.",
+      "goal": "Return customer_id and completed revenue for customers whose completed revenue is above the average customer total.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return customer_id and completed revenue for customers whose completed revenue is above the average customer total.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "customer_id": "C003",
+          "revenue": 5200
+        },
+        {
+          "customer_id": "C005",
+          "revenue": 2800
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "First calculate revenue per customer.",
+        "The comparison average must be based on those customer totals.",
+        "A subquery can produce the average of aggregates."
+      ],
+      "explanation": "Nested aggregation is useful when the benchmark itself is an aggregate across groups.",
+      "xp": 120,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-11",
+      "title": "CTE for Customer Revenue",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. CTE for Customer Revenue is the next ticket.",
+      "goal": "Use a CTE to calculate completed revenue per customer, then keep customers with revenue >= 2000.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Use a CTE to calculate completed revenue per customer, then keep customers with revenue >= 2000.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "customer_id": "C001",
+          "revenue": 2000
+        },
+        {
+          "customer_id": "C002",
+          "revenue": 2300
+        },
+        {
+          "customer_id": "C003",
+          "revenue": 5200
+        },
+        {
+          "customer_id": "C005",
+          "revenue": 2800
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Start WITH customer_revenue AS (...).",
+        "Aggregate completed revenue inside the CTE.",
+        "Filter the CTE output."
+      ],
+      "explanation": "CTEs make multi-step SQL easier to read and review.",
+      "xp": 120,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-12",
+      "title": "Bucket Order Value",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Bucket Order Value is the next ticket.",
+      "goal": "Return order_id and value_band where revenue >=2000 is High, >=1000 is Medium, otherwise Low.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return order_id and value_band where revenue >=2000 is High, >=1000 is Medium, otherwise Low.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_id": "O2001",
+          "value_band": "Medium"
+        },
+        {
+          "order_id": "O2002",
+          "value_band": "Low"
+        },
+        {
+          "order_id": "O2003",
+          "value_band": "High"
+        },
+        {
+          "order_id": "O2004",
+          "value_band": "High"
+        },
+        {
+          "order_id": "O2005",
+          "value_band": "High"
+        },
+        {
+          "order_id": "O2006",
+          "value_band": "Medium"
+        },
+        {
+          "order_id": "O2007",
+          "value_band": "High"
+        },
+        {
+          "order_id": "O2008",
+          "value_band": "Low"
+        },
+        {
+          "order_id": "O2009",
+          "value_band": "Medium"
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use CASE WHEN.",
+        "Evaluate the highest threshold first.",
+        "Alias the result value_band."
+      ],
+      "explanation": "CASE expressions translate numeric values into business-friendly categories.",
+      "xp": 120,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-13",
+      "title": "Unique Customer Regions",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 1,
+      "context": "You are working in the e-commerce analyst SQL lab. Unique Customer Regions is the next ticket.",
+      "goal": "Return each distinct region from customers.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return each distinct region from customers.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "region": "North"
+        },
+        {
+          "region": "West"
+        },
+        {
+          "region": "South"
+        },
+        {
+          "region": "East"
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use SELECT DISTINCT.",
+        "Only region is required.",
+        "Do not aggregate unnecessarily."
+      ],
+      "explanation": "DISTINCT is useful for inspecting category coverage and data quality.",
+      "xp": 120,
+      "datasetName": "customers",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-14",
+      "title": "Rank Orders With Row Number",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Rank Orders With Row Number is the next ticket.",
+      "goal": "Return order_id, revenue and ROW_NUMBER() over revenue descending as revenue_rank.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return order_id, revenue and ROW_NUMBER() over revenue descending as revenue_rank.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_id": "O2004",
+          "revenue": 3200,
+          "revenue_rank": 1
+        },
+        {
+          "order_id": "O2007",
+          "revenue": 2800,
+          "revenue_rank": 2
+        },
+        {
+          "order_id": "O2003",
+          "revenue": 2300,
+          "revenue_rank": 3
+        },
+        {
+          "order_id": "O2005",
+          "revenue": 2000,
+          "revenue_rank": 4
+        },
+        {
+          "order_id": "O2006",
+          "revenue": 1400,
+          "revenue_rank": 5
+        },
+        {
+          "order_id": "O2001",
+          "revenue": 1200,
+          "revenue_rank": 6
+        },
+        {
+          "order_id": "O2009",
+          "revenue": 1100,
+          "revenue_rank": 7
+        },
+        {
+          "order_id": "O2008",
+          "revenue": 900,
+          "revenue_rank": 8
+        },
+        {
+          "order_id": "O2002",
+          "revenue": 800,
+          "revenue_rank": 9
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use ROW_NUMBER().",
+        "Put ORDER BY revenue DESC inside OVER().",
+        "Alias the window result revenue_rank."
+      ],
+      "explanation": "ROW_NUMBER assigns a deterministic sequence over an ordered result set.",
+      "xp": 160,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-15",
+      "title": "Rank Customers by Revenue",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Rank Customers by Revenue is the next ticket.",
+      "goal": "Aggregate completed revenue per customer, then RANK customers by revenue descending.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Aggregate completed revenue per customer, then RANK customers by revenue descending.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "customer_id": "C003",
+          "revenue": 5200,
+          "revenue_rank": 1
+        },
+        {
+          "customer_id": "C005",
+          "revenue": 2800,
+          "revenue_rank": 2
+        },
+        {
+          "customer_id": "C002",
+          "revenue": 2300,
+          "revenue_rank": 3
+        },
+        {
+          "customer_id": "C001",
+          "revenue": 2000,
+          "revenue_rank": 4
+        },
+        {
+          "customer_id": "C004",
+          "revenue": 1100,
+          "revenue_rank": 5
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Use a CTE for customer revenue.",
+        "Apply RANK() after aggregation.",
+        "Order the window by revenue DESC."
+      ],
+      "explanation": "Window ranking works well on an already aggregated business grain.",
+      "xp": 160,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-16",
+      "title": "Running Completed Revenue",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Running Completed Revenue is the next ticket.",
+      "goal": "Aggregate completed daily revenue, then calculate cumulative revenue by date.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Aggregate completed daily revenue, then calculate cumulative revenue by date.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_date": "2026-09-20",
+          "daily_revenue": 1200,
+          "running_revenue": 1200
+        },
+        {
+          "order_date": "2026-09-21",
+          "daily_revenue": 3100,
+          "running_revenue": 4300
+        },
+        {
+          "order_date": "2026-09-22",
+          "daily_revenue": 3200,
+          "running_revenue": 7500
+        },
+        {
+          "order_date": "2026-09-23",
+          "daily_revenue": 2000,
+          "running_revenue": 9500
+        },
+        {
+          "order_date": "2026-09-24",
+          "daily_revenue": 2800,
+          "running_revenue": 12300
+        },
+        {
+          "order_date": "2026-09-26",
+          "daily_revenue": 1100,
+          "running_revenue": 13400
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Build daily revenue first.",
+        "Use SUM(daily_revenue) OVER.",
+        "Order the window by order_date."
+      ],
+      "explanation": "Running totals show cumulative progress while preserving each time period.",
+      "xp": 160,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-17",
+      "title": "Previous-Day Revenue With LAG",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Previous-Day Revenue With LAG is the next ticket.",
+      "goal": "Return daily completed revenue and prior_day_revenue using LAG.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return daily completed revenue and prior_day_revenue using LAG.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_date": "2026-09-20",
+          "daily_revenue": 1200,
+          "prior_day_revenue": null
+        },
+        {
+          "order_date": "2026-09-21",
+          "daily_revenue": 3100,
+          "prior_day_revenue": 1200
+        },
+        {
+          "order_date": "2026-09-22",
+          "daily_revenue": 3200,
+          "prior_day_revenue": 3100
+        },
+        {
+          "order_date": "2026-09-23",
+          "daily_revenue": 2000,
+          "prior_day_revenue": 3200
+        },
+        {
+          "order_date": "2026-09-24",
+          "daily_revenue": 2800,
+          "prior_day_revenue": 2000
+        },
+        {
+          "order_date": "2026-09-26",
+          "daily_revenue": 1100,
+          "prior_day_revenue": 2800
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate by date first.",
+        "Use LAG(daily_revenue).",
+        "Order the window by order_date."
+      ],
+      "explanation": "LAG exposes prior-period values without a self join.",
+      "xp": 160,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-18",
+      "title": "Three-Period Moving Average",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Three-Period Moving Average is the next ticket.",
+      "goal": "Return order_date and a 3-row moving average of completed daily revenue rounded to one decimal.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return order_date and a 3-row moving average of completed daily revenue rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "order_date": "2026-09-20",
+          "moving_avg_3": 1200
+        },
+        {
+          "order_date": "2026-09-21",
+          "moving_avg_3": 2150
+        },
+        {
+          "order_date": "2026-09-22",
+          "moving_avg_3": 2500
+        },
+        {
+          "order_date": "2026-09-23",
+          "moving_avg_3": 2766.7
+        },
+        {
+          "order_date": "2026-09-24",
+          "moving_avg_3": 2666.7
+        },
+        {
+          "order_date": "2026-09-26",
+          "moving_avg_3": 1966.7
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate daily revenue first.",
+        "Use AVG(...) OVER.",
+        "Use ROWS BETWEEN 2 PRECEDING AND CURRENT ROW."
+      ],
+      "explanation": "Moving windows smooth short-term variation while retaining time order.",
+      "xp": 160,
+      "datasetName": "orders",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-19",
+      "title": "Segment Revenue Share",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Segment Revenue Share is the next ticket.",
+      "goal": "Return segment, completed revenue and revenue_share_pct using a window total.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return segment, completed revenue and revenue_share_pct using a window total.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "revenue": 3100,
+          "revenue_share_pct": 23.1
+        },
+        {
+          "segment": "Enterprise",
+          "revenue": 8000,
+          "revenue_share_pct": 59.7
+        },
+        {
+          "segment": "SMB",
+          "revenue": 2300,
+          "revenue_share_pct": 17.2
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Aggregate revenue by segment first.",
+        "Use SUM(revenue) OVER() for the denominator.",
+        "Multiply by 100.0 and round."
+      ],
+      "explanation": "Window totals let each grouped row retain context about the overall total.",
+      "xp": 160,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "sql-core-20",
+      "title": "Rank Orders Within Segment",
+      "department": "SQL Lab",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 2,
+      "context": "You are working in the e-commerce analyst SQL lab. Rank Orders Within Segment is the next ticket.",
+      "goal": "Return segment, order_id, revenue and ROW_NUMBER within each segment by revenue descending for completed orders.",
+      "deliverable": "Return exactly the requested columns and business grain.",
+      "answerType": "sql_result",
+      "prompt": "Return segment, order_id, revenue and ROW_NUMBER within each segment by revenue descending for completed orders.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {
+          "segment": "Consumer",
+          "order_id": "O2001",
+          "revenue": 1200,
+          "segment_rank": 1
+        },
+        {
+          "segment": "Consumer",
+          "order_id": "O2009",
+          "revenue": 1100,
+          "segment_rank": 2
+        },
+        {
+          "segment": "Consumer",
+          "order_id": "O2002",
+          "revenue": 800,
+          "segment_rank": 3
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2004",
+          "revenue": 3200,
+          "segment_rank": 1
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2007",
+          "revenue": 2800,
+          "segment_rank": 2
+        },
+        {
+          "segment": "Enterprise",
+          "order_id": "O2005",
+          "revenue": 2000,
+          "segment_rank": 3
+        },
+        {
+          "segment": "SMB",
+          "order_id": "O2003",
+          "revenue": 2300,
+          "segment_rank": 1
+        }
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Join orders to customers.",
+        "Use PARTITION BY segment.",
+        "Order each partition by revenue DESC."
+      ],
+      "explanation": "Partitioned windows rank records independently inside each business segment.",
+      "xp": 160,
+      "datasetName": "orders + customers",
+      "rows": [],
+      "options": []
+    }
+  ]
+}
