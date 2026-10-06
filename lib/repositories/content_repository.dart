@@ -108,17 +108,24 @@ class ContentRepository {
   }
 
   Future<List<InterviewRoundDefinition>> loadInterviewRounds() async {
-    final raw = await rootBundle.loadString(
-      'assets/content/interview_rounds_v1.json',
-    );
-    final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    final rounds = decoded['rounds'] as List<dynamic>;
-    return rounds
-        .map(
+    final allRounds = <InterviewRoundDefinition>[];
+    for (final asset in const [
+      'assets/content/interview_sql_v1.json',
+      'assets/content/interview_statistics_v1.json',
+      'assets/content/interview_case_v1.json',
+      'assets/content/interview_behavioral_v1.json',
+    ]) {
+      final raw = await rootBundle.loadString(asset);
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      final rounds = decoded['rounds'] as List<dynamic>;
+      allRounds.addAll(
+        rounds.map(
           (item) => InterviewRoundDefinition.fromJson(
             Map<String, dynamic>.from(item as Map),
           ),
-        )
-        .toList();
+        ),
+      );
+    }
+    return allRounds;
   }
 }
