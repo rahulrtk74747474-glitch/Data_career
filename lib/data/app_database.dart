@@ -2,6 +2,8 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
+  static const schemaVersion = 8;
+
   AppDatabase({
     DatabaseFactory? factory,
     this.overridePath,
@@ -22,7 +24,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 8,
+        version: schemaVersion,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
