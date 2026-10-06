@@ -19,6 +19,7 @@ class SqlWorkspaceRepository {
     'logistics_shipments',
     'logistics_inventory_flow',
     'logistics_throughput_forecast',
+    'capstone_company_kpis',
   };
 
   Future<List<SqlTableSchema>> loadSchemas() async {
