@@ -83,8 +83,8 @@ final weeklyCaseServiceProvider = Provider<WeeklyCaseService>((ref) {
 final releaseDiagnosticsServiceProvider =
     Provider<ReleaseDiagnosticsService>((ref) {
   return ReleaseDiagnosticsService(
-    backupService: ref.watch(backupServiceProvider),
-    cloudConfig: ref.watch(cloudRuntimeConfigProvider),
+    ref.watch(backupServiceProvider),
+    ref.watch(cloudRuntimeConfigProvider),
   );
 });
 
