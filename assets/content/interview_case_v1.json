@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "case",
+    "title": "Analytics Case Interview",
+    "description": "Structure ambiguous business problems and connect metrics to decisions.",
+    "durationSeconds": 480,
+    "questions": [
+      {
+        "id": "case-interview-1",
+        "context": "A SaaS company says revenue fell 10% this month and asks why.",
+        "prompt": "Describe how you would structure the analysis.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Clarify metric/time scope", "weight": 20, "keywords": ["scope", "period", "definition", "revenue"]},
+          {"label": "Decompose revenue", "weight": 25, "keywords": ["traffic", "conversion", "price", "volume", "customers"]},
+          {"label": "Segment the change", "weight": 20, "keywords": ["segment", "cohort", "region", "plan", "channel"]},
+          {"label": "Validate data", "weight": 15, "keywords": ["validate", "quality", "data", "tracking"]},
+          {"label": "Recommend next action", "weight": 20, "keywords": ["action", "test", "recommend", "investigate"]}
+        ],
+        "explanation": "Clarify the outcome, build a metric tree, segment the change, validate data quality and end with a prioritized action."
+      },
+      {
+        "id": "case-interview-2",
+        "context": "Checkout conversion fell after a product release while traffic mix also changed.",
+        "prompt": "How would you determine whether the release drove the decline?",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Define exposure", "weight": 20, "keywords": ["exposure", "release", "version", "treatment"]},
+          {"label": "Control confounding", "weight": 25, "keywords": ["traffic", "mix", "control", "segment"]},
+          {"label": "Use causal design", "weight": 25, "keywords": ["experiment", "random", "holdout", "difference"]},
+          {"label": "Check instrumentation", "weight": 15, "keywords": ["tracking", "event", "logging", "instrument"]},
+          {"label": "Quantify uncertainty", "weight": 15, "keywords": ["confidence", "uncertainty", "interval", "significance"]}
+        ],
+        "explanation": "Separate release exposure from changing traffic composition and measurement changes."
+      }
+    ]
+  }]
+}
