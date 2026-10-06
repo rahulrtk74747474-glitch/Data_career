@@ -294,7 +294,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     await ref
         .read(masteryRepositoryProvider)
         .recordAttempt(task.skillKey, score);
-    await ref.read(taskPerformanceRepositoryProvider).recordTask(task, score);
+    final attemptMode = widget.isDaily
+        ? 'daily'
+        : widget.reviewMode
+            ? 'review'
+            : 'career';
+    await ref.read(taskPerformanceRepositoryProvider).recordTask(
+          task,
+          score,
+          mode: attemptMode,
+        );
     ref.invalidate(skillProfileProvider);
     ref.invalidate(reviewQueueProvider);
     ref.invalidate(adaptiveRecommendationsProvider);
