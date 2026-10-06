@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/navigation/app_routes.dart';
 import 'core/theme/app_theme.dart';
-import 'features/daily/daily_challenge_screen.dart';
 import 'features/game/game_providers.dart';
-import 'features/home/home_screen.dart';
-import 'features/review/review_queue_screen.dart';
 import 'services/notification_destination_service.dart';
 
 class DataQuestApp extends ConsumerStatefulWidget {
@@ -28,7 +26,9 @@ class _DataQuestAppState extends ConsumerState<DataQuestApp> {
                   onPayload: _openNotificationPayload,
                 );
         if (launchPayload != null && mounted) {
-          _openNotificationPayload(launchPayload);
+          ref
+              .read(pendingLaunchNotificationPayloadProvider.notifier)
+              .state = launchPayload;
         }
       } catch (_) {
         // Reminder support must never prevent the offline learning app
@@ -51,15 +51,12 @@ class _DataQuestAppState extends ConsumerState<DataQuestApp> {
       return;
     }
 
-    final Widget screen = switch (destination) {
-      NotificationDestination.dailyChallenge =>
-        const DailyChallengeScreen(),
-      NotificationDestination.reviewQueue => const ReviewQueueScreen(),
+    final route = switch (destination) {
+      NotificationDestination.dailyChallenge => AppRoutes.daily,
+      NotificationDestination.reviewQueue => AppRoutes.review,
     };
 
-    navigator.push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    navigator.pushNamed(route);
   }
 
   @override
@@ -71,7 +68,8 @@ class _DataQuestAppState extends ConsumerState<DataQuestApp> {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
-      home: const HomeScreen(),
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }
