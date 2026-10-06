@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
+import '../../services/career_artifact_service.dart';
 import '../../services/portfolio_service.dart';
 import '../game/game_providers.dart';
 
@@ -164,6 +165,10 @@ class PortfolioScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              _ProjectCards(
+                cards: CareerArtifactService.buildProjectCards(portfolio),
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Strongest ticket and lab evidence',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -299,6 +304,61 @@ class _Metric extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+
+class _ProjectCards extends StatelessWidget {
+  const _ProjectCards({required this.cards});
+
+  final List<PortfolioProjectCard> cards;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cards.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Portfolio projects',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Case-study cards built from your strongest recorded Boss Case and capstone evidence.',
+        ),
+        const SizedBox(height: 8),
+        for (final card in cards)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    card.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text('${card.company} • ${card.score}/100 • ${card.attempts} attempts'),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final skill in card.skills)
+                        Chip(label: Text(skill)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
