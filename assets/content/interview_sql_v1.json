@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "sql",
+    "title": "SQL Interview",
+    "description": "Two result-graded SQL questions on joins, filters and aggregation.",
+    "durationSeconds": 420,
+    "questions": [
+      {
+        "id": "sql-interview-1",
+        "context": "Return completed revenue by customer segment.",
+        "prompt": "Using customers and orders, return segment and total_revenue for completed orders.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"segment": "Consumer", "total_revenue": 3100},
+          {"segment": "Enterprise", "total_revenue": 8000},
+          {"segment": "SMB", "total_revenue": 2300}
+        ],
+        "criteria": [],
+        "explanation": "Join on customer_id, filter status before aggregation and group at the requested segment grain."
+      },
+      {
+        "id": "sql-interview-2",
+        "context": "Compare completed revenue geographically.",
+        "prompt": "Return region and total_revenue for completed orders only.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"region": "East", "total_revenue": 2800},
+          {"region": "North", "total_revenue": 4300},
+          {"region": "South", "total_revenue": 1100},
+          {"region": "West", "total_revenue": 5200}
+        ],
+        "criteria": [],
+        "explanation": "Join customer geography to orders, exclude non-completed statuses and aggregate by region."
+      }
+    ]
+  }]
+}
