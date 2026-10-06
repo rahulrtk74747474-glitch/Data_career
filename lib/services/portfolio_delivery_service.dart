@@ -1,4 +1,3 @@
-import 'package:cross_file/cross_file.dart';
 import 'package:flutter/rendering.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
