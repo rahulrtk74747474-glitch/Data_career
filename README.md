@@ -1,34 +1,55 @@
 # DataQuest: Analyst Career
 
-DataQuest is an offline-first Flutter game that trains a student for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews, company chapters and career progression.
+DataQuest is an offline-first Flutter game that trains a learner for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews, company chapters, evidence and career progression.
 
-## Current build: Phase 8
+## Current build: Phase 9
 
-Phase 8 completes the current five-company journey while keeping the career role ladder independent.
+Phase 9 adds the **Graduation & Job-Readiness system** after the complete five-company career journey.
 
-Current company path:
+Current journey:
 - E-commerce Co.
 - SaaS Growth Co.
 - NorthStar Bank Analytics
 - Harborview Hospital Analytics
-- **Logistics Network Co.**
-- final company-journey completion review
+- Logistics Network Co.
+- **Final cross-company capstone**
+- **Interview Gauntlet**
+- **Job Readiness & Graduation**
 
-New Phase 8 capabilities:
-- Hospital → Logistics unlock through the existing evidence-gated Company Chapter Review
-- persisted final five-company journey completion without adding a role above Head of Analytics
-- SQLite v7 synthetic logistics datasets for shipments, route SLA, warehouse inventory flow, throughput forecasts and operating cost
-- ten Advanced Logistics Analytics tickets spanning SQL, cleaning, statistics, SLA, warehouse capacity, normalized cost, route cohorts, delay-driver analysis, forecasting and executive communication
-- Logistics-specific Boss Case
-- Logistics Daily Challenges
-- chapter-gated Logistics Analytics Interview
-- Logistics tables in the SQL Workstation
-- notification taps now deep-link into Daily Challenge or Review Queue, including notification-launched app starts
-- portfolio reports can be generated, opened with a device app, or shared through Android's native share sheet
-- lightweight HTML + browser Print → Save as PDF remains the PDF path to avoid bundling a heavy PDF renderer
-- 77-test verified regression suite
+New Phase 9 capabilities:
+- SQLite v8 final cross-company synthetic KPI dataset
+- six-part final analyst capstone: data cleaning, SQL, statistics, KPI, dashboard choice and executive recommendation
+- persisted capstone result plus immutable capstone attempt evidence
+- transparent Job Readiness Score based on demonstrated evidence rather than XP
+- readiness breakdowns for SQL, spreadsheets/cleaning, statistics, Python/Pandas, business communication and interviews
+- targeted remediation recommendations for weak domains
+- 15-minute mixed Interview Gauntlet covering SQL, statistics, analytics case, behavioral ethics, dashboard choice and executive communication
+- evidence-backed editable resume bullet builder
+- portfolio project cards generated from strongest Boss Case and capstone evidence
+- graduation eligibility gates
+- locally generated completion certificate with Open/Share and browser Print → Save as PDF
+- explicit certificate disclaimer that DataQuest completion is a training credential, not an accredited academic qualification
+- 94-test verified regression suite
 
-Earlier systems remain available: Practice Gym, adaptive review, Python/Pandas Lab, Dashboard Decision Lab, Interview Mode, Daily Challenge, Performance Reviews, company-aware Boss Cases, local reminders, immutable evidence history and portfolio export.
+### Job Readiness formula
+
+XP is intentionally excluded from Job Readiness.
+
+- skill foundation: 50%
+- interviews: 15%
+- Boss Cases: 10%
+- immutable evidence quality/breadth: 10%
+- career/company completion: 5%
+- final capstone: 10%
+
+Graduation currently requires:
+- all five company chapters complete
+- final capstone at least 80/100
+- Job Readiness Score at least 80/100
+- Interview Gauntlet at least 75/100
+- no core readiness domain below 65%
+
+Earlier systems remain available: Practice Gym, adaptive review, SQL Workstation, Python/Pandas Lab, Dashboard Decision Lab, Interview Mode, Daily Challenge, Performance Reviews, company-aware Boss Cases, local reminders, notification deep-links, immutable evidence history and portfolio export/share.
 
 Read `PROGRESS_LOG.md` before making future changes.
 
@@ -60,8 +81,8 @@ GitHub Actions automatically generates/configures the Android wrapper, analyzes 
 
 ## Offline design
 
-The career game, all five company chapters, synthetic datasets, SQL execution, guided Pandas simulator, mastery, Boss Cases, interviews, company-journey state, evidence history, reminder preferences and portfolio generation work locally.
+The complete five-company career game, final capstone, Job Readiness calculations, Interview Gauntlet, resume suggestions, certificate eligibility, synthetic datasets, SQL execution, guided Pandas simulator, mastery, Boss Cases, evidence history, reminder preferences and portfolio generation work locally.
 
-Learning reminders use local Android notifications. Tapping a DataQuest Daily Challenge reminder opens Daily Challenge; tapping a Review Queue reminder opens Review Queue.
+Resume suggestions only describe recorded DataQuest synthetic training evidence and scores. They do not invent real employer impact.
 
-The portfolio report is generated locally as HTML. It can be opened or shared from the app, and a browser can use **Print → Save as PDF** without shipping a heavyweight PDF engine.
+The portfolio and certificate are lightweight local HTML artifacts. They can be opened or shared from the app and converted to PDF through the browser's **Print → Save as PDF** workflow without shipping a heavyweight PDF engine.
