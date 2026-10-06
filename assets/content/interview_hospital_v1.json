@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "hospital_analytics",
+    "title": "Hospital Operations Analytics Interview",
+    "description": "Advanced interview practice on synthetic patient-flow operations, capacity planning and executive communication. No diagnosis or treatment advice.",
+    "companyKey": "hospital",
+    "minCompanyChapter": 3,
+    "durationSeconds": 600,
+    "questions": [
+      {
+        "id": "hospital-interview-sql-1",
+        "context": "The interviewer gives you aggregate unit-day operations data and asks for a waiting-time comparison.",
+        "prompt": "Using hospital_daily_ops, return unit and ROUND(AVG(avg_wait_minutes), 1) AS avg_wait_minutes grouped by unit.",
+        "answerType": "sql_result",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [
+          {"unit": "Emergency", "avg_wait_minutes": 59.0},
+          {"unit": "Outpatient", "avg_wait_minutes": 30.0}
+        ],
+        "criteria": [],
+        "explanation": "A strong answer works at the aggregate unit-day grain and does not imply patient-level or clinical conclusions."
+      },
+      {
+        "id": "hospital-interview-choice-1",
+        "context": "Saturday expected arrivals are higher than planned capacity in the synthetic forecast.",
+        "prompt": "What is the best interpretation?",
+        "answerType": "choice",
+        "options": [
+          "Treat the gap as an operations-planning signal, validate forecast error and test staffing or scheduling scenarios before rollout",
+          "The forecast proves every Saturday will exceed capacity",
+          "Change clinical treatment protocols immediately",
+          "Ignore forecast uncertainty because the point estimate is enough"
+        ],
+        "expectedAnswer": "Treat the gap as an operations-planning signal, validate forecast error and test staffing or scheduling scenarios before rollout",
+        "expectedRows": [],
+        "criteria": [],
+        "explanation": "Forecasts support planning under uncertainty; they are not certainty statements or clinical recommendations."
+      },
+      {
+        "id": "hospital-interview-case-1",
+        "context": "Emergency waiting time increased on two observed days. Leadership asks whether the process change failed.",
+        "prompt": "Describe how you would structure the analysis before making an operations recommendation.",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Define metric and comparison window", "weight": 20, "keywords": ["definition", "wait", "period", "window", "baseline"]},
+          {"label": "Compare demand and capacity context", "weight": 20, "keywords": ["arrivals", "demand", "capacity", "staffing", "volume"]},
+          {"label": "Inspect distribution or percentiles", "weight": 20, "keywords": ["distribution", "percentile", "median", "tail", "variation"]},
+          {"label": "Use comparable cohorts or day types", "weight": 20, "keywords": ["cohort", "day-of-week", "comparable", "unit", "before", "after"]},
+          {"label": "Recommend controlled operational testing", "weight": 20, "keywords": ["test", "scenario", "monitor", "pilot", "validate"]}
+        ],
+        "explanation": "A strong hospital-operations case separates demand, capacity and process effects, uses comparable periods, and recommends a controlled operational test rather than a clinical conclusion."
+      }
+    ]
+  }]
+}
