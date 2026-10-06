@@ -32,7 +32,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 250));
 
     expect(find.text('DataQuest'), findsOneWidget);
-    expect(find.text('E-commerce Co. • Week 1'), findsOneWidget);
+    expect(find.text('E-commerce Co. • Commercial Analytics'), findsOneWidget);
     expect(find.text('Data Analyst Intern'), findsOneWidget);
 
     // Unmount first so Riverpod disposes providers before the test DB closes.
