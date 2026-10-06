@@ -10,6 +10,7 @@ void main() {
     _task('s-intermediate', 'Intermediate', 'saas', 2),
     _task('s-advanced', 'Advanced', 'saas', 3),
     _task('b-advanced', 'Advanced', 'bank', 4),
+    _task('h-advanced', 'Advanced', 'hospital', 5),
   ];
 
   test('intern sees only beginner ecommerce tickets', () {
@@ -47,9 +48,21 @@ void main() {
 
     expect(visible.map((task) => task.id).toList(), ['b-advanced']);
   });
+
+  test('Head of Analytics can work hospital chapter independently', () {
+    final visible = CareerTaskService.visibleTasks(
+      progress: _progress(level: 5, chapter: 3),
+      tasks: tasks,
+    );
+
+    expect(visible.map((task) => task.id).toList(), ['h-advanced']);
+  });
 }
 
-GameProgress _progress({required int level}) {
+GameProgress _progress({
+  required int level,
+  int companyChapter = -1,
+}) {
   return GameProgress(
     xp: 1000,
     streak: 0,
@@ -62,6 +75,7 @@ GameProgress _progress({required int level}) {
     dailyStreak: 0,
     lastDailyDate: null,
     completedDailyDates: const {},
+    companyChapter: companyChapter,
   );
 }
 
