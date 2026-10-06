@@ -51,7 +51,7 @@ void main() {
 
   test('Head of Analytics can work hospital chapter independently', () {
     final visible = CareerTaskService.visibleTasks(
-      progress: _progress(level: 5, chapter: 3),
+      progress: _progress(level: 5, companyChapter: 3),
       tasks: tasks,
     );
 
