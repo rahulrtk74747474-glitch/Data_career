@@ -28,6 +28,8 @@ import '../../repositories/reminder_settings_repository.dart';
 import '../../repositories/sql_workspace_repository.dart';
 import '../../repositories/task_performance_repository.dart';
 import '../../services/adaptive_review_service.dart';
+import '../../services/backup_service.dart';
+import '../../services/cloud_sync_service.dart';
 import '../../services/boss_case_selection_service.dart';
 import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
@@ -38,8 +40,10 @@ import '../../services/graduation_service.dart';
 import '../../services/job_readiness_service.dart';
 import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
+import '../../services/release_diagnostics_service.dart';
 import '../../services/reminder_scheduler.dart';
 import '../../services/sql_runner.dart';
+import '../../services/weekly_case_service.dart';
 import 'game_progress.dart';
 
 final contentRepositoryProvider = Provider<ContentRepository>(
@@ -50,6 +54,43 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();
   ref.onDispose(database.close);
   return database;
+});
+
+final backupServiceProvider = Provider<BackupService>((ref) {
+  return BackupService(ref.watch(appDatabaseProvider));
+});
+
+final cloudRuntimeConfigProvider = Provider<CloudRuntimeConfig>((ref) {
+  return CloudRuntimeConfig.fromEnvironment();
+});
+
+final cloudSyncServiceProvider = Provider<SupabaseCloudService>((ref) {
+  final service = SupabaseCloudService(
+    config: ref.watch(cloudRuntimeConfigProvider),
+  );
+  ref.onDispose(service.close);
+  return service;
+});
+
+final weeklyCaseServiceProvider = Provider<WeeklyCaseService>((ref) {
+  final service = WeeklyCaseService(
+    config: ref.watch(cloudRuntimeConfigProvider),
+  );
+  ref.onDispose(service.close);
+  return service;
+});
+
+final releaseDiagnosticsServiceProvider =
+    Provider<ReleaseDiagnosticsService>((ref) {
+  return ReleaseDiagnosticsService(
+    backupService: ref.watch(backupServiceProvider),
+    cloudConfig: ref.watch(cloudRuntimeConfigProvider),
+  );
+});
+
+final releaseDiagnosticsProvider =
+    FutureProvider<ReleaseDiagnostics>((ref) {
+  return ref.read(releaseDiagnosticsServiceProvider).load();
 });
 
 final masteryRepositoryProvider = Provider<MasteryRepository>((ref) {
