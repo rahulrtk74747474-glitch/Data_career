@@ -22,7 +22,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 7,
+        version: 8,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -37,6 +37,8 @@ class AppDatabase {
           await _seedPhaseSeven(db);
           await _createPhaseEightSchema(db);
           await _seedPhaseEight(db);
+          await _createPhaseNineSchema(db);
+          await _seedPhaseNine(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -61,6 +63,10 @@ class AppDatabase {
           if (oldVersion < 7) {
             await _createPhaseEightSchema(db);
             await _seedPhaseEight(db);
+          }
+          if (oldVersion < 8) {
+            await _createPhaseNineSchema(db);
+            await _seedPhaseNine(db);
           }
         },
       ),
@@ -276,6 +282,34 @@ class AppDatabase {
         day_name TEXT PRIMARY KEY,
         expected_shipments INTEGER NOT NULL,
         planned_throughput INTEGER NOT NULL
+      )
+    ''');
+  }
+
+  Future<void> _createPhaseNineSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS capstone_company_kpis (
+        company_key TEXT NOT NULL,
+        period TEXT NOT NULL,
+        service_score REAL NOT NULL,
+        operating_cost_index REAL NOT NULL,
+        volume_index REAL NOT NULL,
+        exception_rate REAL NOT NULL,
+        PRIMARY KEY (company_key, period)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS capstone_results (
+        capstone_id TEXT PRIMARY KEY,
+        completed_at TEXT NOT NULL,
+        total_score INTEGER NOT NULL,
+        cleaning_score INTEGER NOT NULL,
+        sql_score INTEGER NOT NULL,
+        statistics_score INTEGER NOT NULL,
+        kpi_score INTEGER NOT NULL,
+        dashboard_score INTEGER NOT NULL,
+        recommendation_score INTEGER NOT NULL
       )
     ''');
   }
@@ -511,6 +545,101 @@ class AppDatabase {
     for (final row in forecast) {
       batch.insert(
         'logistics_throughput_forecast',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
+  Future<void> _seedPhaseNine(Database db) async {
+    final rows = <Map<String, Object?>>[
+      {
+        'company_key': 'ecommerce',
+        'period': 'Baseline',
+        'service_score': 84,
+        'operating_cost_index': 100,
+        'volume_index': 100,
+        'exception_rate': 6.2,
+      },
+      {
+        'company_key': 'ecommerce',
+        'period': 'Current',
+        'service_score': 88,
+        'operating_cost_index': 102,
+        'volume_index': 108,
+        'exception_rate': 5.1,
+      },
+      {
+        'company_key': 'saas',
+        'period': 'Baseline',
+        'service_score': 88,
+        'operating_cost_index': 100,
+        'volume_index': 100,
+        'exception_rate': 7.0,
+      },
+      {
+        'company_key': 'saas',
+        'period': 'Current',
+        'service_score': 91,
+        'operating_cost_index': 103,
+        'volume_index': 112,
+        'exception_rate': 5.8,
+      },
+      {
+        'company_key': 'bank',
+        'period': 'Baseline',
+        'service_score': 87,
+        'operating_cost_index': 100,
+        'volume_index': 100,
+        'exception_rate': 4.5,
+      },
+      {
+        'company_key': 'bank',
+        'period': 'Current',
+        'service_score': 89,
+        'operating_cost_index': 104,
+        'volume_index': 105,
+        'exception_rate': 4.1,
+      },
+      {
+        'company_key': 'hospital',
+        'period': 'Baseline',
+        'service_score': 81,
+        'operating_cost_index': 100,
+        'volume_index': 100,
+        'exception_rate': 8.4,
+      },
+      {
+        'company_key': 'hospital',
+        'period': 'Current',
+        'service_score': 86,
+        'operating_cost_index': 108,
+        'volume_index': 111,
+        'exception_rate': 6.7,
+      },
+      {
+        'company_key': 'logistics',
+        'period': 'Baseline',
+        'service_score': 78,
+        'operating_cost_index': 100,
+        'volume_index': 100,
+        'exception_rate': 10.2,
+      },
+      {
+        'company_key': 'logistics',
+        'period': 'Current',
+        'service_score': 84,
+        'operating_cost_index': 105,
+        'volume_index': 118,
+        'exception_rate': 7.9,
+      },
+    ];
+
+    final batch = db.batch();
+    for (final row in rows) {
+      batch.insert(
+        'capstone_company_kpis',
         row,
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
