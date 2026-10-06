@@ -26,18 +26,19 @@ class CompanyChapterReview {
   final List<CompanyChapterCriterion> criteria;
   final bool finalAvailableChapter;
 
-  bool get passed =>
-      !finalAvailableChapter && criteria.every((criterion) => criterion.met);
+  bool get passed => criteria.every((criterion) => criterion.met);
+
+  bool get isJourneyCompletionReview => finalAvailableChapter;
 }
 
 class CompanyChapterProgressionService {
   const CompanyChapterProgressionService._();
 
-  static const _minimumCareerLevel = [2, 4, 5];
-  static const _minimumCompletedTickets = [5, 4, 4];
-  static const _minimumMastery = [55.0, 70.0, 78.0];
-  static const _minimumBossScore = [70, 70, 75];
-  static const _minimumInterviewScore = [0, 65, 75];
+  static const _minimumCareerLevel = [2, 4, 5, 5, 5];
+  static const _minimumCompletedTickets = [5, 4, 4, 5, 6];
+  static const _minimumMastery = [55.0, 70.0, 78.0, 82.0, 85.0];
+  static const _minimumBossScore = [70, 70, 75, 78, 80];
+  static const _minimumInterviewScore = [0, 65, 75, 78, 80];
 
   static CompanyChapterReview evaluate({
     required GameProgress progress,
@@ -47,18 +48,8 @@ class CompanyChapterProgressionService {
     int? interviewScore,
   }) {
     final current = progress.resolvedCompanyChapter;
-    final finalAvailable = current >= 3;
-
-    if (finalAvailable) {
-      return CompanyChapterReview(
-        currentChapter: current,
-        targetChapter: current,
-        criteria: const [],
-        finalAvailableChapter: true,
-      );
-    }
-
-    final target = current + 1;
+    final finalAvailable = current >= 4;
+    final target = finalAvailable ? current : current + 1;
     final minLevel = _minimumCareerLevel[current];
     final minTickets = _minimumCompletedTickets[current];
     final minMastery = _minimumMastery[current];
