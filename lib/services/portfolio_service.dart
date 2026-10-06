@@ -9,14 +9,18 @@ class PortfolioService {
     required String role,
     required int xp,
     required List<SkillMastery> skills,
+    String? companyName,
   }) {
     final buffer = StringBuffer()
       ..writeln('DataQuest Analyst Portfolio')
       ..writeln('Role: $role')
-      ..writeln('Career XP: $xp')
-      ..writeln(
-        'Evidence items: ${snapshot.evidenceCount}',
-      );
+      ..writeln('Career XP: $xp');
+    if (companyName != null) {
+      buffer.writeln('Company: $companyName');
+    }
+    buffer
+      ..writeln('Strong evidence items: ${snapshot.evidenceCount}')
+      ..writeln('Recorded attempts: ${snapshot.attemptCount}');
 
     if (skills.isNotEmpty) {
       buffer.writeln('\nSkill profile:');
@@ -31,7 +35,7 @@ class PortfolioService {
 
     if (snapshot.taskPerformances.isNotEmpty) {
       buffer.writeln('\nStrongest ticket/lab evidence:');
-      for (final task in snapshot.taskPerformances.take(8)) {
+      for (final task in snapshot.taskPerformances.take(10)) {
         buffer.writeln(
           '- ${task.title} | ${task.skillKey} | ${task.difficulty} | best ${task.bestScore}/100 | attempts ${task.attempts}',
         );
@@ -42,14 +46,28 @@ class PortfolioService {
       buffer.writeln('\nBoss Cases:');
       for (final result in snapshot.bossCases) {
         buffer.writeln(
-          '- ${result.caseId}: ${result.totalScore}/100 (Cleaning ${result.cleaningScore}, SQL ${result.sqlScore}, KPI ${result.kpiScore}, Chart ${result.chartScore}, Recommendation ${result.recommendationScore})',
+          '- ${result.caseId}: ${result.totalScore}/100 '
+          '(Cleaning ${result.cleaningScore}, SQL ${result.sqlScore}, '
+          'KPI ${result.kpiScore}, Chart ${result.chartScore}, '
+          'Recommendation ${result.recommendationScore})',
         );
       }
     }
 
-    if (snapshot.evidenceCount == 0) {
+    if (snapshot.attempts.isNotEmpty) {
+      buffer.writeln('\nRecent attempt history:');
+      for (final attempt in snapshot.attempts.take(20)) {
+        buffer.writeln(
+          '- ${attempt.completedAt.toLocal().toIso8601String()} | '
+          '${attempt.sourceType} | ${attempt.title} | '
+          '${attempt.score}/100 | ${attempt.mode} | ${attempt.companyKey}',
+        );
+      }
+    }
+
+    if (snapshot.evidenceCount == 0 && snapshot.attemptCount == 0) {
       buffer.writeln(
-        '\nComplete tickets, labs, or a Boss Case to create portfolio evidence.',
+        '\nComplete tickets, labs, interviews, or a Boss Case to create portfolio evidence.',
       );
     }
 
