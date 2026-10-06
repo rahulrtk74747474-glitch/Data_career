@@ -290,6 +290,7 @@ class _BossCaseScreenState extends ConsumerState<BossCaseScreen> {
     ref.invalidate(bossCaseResultProvider(definition.id));
     ref.invalidate(portfolioSnapshotProvider);
     ref.invalidate(promotionReviewProvider);
+    ref.invalidate(companyChapterReviewProvider);
 
     if (!mounted) return;
     setState(() {
