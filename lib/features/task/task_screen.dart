@@ -309,6 +309,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     ref.invalidate(adaptiveRecommendationsProvider);
     ref.invalidate(portfolioSnapshotProvider);
     ref.invalidate(promotionReviewProvider);
+    ref.invalidate(companyChapterReviewProvider);
     if (widget.isDaily) {
       ref.invalidate(dailyChallengeProvider);
     }
