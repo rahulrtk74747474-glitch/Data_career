@@ -4,10 +4,13 @@ import '../../data/app_database.dart';
 import '../../models/analyst_task.dart';
 import '../../models/boss_case.dart';
 import '../../models/boss_case_result.dart';
+import '../../models/capstone.dart';
+import '../../models/capstone_result.dart';
 import '../../models/dashboard_challenge.dart';
 import '../../models/daily_challenge.dart';
 import '../../models/interview.dart';
 import '../../models/interview_result.dart';
+import '../../models/job_readiness.dart';
 import '../../models/pandas_challenge.dart';
 import '../../models/placement_question.dart';
 import '../../models/reminder_settings.dart';
@@ -15,6 +18,7 @@ import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
 import '../../models/sql_table_schema.dart';
 import '../../repositories/boss_case_result_repository.dart';
+import '../../repositories/capstone_result_repository.dart';
 import '../../repositories/content_repository.dart';
 import '../../repositories/evidence_repository.dart';
 import '../../repositories/interview_result_repository.dart';
@@ -27,8 +31,11 @@ import '../../services/adaptive_review_service.dart';
 import '../../services/boss_case_selection_service.dart';
 import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
+import '../../services/certificate_export_service.dart';
 import '../../services/company_chapter_progression_service.dart';
 import '../../services/daily_challenge_service.dart';
+import '../../services/graduation_service.dart';
+import '../../services/job_readiness_service.dart';
 import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
 import '../../services/reminder_scheduler.dart';
@@ -63,6 +70,11 @@ final bossCaseResultRepositoryProvider =
   return BossCaseResultRepository(ref.watch(appDatabaseProvider));
 });
 
+final capstoneResultRepositoryProvider =
+    Provider<CapstoneResultRepository>((ref) {
+  return CapstoneResultRepository(ref.watch(appDatabaseProvider));
+});
+
 final taskPerformanceRepositoryProvider =
     Provider<TaskPerformanceRepository>((ref) {
   return TaskPerformanceRepository(ref.watch(appDatabaseProvider));
@@ -79,6 +91,11 @@ final evidenceRepositoryProvider = Provider<EvidenceRepository>((ref) {
 final portfolioExportServiceProvider =
     Provider<PortfolioExportService>((ref) {
   return PortfolioExportService(ref.watch(appDatabaseProvider));
+});
+
+final certificateExportServiceProvider =
+    Provider<CertificateExportService>((ref) {
+  return CertificateExportService(ref.watch(appDatabaseProvider));
 });
 
 final portfolioDeliveryServiceProvider =
@@ -124,6 +141,10 @@ final placementQuestionsProvider =
 
 final bossCasesProvider = FutureProvider<List<BossCaseDefinition>>((ref) {
   return ref.read(contentRepositoryProvider).loadBossCases();
+});
+
+final finalCapstoneProvider = FutureProvider<CapstoneDefinition>((ref) {
+  return ref.read(contentRepositoryProvider).loadCapstone();
 });
 
 final bossCaseProvider = FutureProvider<BossCaseDefinition>((ref) async {
@@ -179,6 +200,14 @@ final interviewRoundsProvider =
   return ref.read(contentRepositoryProvider).loadInterviewRounds();
 });
 
+final interviewGauntletProvider =
+    FutureProvider<InterviewRoundDefinition>((ref) async {
+  final rounds = await ref.watch(interviewRoundsProvider.future);
+  return rounds.singleWhere(
+    (round) => round.key == 'job_readiness_gauntlet',
+  );
+});
+
 final availableInterviewRoundsProvider =
     FutureProvider<List<InterviewRoundDefinition>>((ref) async {
   final progress = ref.watch(gameProgressProvider);
@@ -213,6 +242,11 @@ final sqlSchemasProvider = FutureProvider<List<SqlTableSchema>>((ref) {
 final bossCaseResultProvider =
     FutureProvider.family<BossCaseResult?, String>((ref, caseId) {
   return ref.read(bossCaseResultRepositoryProvider).load(caseId);
+});
+
+final capstoneResultProvider = FutureProvider<CapstoneResult?>((ref) async {
+  final definition = await ref.watch(finalCapstoneProvider.future);
+  return ref.read(capstoneResultRepositoryProvider).load(definition.id);
 });
 
 final portfolioSnapshotProvider = FutureProvider<PortfolioSnapshot>((ref) {
@@ -308,6 +342,46 @@ final companyChapterReviewProvider =
     skills: skills,
     bossCaseScore: bossResult?.totalScore,
     interviewScore: interviewScore,
+  );
+});
+
+final jobReadinessProvider =
+    FutureProvider<JobReadinessReport>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final skills = await ref.watch(skillProfileProvider.future);
+  final portfolio = await ref.watch(portfolioSnapshotProvider.future);
+  final interviews = await ref.watch(interviewResultsProvider.future);
+  final capstone = await ref.watch(capstoneResultProvider.future);
+
+  return JobReadinessService.calculate(
+    progress: progress,
+    skills: skills,
+    bossCases: portfolio.bossCases,
+    interviews: interviews,
+    evidence: portfolio.attempts,
+    capstone: capstone,
+  );
+});
+
+final graduationEligibilityProvider =
+    FutureProvider<GraduationEligibility>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final readiness = await ref.watch(jobReadinessProvider.future);
+  final capstone = await ref.watch(capstoneResultProvider.future);
+  final interviews = await ref.watch(interviewResultsProvider.future);
+  InterviewResult? gauntlet;
+  for (final result in interviews) {
+    if (result.roundKey == 'job_readiness_gauntlet') {
+      gauntlet = result;
+      break;
+    }
+  }
+
+  return GraduationService.evaluate(
+    progress: progress,
+    readiness: readiness,
+    capstone: capstone,
+    gauntlet: gauntlet,
   );
 });
 
