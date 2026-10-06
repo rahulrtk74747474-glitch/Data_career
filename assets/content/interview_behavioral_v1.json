@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "rounds": [{
+    "key": "behavioral",
+    "title": "Behavioral Interview",
+    "description": "Practice concise evidence about disagreement, ambiguity and stakeholder communication.",
+    "durationSeconds": 420,
+    "questions": [
+      {
+        "id": "behavioral-interview-1",
+        "context": "A senior stakeholder wants a stronger conclusion than the analysis supports.",
+        "prompt": "How would you handle the disagreement?",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Respectful stakeholder handling", "weight": 20, "keywords": ["listen", "respect", "understand", "stakeholder"]},
+          {"label": "Evidence boundary", "weight": 25, "keywords": ["evidence", "limitation", "association", "causal"]},
+          {"label": "Business impact", "weight": 15, "keywords": ["decision", "risk", "impact"]},
+          {"label": "Alternative path", "weight": 25, "keywords": ["experiment", "test", "analysis", "next"]},
+          {"label": "Clear communication", "weight": 15, "keywords": ["explain", "communicate", "summary", "document"]}
+        ],
+        "explanation": "Protect decision quality while preserving the relationship: clarify the request, state evidence limits and offer a path to stronger evidence."
+      },
+      {
+        "id": "behavioral-interview-2",
+        "context": "You discover a KPI dashboard error one hour before an executive meeting.",
+        "prompt": "What would you do?",
+        "answerType": "rubric",
+        "options": [],
+        "expectedAnswer": "",
+        "expectedRows": [],
+        "criteria": [
+          {"label": "Assess severity", "weight": 20, "keywords": ["impact", "severity", "scope", "affected"]},
+          {"label": "Communicate early", "weight": 20, "keywords": ["notify", "communicate", "stakeholder", "early"]},
+          {"label": "Correct or quarantine", "weight": 20, "keywords": ["fix", "correct", "remove", "quarantine"]},
+          {"label": "Validate correction", "weight": 20, "keywords": ["validate", "check", "test", "reconcile"]},
+          {"label": "Prevent recurrence", "weight": 20, "keywords": ["monitor", "test", "document", "prevent"]}
+        ],
+        "explanation": "Balance speed, transparency, validation and prevention instead of quietly patching the number."
+      }
+    ]
+  }]
+}
