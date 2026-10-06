@@ -12,6 +12,7 @@ import '../../models/daily_challenge.dart';
 import '../../models/interview.dart';
 import '../../models/interview_result.dart';
 import '../../models/job_readiness.dart';
+import '../../models/narrative_content.dart';
 import '../../models/pandas_challenge.dart';
 import '../../models/placement_question.dart';
 import '../../models/reminder_settings.dart';
@@ -175,6 +176,21 @@ final careerTasksProvider = FutureProvider<List<AnalystTask>>((ref) async {
     progress: progress,
     tasks: tasks,
   );
+});
+
+final insightScenariosProvider =
+    FutureProvider<List<InsightScenario>>((ref) {
+  return ref.read(contentRepositoryProvider).loadInsightScenarios();
+});
+
+final managerDialoguesProvider =
+    FutureProvider<List<ManagerDialogue>>((ref) {
+  return ref.read(contentRepositoryProvider).loadManagerDialogues();
+});
+
+final randomEventsProvider =
+    FutureProvider<List<RandomEventDefinition>>((ref) {
+  return ref.read(contentRepositoryProvider).loadRandomEvents();
 });
 
 final placementQuestionsProvider =
