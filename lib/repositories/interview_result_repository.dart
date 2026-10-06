@@ -1,5 +1,3 @@
-import 'package:sqflite/sqflite.dart';
-
 import '../data/app_database.dart';
 import '../models/interview_result.dart';
 
