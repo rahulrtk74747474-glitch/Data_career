@@ -104,7 +104,7 @@ class CompanyChapterProgressionService {
       currentChapter: current,
       targetChapter: target,
       criteria: criteria,
-      finalAvailableChapter: false,
+      finalAvailableChapter: finalAvailable,
     );
   }
 }
