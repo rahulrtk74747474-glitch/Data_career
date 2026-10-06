@@ -4,6 +4,8 @@
     "key": "bank_analytics",
     "title": "Bank Analytics Interview",
     "description": "Advanced risk, transaction-review and credit-governance interview practice using synthetic data.",
+    "companyKey": "bank",
+    "minCompanyChapter": 2,
     "durationSeconds": 600,
     "questions": [
       {
