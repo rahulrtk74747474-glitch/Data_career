@@ -22,6 +22,7 @@ class ContentRepository {
       'assets/content/phase4_tasks.json',
       'assets/content/saas_retention_v1.json',
       'assets/content/saas_sql_v1.json',
+      'assets/content/saas_statistics_v1.json',
       'assets/content/saas_nrr_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
