@@ -68,7 +68,7 @@ class CapstoneScoringService {
 
   static int normalizedComponentScore(int earned, int possible) {
     if (possible <= 0) return 0;
-    return ((earned / possible) * 100).round().clamp(0, 100);
+    return ((earned / possible) * 100).round().clamp(0, 100).toInt();
   }
 
   static bool _sameSet(Set<String> a, Set<String> b) {
