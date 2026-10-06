@@ -25,6 +25,7 @@ class ContentRepository {
       'assets/content/saas_statistics_v1.json',
       'assets/content/saas_nrr_v1.json',
       'assets/content/bank_tasks_v1.json',
+      'assets/content/hospital_tasks_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -67,6 +68,7 @@ class ContentRepository {
       'assets/content/boss_case_v1.json',
       'assets/content/boss_case_saas_v1.json',
       'assets/content/boss_case_bank_v1.json',
+      'assets/content/boss_case_hospital_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
@@ -128,6 +130,7 @@ class ContentRepository {
       'assets/content/interview_case_v1.json',
       'assets/content/interview_behavioral_v1.json',
       'assets/content/interview_bank_v1.json',
+      'assets/content/interview_hospital_v1.json',
     ]) {
       final raw = await rootBundle.loadString(asset);
       final decoded = jsonDecode(raw) as Map<String, dynamic>;
