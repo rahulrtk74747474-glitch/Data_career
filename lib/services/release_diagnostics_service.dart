@@ -27,11 +27,10 @@ class ReleaseDiagnostics {
 }
 
 class ReleaseDiagnosticsService {
-  const ReleaseDiagnosticsService({
-    required BackupService backupService,
-    required CloudRuntimeConfig cloudConfig,
-  })  : _backupService = backupService,
-        _cloudConfig = cloudConfig;
+  const ReleaseDiagnosticsService(
+    this._backupService,
+    this._cloudConfig,
+  );
 
   final BackupService _backupService;
   final CloudRuntimeConfig _cloudConfig;
