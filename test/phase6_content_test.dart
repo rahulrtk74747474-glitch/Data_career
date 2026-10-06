@@ -31,6 +31,7 @@ void main() {
       'saas',
       'bank',
       'hospital',
+      'logistics',
     });
   });
 
