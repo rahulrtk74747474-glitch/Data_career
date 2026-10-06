@@ -19,6 +19,7 @@ class GameProgress {
     required this.lastDailyDate,
     required this.completedDailyDates,
     this.companyChapter = -1,
+    this.companyJourneyCompleted = false,
   });
 
   static const roleNames = [
@@ -62,6 +63,7 @@ class GameProgress {
       lastDailyDate: null,
       completedDailyDates: <String>{},
       companyChapter: 0,
+      companyJourneyCompleted: false,
     );
   }
 
@@ -81,6 +83,7 @@ class GameProgress {
   /// manually constructed objects. Persisted progress always stores a
   /// concrete independent chapter.
   final int companyChapter;
+  final bool companyJourneyCompleted;
 
   int get resolvedCompanyChapter {
     if (companyChapter >= 0) {
@@ -112,7 +115,7 @@ class GameProgress {
 
   bool get isTopRole => careerLevel >= roleNames.length - 1;
 
-  bool get isFinalAvailableCompanyChapter => resolvedCompanyChapter >= 3;
+  bool get isFinalAvailableCompanyChapter => resolvedCompanyChapter >= 4;
 
   String? get nextCompanyName {
     if (isFinalAvailableCompanyChapter) return null;
@@ -148,6 +151,7 @@ class GameProgress {
     bool clearLastDailyDate = false,
     Set<String>? completedDailyDates,
     int? companyChapter,
+    bool? companyJourneyCompleted,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -163,6 +167,8 @@ class GameProgress {
           clearLastDailyDate ? null : (lastDailyDate ?? this.lastDailyDate),
       completedDailyDates: completedDailyDates ?? this.completedDailyDates,
       companyChapter: companyChapter ?? resolvedCompanyChapter,
+      companyJourneyCompleted:
+          companyJourneyCompleted ?? this.companyJourneyCompleted,
     );
   }
 
@@ -180,6 +186,7 @@ class GameProgress {
       'lastDailyDate': lastDailyDate,
       'completedDailyDates': completedDailyDates.toList(),
       'companyChapter': resolvedCompanyChapter,
+      'companyJourneyCompleted': companyJourneyCompleted,
     };
   }
 
@@ -211,6 +218,8 @@ class GameProgress {
               _legacyCompanyChapterFromCareerLevel(careerLevel))
           .clamp(0, companyKeys.length - 1)
           .toInt(),
+      companyJourneyCompleted:
+          (json['companyJourneyCompleted'] as bool?) ?? false,
     );
   }
 
@@ -329,13 +338,18 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
   }
 
   Future<void> advanceCompanyChapter() async {
-    // Hospital is the final available chapter in Phase 7. Logistics is
-    // intentionally reserved for a later phase so players cannot enter an
-    // empty chapter.
-    if (state.resolvedCompanyChapter >= 3) return;
+    if (state.resolvedCompanyChapter >= 4) return;
     state = state.copyWith(
       companyChapter: state.resolvedCompanyChapter + 1,
+      companyJourneyCompleted: false,
     );
+    await _save();
+  }
+
+  Future<void> completeCompanyJourney() async {
+    if (state.resolvedCompanyChapter < 4) return;
+    if (state.companyJourneyCompleted) return;
+    state = state.copyWith(companyJourneyCompleted: true);
     await _save();
   }
 
