@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 4,
+  "tasks": [{
+    "id": "saas-retention-definition-001",
+    "title": "Define Monthly Logo Retention",
+    "department": "CEO",
+    "skill": "Business Analytics",
+    "skillKey": "business",
+    "difficulty": "Intermediate",
+    "companyKey": "saas",
+    "minCareerLevel": 2,
+    "context": "Leadership needs a retention KPI for existing customers.",
+    "goal": "Use a starting-customer denominator.",
+    "deliverable": "Select the defensible formula.",
+    "answerType": "choice",
+    "prompt": "Which formula should the dashboard use?",
+    "expectedAnswer": "Starting customers still active at month end divided by customers active at month start",
+    "requiredTokens": [],
+    "expectedRows": [],
+    "expectedSelections": [],
+    "hints": ["Follow the starting population.", "Do not add new customers.", "Use the month-start cohort."],
+    "explanation": "Retention follows the starting customer cohort rather than mixing in newly acquired customers.",
+    "xp": 120,
+    "datasetName": "",
+    "rows": [],
+    "options": [
+      "Starting customers still active at month end divided by customers active at month start",
+      "All month-end customers divided by all historical leads",
+      "New signups divided by visits",
+      "Revenue divided by employees"
+    ]
+  }]
+}
