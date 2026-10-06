@@ -1,0 +1,157 @@
+{
+  "packId": "mvp-sample-core",
+  "schemaVersion": 1,
+  "contentVersion": 1,
+  "datasets": [
+    {
+      "id": "sample-sales-table",
+      "name": "sample_sales",
+      "columns": ["order_id", "region", "revenue", "status"],
+      "rows": [
+        {"order_id": "S1", "region": "North", "revenue": 1200, "status": "completed"},
+        {"order_id": "S2", "region": "West", "revenue": 800, "status": "completed"},
+        {"order_id": "S3", "region": "North", "revenue": 500, "status": "refunded"}
+      ]
+    }
+  ],
+  "rubrics": [
+    {
+      "id": "insight-core-v1",
+      "kind": "written_insight",
+      "criteria": [
+        {"key": "clarity", "weight": 25},
+        {"key": "evidence", "weight": 30},
+        {"key": "recommendation", "weight": 25},
+        {"key": "businessImpact", "weight": 20}
+      ]
+    }
+  ],
+  "dialogues": [
+    {
+      "id": "manager-good-evidence",
+      "triggerKey": "insight_score_80",
+      "speaker": "Manager",
+      "text": "Good analysis. You quantified the evidence, separated the finding from the recommendation, and made the business trade-off clear."
+    },
+    {
+      "id": "manager-needs-evidence",
+      "triggerKey": "insight_score_below_60",
+      "speaker": "Manager",
+      "text": "The direction may be reasonable, but I need the numbers and assumptions before we act. Show the evidence first, then make the recommendation."
+    }
+  ],
+  "events": [
+    {
+      "id": "dirty-vendor-file",
+      "eventType": "data_quality",
+      "title": "Dirty vendor export",
+      "description": "A supplier file arrives with duplicated rows, mixed date formats and blank product codes.",
+      "decision": "Validate grain, duplicates, types and missing identifiers before joining it to production data."
+    },
+    {
+      "id": "urgent-ceo-request",
+      "eventType": "priority",
+      "title": "Urgent CEO request",
+      "description": "The CEO asks for a number in 20 minutes that normally requires several joins.",
+      "decision": "Provide a clearly labeled preliminary estimate only if definitions are agreed and limitations are stated."
+    },
+    {
+      "id": "conflicting-reports",
+      "eventType": "metric_definition",
+      "title": "Conflicting reports",
+      "description": "Finance and Sales dashboards show different revenue for the same month.",
+      "decision": "Reconcile grain, date logic, status filters and metric definitions before choosing a source of truth."
+    },
+    {
+      "id": "privacy-incident",
+      "eventType": "privacy",
+      "title": "Privacy incident",
+      "description": "A file with unnecessary personal fields appears in a shared analysis folder.",
+      "decision": "Stop further sharing, minimize access, follow the organization incident process and use only fields needed for analysis."
+    }
+  ],
+  "achievements": [
+    {
+      "id": "first-query",
+      "title": "First Query",
+      "description": "Complete your first SQL task.",
+      "rule": {"type": "skill_attempts", "skillKey": "sql", "minimum": 1}
+    },
+    {
+      "id": "evidence-driven",
+      "title": "Evidence Driven",
+      "description": "Score 80 or higher on a written insight.",
+      "rule": {"type": "source_score", "sourceType": "insight", "minimum": 80}
+    }
+  ],
+  "tasks": [
+    {
+      "id": "sample-spreadsheet-001",
+      "title": "Net Revenue Formula",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "answerType": "formula",
+      "context": "Sales wants net revenue after a percentage discount.",
+      "prompt": "If B2 is gross revenue and C2 is discount rate, write the formula for net revenue.",
+      "expectedAnswer": "=B2*(1-C2)",
+      "hints": ["Start with gross revenue.", "Discount is a percentage of gross.", "Multiply B2 by one minus C2."]
+    },
+    {
+      "id": "sample-sql-001",
+      "title": "Completed Revenue by Region",
+      "skillKey": "sql",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "answerType": "sql_result",
+      "context": "Operations wants completed revenue by region.",
+      "prompt": "Group completed sample_sales rows by region and sum revenue.",
+      "expectedRows": [
+        {"region": "North", "revenue": 1200},
+        {"region": "West", "revenue": 800}
+      ],
+      "hints": ["Filter completed rows.", "Use SUM(revenue).", "GROUP BY region."]
+    },
+    {
+      "id": "sample-cleaning-001",
+      "title": "Duplicate Order Check",
+      "skillKey": "cleaning",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "answerType": "multi_select",
+      "context": "A vendor extract may contain duplicates.",
+      "prompt": "Choose the checks that should happen before deduplication.",
+      "expectedSelections": ["Confirm row grain", "Identify duplicate business keys"],
+      "options": ["Confirm row grain", "Identify duplicate business keys", "Delete every repeated-looking row immediately"],
+      "hints": ["Know what one row should represent.", "Use the business key.", "Do not delete before understanding grain."]
+    },
+    {
+      "id": "sample-statistics-001",
+      "title": "Correlation Is Not Causation",
+      "skillKey": "statistics",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "answerType": "choice",
+      "context": "Ad spend and sales rose together.",
+      "prompt": "What is the defensible conclusion?",
+      "expectedAnswer": "The variables moved together, but more evidence is needed before claiming ad spend caused the sales increase.",
+      "options": [
+        "The variables moved together, but more evidence is needed before claiming ad spend caused the sales increase.",
+        "The correlation proves the ads caused all sales growth."
+      ],
+      "hints": ["Association is not causation.", "Other factors can move both metrics.", "A controlled design is stronger for causal claims."]
+    },
+    {
+      "id": "sample-insight-001",
+      "title": "Write a Decision-Ready Insight",
+      "skillKey": "business",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "answerType": "written_insight",
+      "context": "North delivered ₹1,200 completed revenue versus West ₹800 in the tiny sample.",
+      "prompt": "Write one short insight that states the evidence, avoids overclaiming, and recommends a next step.",
+      "rubricId": "insight-core-v1",
+      "hints": ["Lead with the finding.", "Include the numbers.", "Recommend a bounded next action."]
+    }
+  ]
+}
