@@ -31,6 +31,9 @@ void main() {
         'bank_transactions',
         'hospital_daily_ops',
         'hospital_capacity_forecast',
+        'logistics_shipments',
+        'logistics_inventory_flow',
+        'logistics_throughput_forecast',
       }),
     );
   });
