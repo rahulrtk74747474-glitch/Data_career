@@ -1,0 +1,646 @@
+{
+  "schemaVersion": 1,
+  "packId": "spreadsheet-cleaning-lab-v1",
+  "challenges": [
+    {
+      "id": "sheet-formula-net-revenue-001",
+      "title": "Net Revenue Formula",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "Sales tracks gross revenue in B2 and discount rate in C2.",
+      "prompt": "Write a touch-friendly workbook command for net revenue = gross × (1 - discount).",
+      "datasetName": "sales_sheet",
+      "rows": [
+        {
+          "row": 2,
+          "gross_revenue": 1000,
+          "discount_rate": 0.1
+        }
+      ],
+      "expectedCommand": "FORMULA =B2*(1-C2)",
+      "expectedRows": [],
+      "hints": [
+        "Start with the gross cell B2.",
+        "Discount reduces gross revenue.",
+        "Use one minus the discount rate before multiplying."
+      ],
+      "explanation": "Net revenue equals gross revenue multiplied by the retained percentage after discount.",
+      "xp": 70
+    },
+    {
+      "id": "sheet-formula-margin-001",
+      "title": "Gross Margin Formula",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "Finance stores revenue in B2 and cost in C2.",
+      "prompt": "Write gross margin percentage as (revenue - cost) / revenue.",
+      "datasetName": "margin_sheet",
+      "rows": [
+        {
+          "row": 2,
+          "revenue": 2000,
+          "cost": 1400
+        }
+      ],
+      "expectedCommand": "FORMULA =(B2-C2)/B2",
+      "expectedRows": [],
+      "hints": [
+        "Margin starts with revenue minus cost.",
+        "Divide profit by revenue.",
+        "Keep the full expression in parentheses."
+      ],
+      "explanation": "Gross margin normalizes gross profit by revenue so businesses of different scale can be compared.",
+      "xp": 75
+    },
+    {
+      "id": "sheet-lookup-customer-001",
+      "title": "Lookup Customer Segment",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "bank",
+      "context": "A relationship manager needs the segment for customer C002.",
+      "prompt": "Use LOOKUP <lookupColumn> <value> <returnColumn> to return the segment for C002.",
+      "datasetName": "customer_master",
+      "rows": [
+        {
+          "customer_id": "C001",
+          "segment": "Retail"
+        },
+        {
+          "customer_id": "C002",
+          "segment": "SMB"
+        },
+        {
+          "customer_id": "C003",
+          "segment": "Affluent"
+        }
+      ],
+      "expectedCommand": "LOOKUP customer_id C002 segment",
+      "expectedRows": [
+        {
+          "customer_id": "C002",
+          "segment": "SMB"
+        }
+      ],
+      "hints": [
+        "The lookup key is customer_id.",
+        "The lookup value is C002.",
+        "Return segment."
+      ],
+      "explanation": "Lookups map a stable key to a requested attribute without manually scanning the table.",
+      "xp": 80
+    },
+    {
+      "id": "sheet-lookup-sku-001",
+      "title": "Lookup SKU Category",
+      "skillKey": "spreadsheets",
+      "difficulty": "Intermediate",
+      "companyKey": "logistics",
+      "context": "Warehouse planning needs the category for SKU K300.",
+      "prompt": "Return the category for K300.",
+      "datasetName": "sku_master",
+      "rows": [
+        {
+          "sku": "K100",
+          "category": "Fast"
+        },
+        {
+          "sku": "K200",
+          "category": "Slow"
+        },
+        {
+          "sku": "K300",
+          "category": "Seasonal"
+        }
+      ],
+      "expectedCommand": "LOOKUP sku K300 category",
+      "expectedRows": [
+        {
+          "sku": "K300",
+          "category": "Seasonal"
+        }
+      ],
+      "hints": [
+        "Use sku as the lookup column.",
+        "Find K300.",
+        "Return category."
+      ],
+      "explanation": "Key-based lookups are useful when enriching operational rows from a reference table.",
+      "xp": 90
+    },
+    {
+      "id": "sheet-sort-revenue-001",
+      "title": "Sort Revenue High to Low",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "A sales manager wants the largest orders first.",
+      "prompt": "Sort the table by revenue descending.",
+      "datasetName": "orders_sheet",
+      "rows": [
+        {
+          "order_id": "O1",
+          "revenue": 900
+        },
+        {
+          "order_id": "O2",
+          "revenue": 1500
+        },
+        {
+          "order_id": "O3",
+          "revenue": 1100
+        }
+      ],
+      "expectedCommand": "SORT revenue DESC",
+      "expectedRows": [
+        {
+          "order_id": "O2",
+          "revenue": 1500
+        },
+        {
+          "order_id": "O3",
+          "revenue": 1100
+        },
+        {
+          "order_id": "O1",
+          "revenue": 900
+        }
+      ],
+      "hints": [
+        "Use SORT.",
+        "Choose the revenue column.",
+        "DESC means largest first."
+      ],
+      "explanation": "Sorting helps prioritize records while preserving the underlying rows.",
+      "xp": 75
+    },
+    {
+      "id": "sheet-sort-wait-001",
+      "title": "Sort Wait Time Low to High",
+      "skillKey": "spreadsheets",
+      "difficulty": "Intermediate",
+      "companyKey": "hospital",
+      "context": "Operations wants to see the shortest waits first.",
+      "prompt": "Sort avg_wait_minutes ascending.",
+      "datasetName": "wait_sheet",
+      "rows": [
+        {
+          "unit": "Emergency",
+          "avg_wait_minutes": 52
+        },
+        {
+          "unit": "Outpatient",
+          "avg_wait_minutes": 31
+        },
+        {
+          "unit": "Diagnostics",
+          "avg_wait_minutes": 44
+        }
+      ],
+      "expectedCommand": "SORT avg_wait_minutes ASC",
+      "expectedRows": [
+        {
+          "unit": "Outpatient",
+          "avg_wait_minutes": 31
+        },
+        {
+          "unit": "Diagnostics",
+          "avg_wait_minutes": 44
+        },
+        {
+          "unit": "Emergency",
+          "avg_wait_minutes": 52
+        }
+      ],
+      "hints": [
+        "Use SORT.",
+        "Choose avg_wait_minutes.",
+        "ASC means smallest first."
+      ],
+      "explanation": "Ascending sorts make lower values appear first and are useful for ranking service times.",
+      "xp": 95
+    },
+    {
+      "id": "sheet-filter-completed-001",
+      "title": "Filter Completed Orders",
+      "skillKey": "spreadsheets",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "Finance only wants completed orders in the revenue sheet.",
+      "prompt": "Filter status = completed.",
+      "datasetName": "order_status_sheet",
+      "rows": [
+        {
+          "order_id": "O1",
+          "status": "completed",
+          "revenue": 1000
+        },
+        {
+          "order_id": "O2",
+          "status": "refunded",
+          "revenue": 700
+        },
+        {
+          "order_id": "O3",
+          "status": "completed",
+          "revenue": 1200
+        }
+      ],
+      "expectedCommand": "FILTER status = completed",
+      "expectedRows": [
+        {
+          "order_id": "O1",
+          "status": "completed",
+          "revenue": 1000
+        },
+        {
+          "order_id": "O3",
+          "status": "completed",
+          "revenue": 1200
+        }
+      ],
+      "hints": [
+        "Use FILTER.",
+        "The column is status.",
+        "Keep only completed."
+      ],
+      "explanation": "Filters restrict the working set without deleting excluded records.",
+      "xp": 75
+    },
+    {
+      "id": "sheet-filter-region-001",
+      "title": "Filter North Region",
+      "skillKey": "spreadsheets",
+      "difficulty": "Intermediate",
+      "companyKey": "bank",
+      "context": "A regional review focuses on North accounts.",
+      "prompt": "Filter region = North.",
+      "datasetName": "account_sheet",
+      "rows": [
+        {
+          "account_id": "A1",
+          "region": "North",
+          "balance": 50000
+        },
+        {
+          "account_id": "A2",
+          "region": "South",
+          "balance": 65000
+        },
+        {
+          "account_id": "A3",
+          "region": "North",
+          "balance": 90000
+        }
+      ],
+      "expectedCommand": "FILTER region = North",
+      "expectedRows": [
+        {
+          "account_id": "A1",
+          "region": "North",
+          "balance": 50000
+        },
+        {
+          "account_id": "A3",
+          "region": "North",
+          "balance": 90000
+        }
+      ],
+      "hints": [
+        "Use FILTER.",
+        "The field is region.",
+        "Match North exactly."
+      ],
+      "explanation": "Filtering by business segment or geography is a core spreadsheet analysis operation.",
+      "xp": 90
+    },
+    {
+      "id": "sheet-pivot-region-revenue-001",
+      "title": "Pivot Revenue by Region",
+      "skillKey": "spreadsheets",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "context": "Leadership wants a regional revenue summary.",
+      "prompt": "Create a pivot grouped by region with SUM revenue.",
+      "datasetName": "regional_sales",
+      "rows": [
+        {
+          "region": "North",
+          "revenue": 1000
+        },
+        {
+          "region": "West",
+          "revenue": 800
+        },
+        {
+          "region": "North",
+          "revenue": 500
+        },
+        {
+          "region": "West",
+          "revenue": 300
+        }
+      ],
+      "expectedCommand": "PIVOT region SUM revenue",
+      "expectedRows": [
+        {
+          "region": "North",
+          "sum_revenue": 1500
+        },
+        {
+          "region": "West",
+          "sum_revenue": 1100
+        }
+      ],
+      "hints": [
+        "Group by region.",
+        "Use SUM.",
+        "The value field is revenue."
+      ],
+      "explanation": "A pivot summarizes row-level data at the business grain needed for comparison.",
+      "xp": 105
+    },
+    {
+      "id": "sheet-pivot-status-count-001",
+      "title": "Pivot Shipment Count by Status",
+      "skillKey": "spreadsheets",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "context": "Network operations wants shipment counts by status.",
+      "prompt": "Create a pivot grouped by status using COUNT *.",
+      "datasetName": "shipment_status",
+      "rows": [
+        {
+          "shipment_id": "S1",
+          "status": "delivered"
+        },
+        {
+          "shipment_id": "S2",
+          "status": "late"
+        },
+        {
+          "shipment_id": "S3",
+          "status": "delivered"
+        },
+        {
+          "shipment_id": "S4",
+          "status": "late"
+        },
+        {
+          "shipment_id": "S5",
+          "status": "delivered"
+        }
+      ],
+      "expectedCommand": "PIVOT status COUNT *",
+      "expectedRows": [
+        {
+          "status": "delivered",
+          "count": 3
+        },
+        {
+          "status": "late",
+          "count": 2
+        }
+      ],
+      "hints": [
+        "Group by status.",
+        "Use COUNT.",
+        "Use * because you are counting rows."
+      ],
+      "explanation": "Count pivots quickly convert detailed operational records into categorical workload summaries.",
+      "xp": 120
+    },
+    {
+      "id": "clean-fill-region-001",
+      "title": "Fill Missing Region",
+      "skillKey": "cleaning",
+      "difficulty": "Beginner",
+      "companyKey": "ecommerce",
+      "context": "A customer export has one blank region.",
+      "prompt": "Fill missing region values with Unknown.",
+      "datasetName": "dirty_regions",
+      "rows": [
+        {
+          "customer_id": "C1",
+          "region": "North"
+        },
+        {
+          "customer_id": "C2",
+          "region": ""
+        },
+        {
+          "customer_id": "C3",
+          "region": "West"
+        }
+      ],
+      "expectedCommand": "CLEAN FILL region Unknown",
+      "expectedRows": [
+        {
+          "customer_id": "C1",
+          "region": "North"
+        },
+        {
+          "customer_id": "C2",
+          "region": "Unknown"
+        },
+        {
+          "customer_id": "C3",
+          "region": "West"
+        }
+      ],
+      "hints": [
+        "Use CLEAN FILL.",
+        "Choose region.",
+        "Use Unknown rather than guessing a real region."
+      ],
+      "explanation": "Explicit Unknown categories preserve missingness without inventing unsupported business facts.",
+      "xp": 80
+    },
+    {
+      "id": "clean-dedupe-order-001",
+      "title": "Remove Duplicate Orders",
+      "skillKey": "cleaning",
+      "difficulty": "Intermediate",
+      "companyKey": "ecommerce",
+      "context": "A vendor file contains the same order twice.",
+      "prompt": "Deduplicate on order_id, keeping the first occurrence.",
+      "datasetName": "duplicate_orders",
+      "rows": [
+        {
+          "order_id": "O1",
+          "revenue": 1000
+        },
+        {
+          "order_id": "O2",
+          "revenue": 700
+        },
+        {
+          "order_id": "O2",
+          "revenue": 700
+        },
+        {
+          "order_id": "O3",
+          "revenue": 900
+        }
+      ],
+      "expectedCommand": "CLEAN DEDUPE order_id",
+      "expectedRows": [
+        {
+          "order_id": "O1",
+          "revenue": 1000
+        },
+        {
+          "order_id": "O2",
+          "revenue": 700
+        },
+        {
+          "order_id": "O3",
+          "revenue": 900
+        }
+      ],
+      "hints": [
+        "Confirm the row grain first.",
+        "Use order_id as the business key.",
+        "The simulator keeps the first row for each key."
+      ],
+      "explanation": "Deduplication should use a documented business key, not visual similarity alone.",
+      "xp": 100
+    },
+    {
+      "id": "clean-title-region-001",
+      "title": "Standardize Region Labels",
+      "skillKey": "cleaning",
+      "difficulty": "Intermediate",
+      "companyKey": "bank",
+      "context": "The same region appears with inconsistent letter case.",
+      "prompt": "Convert region labels to title case.",
+      "datasetName": "region_labels",
+      "rows": [
+        {
+          "account_id": "A1",
+          "region": "north"
+        },
+        {
+          "account_id": "A2",
+          "region": "SOUTH"
+        },
+        {
+          "account_id": "A3",
+          "region": "west"
+        }
+      ],
+      "expectedCommand": "CLEAN TITLE region",
+      "expectedRows": [
+        {
+          "account_id": "A1",
+          "region": "North"
+        },
+        {
+          "account_id": "A2",
+          "region": "South"
+        },
+        {
+          "account_id": "A3",
+          "region": "West"
+        }
+      ],
+      "hints": [
+        "Use CLEAN TITLE.",
+        "Target region.",
+        "Title case produces North, South, West."
+      ],
+      "explanation": "Standardized categorical labels prevent accidental split groups in pivots and summaries.",
+      "xp": 100
+    },
+    {
+      "id": "clean-negative-amount-001",
+      "title": "Exclude Impossible Negative Amount",
+      "skillKey": "cleaning",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "context": "A shipping-cost extract contains an impossible negative value flagged for exclusion pending source-system review.",
+      "prompt": "Keep only non-negative shipping_cost rows.",
+      "datasetName": "shipping_cost_dirty",
+      "rows": [
+        {
+          "shipment_id": "S1",
+          "shipping_cost": 4200
+        },
+        {
+          "shipment_id": "S2",
+          "shipping_cost": -999
+        },
+        {
+          "shipment_id": "S3",
+          "shipping_cost": 3900
+        }
+      ],
+      "expectedCommand": "CLEAN NONNEGATIVE shipping_cost",
+      "expectedRows": [
+        {
+          "shipment_id": "S1",
+          "shipping_cost": 4200
+        },
+        {
+          "shipment_id": "S3",
+          "shipping_cost": 3900
+        }
+      ],
+      "hints": [
+        "Use CLEAN NONNEGATIVE.",
+        "Target shipping_cost.",
+        "This simulator excludes invalid negatives; in real work also investigate the source."
+      ],
+      "explanation": "Domain checks catch impossible values. Exclusion should be documented and followed by source-system investigation.",
+      "xp": 120
+    },
+    {
+      "id": "clean-date-iso-001",
+      "title": "Standardize Date Formats",
+      "skillKey": "cleaning",
+      "difficulty": "Advanced",
+      "companyKey": "hospital",
+      "context": "An operations export mixes ISO, slash-ISO and day/month/year dates.",
+      "prompt": "Standardize service_date to YYYY-MM-DD.",
+      "datasetName": "mixed_dates",
+      "rows": [
+        {
+          "row_id": 1,
+          "service_date": "2026-10-01"
+        },
+        {
+          "row_id": 2,
+          "service_date": "2026/10/02"
+        },
+        {
+          "row_id": 3,
+          "service_date": "03/10/2026"
+        }
+      ],
+      "expectedCommand": "CLEAN DATE_ISO service_date",
+      "expectedRows": [
+        {
+          "row_id": 1,
+          "service_date": "2026-10-01"
+        },
+        {
+          "row_id": 2,
+          "service_date": "2026-10-02"
+        },
+        {
+          "row_id": 3,
+          "service_date": "2026-10-03"
+        }
+      ],
+      "hints": [
+        "Use CLEAN DATE_ISO.",
+        "Target service_date.",
+        "The simulator understands ISO, slash-ISO and DD/MM/YYYY."
+      ],
+      "explanation": "Standard date representation prevents incorrect sorting, grouping and period comparisons.",
+      "xp": 125
+    }
+  ]
+}
