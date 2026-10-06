@@ -18,6 +18,7 @@ class GameProgress {
     required this.dailyStreak,
     required this.lastDailyDate,
     required this.completedDailyDates,
+    this.companyChapter = -1,
   });
 
   static const roleNames = [
@@ -27,6 +28,22 @@ class GameProgress {
     'Senior Analyst',
     'Lead Analyst',
     'Head of Analytics',
+  ];
+
+  static const companyKeys = [
+    'ecommerce',
+    'saas',
+    'bank',
+    'hospital',
+    'logistics',
+  ];
+
+  static const companyNames = [
+    'E-commerce Co.',
+    'SaaS Growth Co.',
+    'NorthStar Bank Analytics',
+    'Harborview Hospital Analytics',
+    'Logistics Network Co.',
   ];
 
   static const xpThresholds = [200, 500, 900, 1400, 2000];
@@ -44,6 +61,7 @@ class GameProgress {
       dailyStreak: 0,
       lastDailyDate: null,
       completedDailyDates: <String>{},
+      companyChapter: 0,
     );
   }
 
@@ -59,37 +77,47 @@ class GameProgress {
   final String? lastDailyDate;
   final Set<String> completedDailyDates;
 
+  /// -1 is accepted only for source/backward compatibility in tests and
+  /// manually constructed objects. Persisted progress always stores a
+  /// concrete independent chapter.
+  final int companyChapter;
+
+  int get resolvedCompanyChapter {
+    if (companyChapter >= 0) {
+      return companyChapter.clamp(0, companyKeys.length - 1).toInt();
+    }
+    return _legacyCompanyChapterFromCareerLevel(careerLevel);
+  }
+
   String get role => roleNames[careerLevel.clamp(0, 5).toInt()];
 
-  String get companyKey {
-    if (careerLevel >= 4) return 'bank';
-    if (careerLevel >= 2) return 'saas';
-    return 'ecommerce';
-  }
+  String get companyKey => companyKeys[resolvedCompanyChapter];
 
-  String get companyName {
-    switch (companyKey) {
-      case 'bank':
-        return 'NorthStar Bank Analytics';
-      case 'saas':
-        return 'SaaS Growth Co.';
-      default:
-        return 'E-commerce Co.';
-    }
-  }
+  String get companyName => companyNames[resolvedCompanyChapter];
 
   String get companyStageLabel {
     switch (companyKey) {
+      case 'hospital':
+        return 'Harborview Hospital Analytics • Operations & Capacity';
       case 'bank':
         return 'NorthStar Bank Analytics • Risk & Operations';
       case 'saas':
         return 'SaaS Growth Co. • Growth team';
+      case 'logistics':
+        return 'Logistics Network Co. • Network Operations';
       default:
-        return 'E-commerce Co. • Week 1';
+        return 'E-commerce Co. • Commercial Analytics';
     }
   }
 
   bool get isTopRole => careerLevel >= roleNames.length - 1;
+
+  bool get isFinalAvailableCompanyChapter => resolvedCompanyChapter >= 3;
+
+  String? get nextCompanyName {
+    if (isFinalAvailableCompanyChapter) return null;
+    return companyNames[resolvedCompanyChapter + 1];
+  }
 
   int get nextRoleXp {
     if (isTopRole) return xpThresholds.last;
@@ -119,6 +147,7 @@ class GameProgress {
     String? lastDailyDate,
     bool clearLastDailyDate = false,
     Set<String>? completedDailyDates,
+    int? companyChapter,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -133,6 +162,7 @@ class GameProgress {
       lastDailyDate:
           clearLastDailyDate ? null : (lastDailyDate ?? this.lastDailyDate),
       completedDailyDates: completedDailyDates ?? this.completedDailyDates,
+      companyChapter: companyChapter ?? resolvedCompanyChapter,
     );
   }
 
@@ -149,12 +179,17 @@ class GameProgress {
       'dailyStreak': dailyStreak,
       'lastDailyDate': lastDailyDate,
       'completedDailyDates': completedDailyDates.toList(),
+      'companyChapter': resolvedCompanyChapter,
     };
   }
 
   factory GameProgress.fromJson(Map<String, dynamic> json) {
     final xp = (json['xp'] as num?)?.toInt() ?? 0;
     final savedLevel = (json['careerLevel'] as num?)?.toInt();
+    final careerLevel =
+        (savedLevel ?? _legacyLevelFromXp(xp)).clamp(0, 5).toInt();
+    final savedChapter = (json['companyChapter'] as num?)?.toInt();
+
     return GameProgress(
       xp: xp,
       streak: (json['streak'] as num?)?.toInt() ?? 0,
@@ -165,13 +200,17 @@ class GameProgress {
       churnRate: (json['churnRate'] as num?)?.toDouble() ?? 8,
       costIndex: (json['costIndex'] as num?)?.toDouble() ?? 100,
       satisfaction: (json['satisfaction'] as num?)?.toDouble() ?? 70,
-      careerLevel: (savedLevel ?? _legacyLevelFromXp(xp)).clamp(0, 5).toInt(),
+      careerLevel: careerLevel,
       dailyStreak: (json['dailyStreak'] as num?)?.toInt() ?? 0,
       lastDailyDate: json['lastDailyDate'] as String?,
       completedDailyDates: Set<String>.from(
         (json['completedDailyDates'] as List<dynamic>?) ??
             const <dynamic>[],
       ),
+      companyChapter: (savedChapter ??
+              _legacyCompanyChapterFromCareerLevel(careerLevel))
+          .clamp(0, companyKeys.length - 1)
+          .toInt(),
     );
   }
 
@@ -181,6 +220,12 @@ class GameProgress {
     if (xp >= 900) return 3;
     if (xp >= 500) return 2;
     if (xp >= 200) return 1;
+    return 0;
+  }
+
+  static int _legacyCompanyChapterFromCareerLevel(int careerLevel) {
+    if (careerLevel >= 4) return 2;
+    if (careerLevel >= 2) return 1;
     return 0;
   }
 }
@@ -280,6 +325,17 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
   Future<void> promote() async {
     if (state.isTopRole) return;
     state = state.copyWith(careerLevel: state.careerLevel + 1);
+    await _save();
+  }
+
+  Future<void> advanceCompanyChapter() async {
+    // Hospital is the final available chapter in Phase 7. Logistics is
+    // intentionally reserved for a later phase so players cannot enter an
+    // empty chapter.
+    if (state.resolvedCompanyChapter >= 3) return;
+    state = state.copyWith(
+      companyChapter: state.resolvedCompanyChapter + 1,
+    );
     await _save();
   }
 
