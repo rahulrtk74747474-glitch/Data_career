@@ -4,12 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/analyst_task.dart';
 import '../../models/skill_mastery.dart';
 import '../boss_case/boss_case_screen.dart';
+import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../graduation/job_readiness_screen.dart';
 import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
+import '../online/weekly_case_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
 import '../portfolio/portfolio_screen.dart';
 import '../game/game_progress.dart';
@@ -119,6 +121,10 @@ class HomeScreen extends ConsumerWidget {
                     _open(context, const ReminderSettingsScreen()),
                 onReadiness: () =>
                     _open(context, const JobReadinessScreen()),
+                onWeeklyCase: () =>
+                    _open(context, const WeeklyCaseScreen()),
+                onContinuity: () =>
+                    _open(context, const DataContinuityScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -254,6 +260,8 @@ class _FeatureGrid extends StatelessWidget {
     required this.onCompanyChapter,
     required this.onReminders,
     required this.onReadiness,
+    required this.onWeeklyCase,
+    required this.onContinuity,
   });
 
   final int reviewCount;
@@ -270,6 +278,8 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onCompanyChapter;
   final VoidCallback onReminders;
   final VoidCallback onReadiness;
+  final VoidCallback onWeeklyCase;
+  final VoidCallback onContinuity;
 
   @override
   Widget build(BuildContext context) {
@@ -292,12 +302,14 @@ class _FeatureGrid extends StatelessWidget {
         onDashboard,
       ),
       ('Daily Challenge', 'Streak + bonus XP', Icons.today_outlined, onDaily),
+      ('Weekly Case', 'Online + cached fallback', Icons.calendar_month_outlined, onWeeklyCase),
       ('Interview Mode', 'SQL + cases', Icons.record_voice_over_outlined, onInterview),
       ('Job Readiness', 'Capstone + graduation', Icons.school_outlined, onReadiness),
       ('Performance Review', 'Promotion gates', Icons.workspace_premium_outlined, onReviewCareer),
       ('Company Chapter', 'Industry unlocks', Icons.business_center_outlined, onCompanyChapter),
       ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
       ('Portfolio', 'Strongest evidence', Icons.work_outline, onPortfolio),
+      ('Data & Cloud', 'Backup + optional sync', Icons.cloud_sync_outlined, onContinuity),
       ('Reminders', 'Daily + review times', Icons.notifications_active_outlined, onReminders),
     ];
 
