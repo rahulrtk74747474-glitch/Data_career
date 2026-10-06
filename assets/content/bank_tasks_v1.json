@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 4,
+  "packId": "career-bank-risk-ops-v1",
+  "tasks": [
+    {
+      "id": "bank-credit-risk-sql-001",
+      "title": "Aggregate Credit Exposure by Risk Band",
+      "department": "Risk",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "The credit-risk team needs a portfolio view of synthetic outstanding balances by risk band.",
+      "goal": "Aggregate exposure at the requested risk-band grain.",
+      "deliverable": "Return risk_band and total_outstanding.",
+      "answerType": "sql_result",
+      "prompt": "Query loan_portfolio and sum outstanding by risk_band.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"risk_band": "High", "total_outstanding": 500000},
+        {"risk_band": "Low", "total_outstanding": 2420000},
+        {"risk_band": "Medium", "total_outstanding": 45000}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "The table already has one row per synthetic loan.",
+        "Use SUM(outstanding).",
+        "GROUP BY risk_band."
+      ],
+      "explanation": "Risk reporting starts with the correct aggregation grain. This result measures exposure, not probability of default or expected loss.",
+      "xp": 180,
+      "datasetName": "loan_portfolio",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "bank-fraud-review-001",
+      "title": "Interpret Transaction Review Flags",
+      "department": "Fraud Operations",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "A monitoring system flags three synthetic transactions for human review.",
+      "goal": "Use review flags safely and avoid treating a model signal as proof.",
+      "deliverable": "Choose the correct operational interpretation.",
+      "answerType": "choice",
+      "prompt": "What should the analyst tell Fraud Operations?",
+      "expectedAnswer": "A review flag is a prioritization signal, not proof of fraud; validate context and outcomes before changing controls or taking customer action",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "A flag tells you what to review.",
+        "False positives are possible.",
+        "Operational action needs evidence and documented controls."
+      ],
+      "explanation": "Responsible fraud analytics separates model or rule signals from confirmed outcomes and measures false positives, review capacity, and customer impact.",
+      "xp": 175,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "A review flag is a prioritization signal, not proof of fraud; validate context and outcomes before changing controls or taking customer action",
+        "Every flagged transaction is confirmed fraud",
+        "Block every account with any large transaction",
+        "Ignore review flags because they are never useful"
+      ]
+    },
+    {
+      "id": "bank-flagged-channel-sql-001",
+      "title": "Find Review Workload by Channel",
+      "department": "Fraud Operations",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "Operations wants to understand where review workload is generated across synthetic transaction channels.",
+      "goal": "Count review-flagged transactions by channel without counting unflagged activity.",
+      "deliverable": "Return channel and flagged_transactions for channels with at least one flagged transaction.",
+      "answerType": "sql_result",
+      "prompt": "Query bank_transactions. Return only channels with review_flag = 1, grouped by channel.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"channel": "atm", "flagged_transactions": 1},
+        {"channel": "online", "flagged_transactions": 2}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Filter review_flag = 1 before aggregation.",
+        "COUNT(*) is enough after filtering.",
+        "GROUP BY channel."
+      ],
+      "explanation": "This measures review workload by channel. It does not estimate fraud rate because confirmed outcomes are not present in this dataset.",
+      "xp": 185,
+      "datasetName": "bank_transactions",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "bank-credit-governance-001",
+      "title": "Challenge a Credit Policy Shortcut",
+      "department": "Credit Strategy",
+      "skill": "Statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "bank",
+      "minCareerLevel": 4,
+      "context": "A manager proposes declining every applicant from a segment because that segment has a higher observed delinquency rate.",
+      "goal": "Identify the analytical and governance problem before policy action.",
+      "deliverable": "Choose the strongest response.",
+      "answerType": "choice",
+      "prompt": "What should the analyst recommend?",
+      "expectedAnswer": "Control for relevant risk factors, test stability and fairness, validate the decision policy, and avoid using segment-level association as an automatic individual decision rule",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "Group averages do not determine every individual outcome.",
+        "Check confounding, stability, and decision impact.",
+        "Credit policy needs documented validation and governance."
+      ],
+      "explanation": "A segment-level correlation can reflect many underlying factors and should not be converted directly into an individual decision rule without validation and governance.",
+      "xp": 190,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Control for relevant risk factors, test stability and fairness, validate the decision policy, and avoid using segment-level association as an automatic individual decision rule",
+        "Decline everyone in the segment immediately",
+        "Use only the segment name and ignore all other data",
+        "Remove all model validation so decisions are faster"
+      ]
+    }
+  ]
+}
