@@ -11,7 +11,7 @@ class InterviewModeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rounds = ref.watch(interviewRoundsProvider);
+    final rounds = ref.watch(availableInterviewRoundsProvider);
     final results = ref.watch(interviewResultsProvider);
 
     return Scaffold(
