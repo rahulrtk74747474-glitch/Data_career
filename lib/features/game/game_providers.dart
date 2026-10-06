@@ -15,15 +15,18 @@ import '../../models/skill_mastery.dart';
 import '../../models/sql_table_schema.dart';
 import '../../repositories/boss_case_result_repository.dart';
 import '../../repositories/content_repository.dart';
+import '../../repositories/evidence_repository.dart';
 import '../../repositories/interview_result_repository.dart';
 import '../../repositories/mastery_repository.dart';
 import '../../repositories/portfolio_repository.dart';
 import '../../repositories/sql_workspace_repository.dart';
 import '../../repositories/task_performance_repository.dart';
 import '../../services/adaptive_review_service.dart';
+import '../../services/boss_case_selection_service.dart';
 import '../../services/career_progression_service.dart';
 import '../../services/career_task_service.dart';
 import '../../services/daily_challenge_service.dart';
+import '../../services/portfolio_export_service.dart';
 import '../../services/sql_runner.dart';
 import 'game_progress.dart';
 
@@ -64,6 +67,15 @@ final portfolioRepositoryProvider = Provider<PortfolioRepository>((ref) {
   return PortfolioRepository(ref.watch(appDatabaseProvider));
 });
 
+final evidenceRepositoryProvider = Provider<EvidenceRepository>((ref) {
+  return EvidenceRepository(ref.watch(appDatabaseProvider));
+});
+
+final portfolioExportServiceProvider =
+    Provider<PortfolioExportService>((ref) {
+  return PortfolioExportService(ref.watch(appDatabaseProvider));
+});
+
 final interviewResultRepositoryProvider =
     Provider<InterviewResultRepository>((ref) {
   return InterviewResultRepository(ref.watch(appDatabaseProvider));
@@ -87,8 +99,18 @@ final placementQuestionsProvider =
   return ref.read(contentRepositoryProvider).loadPlacementQuestions();
 });
 
-final bossCaseProvider = FutureProvider<BossCaseDefinition>((ref) {
-  return ref.read(contentRepositoryProvider).loadBossCase();
+final bossCasesProvider = FutureProvider<List<BossCaseDefinition>>((ref) {
+  return ref.read(contentRepositoryProvider).loadBossCases();
+});
+
+final bossCaseProvider = FutureProvider<BossCaseDefinition>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final cases = await ref.watch(bossCasesProvider.future);
+  return BossCaseSelectionService.select(
+    cases: cases,
+    companyKey: progress.companyKey,
+    careerLevel: progress.careerLevel,
+  );
 });
 
 final pandasChallengesProvider =
