@@ -497,6 +497,7 @@ class _DiagnosticsCard extends StatelessWidget {
             Text(
               'Weekly case schema: v${diagnostics.weeklyCaseSchema}',
             ),
+            Text('Content schemas: ${diagnostics.contentSchemaSummary}'),
             Text(
               'Cloud save: ${diagnostics.cloudConfigured ? 'configured' : 'offline-only'}',
             ),
