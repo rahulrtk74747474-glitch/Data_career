@@ -36,7 +36,7 @@ Phase 1 CI note:
 
 ## Phase 2 — Offline analyst workstation and skill model
 
-Status: **IMPLEMENTED — CI verification pending**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #6)**
 
 Implemented:
 1. Added real local SQLite using `sqflite`.
@@ -50,7 +50,7 @@ Implemented:
 9. Added a `fl_chart` radar chart plus skill detail screen.
 10. Added an Operations data-cleaning ticket with nulls, duplicates, mixed dates, inconsistent categories, invalid ages and a suspicious negative amount.
 11. Added SQLite/result grading/mastery unit tests plus a real app widget smoke test.
-12. Updated CI to install SQLite native test support before Flutter tests.
+12. Updated CI to install SQLite native test support before Flutter tests.\n13. CI run #6 passed static analysis, all 8 tests, Android debug APK build, and artifact upload.
 
 ### Content schema migration
 
