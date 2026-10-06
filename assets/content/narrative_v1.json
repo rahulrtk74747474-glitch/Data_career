@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "insightScenarios": [
+    {
+      "id": "insight-revenue-mix-001",
+      "title": "Explain Revenue Growth",
+      "companyKey": "ecommerce",
+      "difficulty": "Intermediate",
+      "context": "Revenue is up 12%, orders are up 4%, and average order value is up 7.7%.",
+      "prompt": "Write the manager-ready insight and one next action.",
+      "evidenceTerms": [
+        "12",
+        "4",
+        "7.7",
+        "revenue",
+        "orders",
+        "average order value"
+      ],
+      "recommendationTerms": [
+        "investigate",
+        "test",
+        "monitor",
+        "focus",
+        "compare"
+      ],
+      "impactTerms": [
+        "revenue",
+        "margin",
+        "growth",
+        "customer"
+      ]
+    },
+    {
+      "id": "insight-saas-retention-001",
+      "title": "Explain Retention Movement",
+      "companyKey": "saas",
+      "difficulty": "Intermediate",
+      "context": "Month-3 retention improved from 62% to 71%, but the newer cohort is 40% smaller.",
+      "prompt": "Write a cautious retention insight and what should be checked next.",
+      "evidenceTerms": [
+        "62",
+        "71",
+        "40",
+        "retention",
+        "cohort"
+      ],
+      "recommendationTerms": [
+        "check",
+        "compare",
+        "segment",
+        "validate",
+        "monitor"
+      ],
+      "impactTerms": [
+        "retention",
+        "churn",
+        "ltv",
+        "revenue"
+      ]
+    },
+    {
+      "id": "insight-bank-review-001",
+      "title": "Explain Review Workload",
+      "companyKey": "bank",
+      "difficulty": "Advanced",
+      "context": "Online transactions are 2 of 7 observed transactions but both were review-flagged. Flags are routing signals, not confirmed fraud.",
+      "prompt": "Write a governance-safe insight for operations.",
+      "evidenceTerms": [
+        "2",
+        "7",
+        "online",
+        "review",
+        "flag"
+      ],
+      "recommendationTerms": [
+        "review",
+        "validate",
+        "monitor",
+        "investigate",
+        "sample"
+      ],
+      "impactTerms": [
+        "workload",
+        "risk",
+        "operations",
+        "customer"
+      ]
+    },
+    {
+      "id": "insight-hospital-capacity-001",
+      "title": "Explain Capacity Pressure",
+      "companyKey": "hospital",
+      "difficulty": "Advanced",
+      "context": "Saturday forecast arrivals exceed planned capacity by 25 while Friday exceeds by 15.",
+      "prompt": "Write an operational insight without making a clinical claim.",
+      "evidenceTerms": [
+        "25",
+        "15",
+        "saturday",
+        "friday",
+        "capacity"
+      ],
+      "recommendationTerms": [
+        "staff",
+        "scenario",
+        "monitor",
+        "plan",
+        "validate"
+      ],
+      "impactTerms": [
+        "capacity",
+        "wait",
+        "throughput",
+        "operations"
+      ]
+    },
+    {
+      "id": "insight-logistics-sla-001",
+      "title": "Explain Route SLA Risk",
+      "companyKey": "logistics",
+      "difficulty": "Advanced",
+      "context": "NS-1 has 2 of 2 late shipments in the tiny sample, while NW-1 has 1 of 3.",
+      "prompt": "Write a decision-ready insight that avoids claiming the route code caused delay.",
+      "evidenceTerms": [
+        "2",
+        "3",
+        "ns-1",
+        "nw-1",
+        "late"
+      ],
+      "recommendationTerms": [
+        "investigate",
+        "compare",
+        "validate",
+        "test",
+        "monitor"
+      ],
+      "impactTerms": [
+        "sla",
+        "delay",
+        "cost",
+        "service"
+      ]
+    }
+  ],
+  "managerDialogues": [
+    {
+      "minScore": 85,
+      "title": "Strong analyst communication",
+      "message": "You led with evidence, kept the claim bounded, recommended a concrete next step and connected it to business impact."
+    },
+    {
+      "minScore": 70,
+      "title": "Good direction",
+      "message": "The analysis is usable. Tighten the evidence or recommendation so a manager can act without filling in the gaps."
+    },
+    {
+      "minScore": 50,
+      "title": "Needs stronger evidence",
+      "message": "The direction may be reasonable, but the message needs clearer numbers, a bounded claim and an explicit next action."
+    },
+    {
+      "minScore": 0,
+      "title": "Rewrite before sending",
+      "message": "Start with the finding and evidence. Then add one recommendation and state why it matters to the business."
+    }
+  ],
+  "events": [
+    {
+      "id": "event-dirty-vendor",
+      "title": "Dirty Vendor Data",
+      "category": "Data quality",
+      "context": "A supplier sends a file with duplicates, mixed date formats and blank product codes 30 minutes before a weekly review.",
+      "choices": [
+        {
+          "text": "Validate grain, quarantine invalid rows, document the limitation and send a clean partial view if needed.",
+          "feedback": "Best choice. You protect decision quality without hiding the deadline.",
+          "best": true,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0.2,
+          "satisfactionDelta": 1.5
+        },
+        {
+          "text": "Delete every suspicious row quickly and present the remaining data as complete.",
+          "feedback": "Risky. Silent deletion can bias the result and hides uncertainty.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0,
+          "satisfactionDelta": -1.5
+        },
+        {
+          "text": "Load the file unchanged because the meeting is urgent.",
+          "feedback": "Poor choice. Known quality problems should not be passed downstream without controls.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0.5,
+          "satisfactionDelta": -2
+        }
+      ]
+    },
+    {
+      "id": "event-ceo-urgent",
+      "title": "Urgent CEO Request",
+      "category": "Prioritization",
+      "context": "The CEO asks for an unfamiliar KPI in 20 minutes and wants one number for a board call.",
+      "choices": [
+        {
+          "text": "Confirm the metric definition, produce a clearly labeled preliminary estimate if feasible, and state assumptions.",
+          "feedback": "Best choice. Speed is balanced with definition and uncertainty.",
+          "best": true,
+          "revenueDelta": 0.3,
+          "churnDelta": 0,
+          "costDelta": 0,
+          "satisfactionDelta": 1.5
+        },
+        {
+          "text": "Guess the definition from a similar dashboard and send the number without caveats.",
+          "feedback": "Fast but unsafe. A wrong definition can create a confident wrong decision.",
+          "best": false,
+          "revenueDelta": -0.5,
+          "churnDelta": 0,
+          "costDelta": 0,
+          "satisfactionDelta": -2
+        },
+        {
+          "text": "Refuse to answer anything until a full multi-day analysis is complete.",
+          "feedback": "Overly rigid. A bounded preliminary answer can still be useful when labeled correctly.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0,
+          "satisfactionDelta": -0.5
+        }
+      ]
+    },
+    {
+      "id": "event-conflicting-reports",
+      "title": "Conflicting Reports",
+      "category": "Metric governance",
+      "context": "Finance reports ₹13.4M revenue while Sales reports ₹14.8M for the same month.",
+      "choices": [
+        {
+          "text": "Reconcile grain, status filters, date logic and metric definitions before choosing a source of truth.",
+          "feedback": "Best choice. Conflicting metrics are usually a definition or transformation problem to reconcile.",
+          "best": true,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": -0.2,
+          "satisfactionDelta": 1.5
+        },
+        {
+          "text": "Use the larger number because executives prefer growth.",
+          "feedback": "Incorrect. Selecting a number for optics destroys metric integrity.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0,
+          "satisfactionDelta": -3
+        },
+        {
+          "text": "Average the two reports and move on.",
+          "feedback": "Incorrect. Averaging incompatible definitions produces a third unsupported number.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0.2,
+          "satisfactionDelta": -2
+        }
+      ]
+    },
+    {
+      "id": "event-privacy",
+      "title": "Privacy Incident",
+      "category": "Professional ethics",
+      "context": "A shared analysis folder contains unnecessary personal identifiers that were not needed for the project.",
+      "choices": [
+        {
+          "text": "Stop further sharing, restrict access, follow the incident process and continue only with minimized fields.",
+          "feedback": "Best choice. Protect privacy, follow policy and minimize data.",
+          "best": true,
+          "revenueDelta": 0,
+          "churnDelta": 0,
+          "costDelta": 0.3,
+          "satisfactionDelta": 2
+        },
+        {
+          "text": "Ignore the extra fields because the analysis itself is correct.",
+          "feedback": "Incorrect. Unnecessary exposure is a governance problem even if calculations are right.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0.3,
+          "costDelta": 0,
+          "satisfactionDelta": -4
+        },
+        {
+          "text": "Copy the file to a personal device so it can be cleaned faster.",
+          "feedback": "Incorrect. Moving sensitive data to uncontrolled storage worsens the incident.",
+          "best": false,
+          "revenueDelta": 0,
+          "churnDelta": 0.5,
+          "costDelta": 0,
+          "satisfactionDelta": -5
+        }
+      ]
+    }
+  ]
+}
