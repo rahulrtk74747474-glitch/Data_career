@@ -76,7 +76,42 @@ class LeaderboardEntry {
   }
 }
 
-class SupabaseCloudService {
+abstract interface class CloudSyncGateway {
+  CloudRuntimeConfig get config;
+
+  Future<CloudSession> signIn({
+    required String email,
+    required String password,
+  });
+
+  Future<BackupSnapshot?> loadBackup(CloudSession session);
+
+  Future<void> saveBackup(
+    CloudSession session,
+    BackupSnapshot snapshot,
+  );
+
+  Future<CloudSyncResult> sync({
+    required CloudSession session,
+    required BackupSnapshot local,
+  });
+
+  Future<void> publishLeaderboard({
+    required CloudSession session,
+    required String alias,
+    required int readinessScore,
+    required bool graduated,
+  });
+
+  Future<List<LeaderboardEntry>> loadLeaderboard({
+    required CloudSession session,
+    int limit = 25,
+  });
+
+  void close();
+}
+
+class SupabaseCloudService implements CloudSyncGateway {
   SupabaseCloudService({
     CloudRuntimeConfig? config,
     http.Client? client,
