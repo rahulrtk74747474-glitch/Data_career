@@ -22,7 +22,7 @@ class AppDatabase {
     return _factory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 4,
+        version: 5,
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -31,6 +31,8 @@ class AppDatabase {
           await _createPhaseFourSchema(db);
           await _seedPhaseFour(db);
           await _createPhaseFiveSchema(db);
+          await _createPhaseSixSchema(db);
+          await _seedPhaseSix(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -43,6 +45,10 @@ class AppDatabase {
           }
           if (oldVersion < 4) {
             await _createPhaseFiveSchema(db);
+          }
+          if (oldVersion < 5) {
+            await _createPhaseSixSchema(db);
+            await _seedPhaseSix(db);
           }
         },
       ),
@@ -152,6 +158,54 @@ class AppDatabase {
     ''');
   }
 
+  Future<void> _createPhaseSixSchema(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS bank_accounts (
+        account_id TEXT PRIMARY KEY,
+        segment TEXT NOT NULL,
+        region TEXT NOT NULL,
+        tenure_months INTEGER NOT NULL,
+        avg_balance REAL NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS loan_portfolio (
+        loan_id TEXT PRIMARY KEY,
+        account_id TEXT NOT NULL,
+        product TEXT NOT NULL,
+        outstanding REAL NOT NULL,
+        dpd INTEGER NOT NULL,
+        risk_band TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS bank_transactions (
+        txn_id TEXT PRIMARY KEY,
+        account_id TEXT NOT NULL,
+        txn_date TEXT NOT NULL,
+        amount REAL NOT NULL,
+        channel TEXT NOT NULL,
+        review_flag INTEGER NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS evidence_attempts (
+        attempt_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_type TEXT NOT NULL,
+        source_id TEXT NOT NULL,
+        title TEXT NOT NULL,
+        skill_key TEXT NOT NULL,
+        score INTEGER NOT NULL,
+        mode TEXT NOT NULL,
+        company_key TEXT NOT NULL,
+        completed_at TEXT NOT NULL
+      )
+    ''');
+  }
+
   Future<void> _seedCore(Database db) async {
     final campaignRows = <Map<String, Object?>>[
       {'date': '2026-09-28', 'channel': 'Search', 'spend': 12000, 'conversions': 84},
@@ -234,6 +288,66 @@ class AppDatabase {
       {'skill_key': 'python'},
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
+  }
+
+  Future<void> _seedPhaseSix(Database db) async {
+    final accounts = <Map<String, Object?>>[
+      {'account_id': 'A001', 'segment': 'Retail', 'region': 'North', 'tenure_months': 24, 'avg_balance': 85000},
+      {'account_id': 'A002', 'segment': 'Retail', 'region': 'West', 'tenure_months': 8, 'avg_balance': 35000},
+      {'account_id': 'A003', 'segment': 'SME', 'region': 'North', 'tenure_months': 36, 'avg_balance': 240000},
+      {'account_id': 'A004', 'segment': 'SME', 'region': 'South', 'tenure_months': 18, 'avg_balance': 180000},
+      {'account_id': 'A005', 'segment': 'Affluent', 'region': 'East', 'tenure_months': 48, 'avg_balance': 600000},
+      {'account_id': 'A006', 'segment': 'Retail', 'region': 'South', 'tenure_months': 5, 'avg_balance': 22000},
+    ];
+
+    final loans = <Map<String, Object?>>[
+      {'loan_id': 'L001', 'account_id': 'A001', 'product': 'Personal', 'outstanding': 120000, 'dpd': 0, 'risk_band': 'Low'},
+      {'loan_id': 'L002', 'account_id': 'A002', 'product': 'CreditCard', 'outstanding': 45000, 'dpd': 18, 'risk_band': 'Medium'},
+      {'loan_id': 'L003', 'account_id': 'A003', 'product': 'Business', 'outstanding': 500000, 'dpd': 0, 'risk_band': 'Low'},
+      {'loan_id': 'L004', 'account_id': 'A004', 'product': 'Business', 'outstanding': 420000, 'dpd': 42, 'risk_band': 'High'},
+      {'loan_id': 'L005', 'account_id': 'A005', 'product': 'Home', 'outstanding': 1800000, 'dpd': 0, 'risk_band': 'Low'},
+      {'loan_id': 'L006', 'account_id': 'A006', 'product': 'Personal', 'outstanding': 80000, 'dpd': 65, 'risk_band': 'High'},
+    ];
+
+    final transactions = <Map<String, Object?>>[
+      {'txn_id': 'T001', 'account_id': 'A001', 'txn_date': '2026-10-01', 'amount': 6500, 'channel': 'card', 'review_flag': 0},
+      {'txn_id': 'T002', 'account_id': 'A002', 'txn_date': '2026-10-01', 'amount': 48000, 'channel': 'online', 'review_flag': 1},
+      {'txn_id': 'T003', 'account_id': 'A003', 'txn_date': '2026-10-02', 'amount': 125000, 'channel': 'rtgs', 'review_flag': 0},
+      {'txn_id': 'T004', 'account_id': 'A004', 'txn_date': '2026-10-02', 'amount': 210000, 'channel': 'online', 'review_flag': 1},
+      {'txn_id': 'T005', 'account_id': 'A005', 'txn_date': '2026-10-03', 'amount': 76000, 'channel': 'card', 'review_flag': 0},
+      {'txn_id': 'T006', 'account_id': 'A006', 'txn_date': '2026-10-03', 'amount': 32000, 'channel': 'atm', 'review_flag': 1},
+      {'txn_id': 'T007', 'account_id': 'A002', 'txn_date': '2026-10-04', 'amount': 1200, 'channel': 'card', 'review_flag': 0},
+    ];
+
+    final batch = db.batch();
+    for (final row in accounts) {
+      batch.insert(
+        'bank_accounts',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in loans) {
+      batch.insert(
+        'loan_portfolio',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    for (final row in transactions) {
+      batch.insert(
+        'bank_transactions',
+        row,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
+  Future<String> get storageDirectoryPath async {
+    final databasePath = overridePath ??
+        p.join(await _factory.getDatabasesPath(), 'dataquest_v2.db');
+    return p.dirname(databasePath);
   }
 
   Future<void> close() async {
