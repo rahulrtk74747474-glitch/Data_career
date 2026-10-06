@@ -20,7 +20,7 @@ class PandasChallenge {
   final String difficulty;
   final String context;
   final String datasetName;
-  final List<Map<String, dynamic>> rows;
+  final List<Map<String, Object?>> rows;
   final String prompt;
   final List<String> requiredFragments;
   final Map<String, dynamic> operation;
@@ -37,7 +37,7 @@ class PandasChallenge {
       context: json['context'] as String,
       datasetName: json['datasetName'] as String,
       rows: (json['rows'] as List<dynamic>)
-          .map((row) => Map<String, dynamic>.from(row as Map))
+          .map((row) => Map<String, Object?>.from(row as Map))
           .toList(),
       prompt: json['prompt'] as String,
       requiredFragments:

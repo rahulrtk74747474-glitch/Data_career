@@ -268,9 +268,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     await ref
         .read(masteryRepositoryProvider)
         .recordAttempt(task.skillKey, score);
+    await ref.read(taskPerformanceRepositoryProvider).recordTask(task, score);
     ref.invalidate(skillProfileProvider);
     ref.invalidate(reviewQueueProvider);
     ref.invalidate(adaptiveRecommendationsProvider);
+    ref.invalidate(portfolioSnapshotProvider);
 
     if (!mounted) return;
     setState(() {

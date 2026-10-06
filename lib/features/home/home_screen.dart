@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/analyst_task.dart';
 import '../../models/skill_mastery.dart';
 import '../boss_case/boss_case_screen.dart';
+import '../dashboard/dashboard_lab_screen.dart';
+import '../pandas/pandas_lab_screen.dart';
+import '../portfolio/portfolio_screen.dart';
 import '../game/game_progress.dart';
 import '../game/game_providers.dart';
 import '../placement/placement_screen.dart';
@@ -49,6 +52,7 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(placementCompletedProvider);
             ref.invalidate(reviewQueueProvider);
             ref.invalidate(adaptiveRecommendationsProvider);
+            ref.invalidate(portfolioSnapshotProvider);
             await Future.wait([
               ref.read(tasksProvider.future),
               ref.read(skillProfileProvider.future),
@@ -84,6 +88,11 @@ class HomeScreen extends ConsumerWidget {
                 onWorkspace: () =>
                     _open(context, const SqlWorkspaceScreen()),
                 onBoss: () => _open(context, const BossCaseScreen()),
+                onPandas: () => _open(context, const PandasLabScreen()),
+                onDashboard: () =>
+                    _open(context, const DashboardLabScreen()),
+                onPortfolio: () =>
+                    _open(context, const PortfolioScreen()),
               ),
               recommendations.when(
                 loading: () => const SizedBox.shrink(),
@@ -162,7 +171,7 @@ class HomeScreen extends ConsumerWidget {
         return AlertDialog(
           title: const Text('Reset career progress?'),
           content: const Text(
-            'This removes completed tickets, XP, placement results, skill mastery and Boss Case scores stored on this device.',
+            'This removes completed tickets, XP, placement results, skill mastery, portfolio evidence and Boss Case scores stored on this device.',
           ),
           actions: [
             TextButton(
@@ -182,10 +191,12 @@ class HomeScreen extends ConsumerWidget {
       await ref.read(gameProgressProvider.notifier).reset();
       await ref.read(masteryRepositoryProvider).resetAll();
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
+      await ref.read(taskPerformanceRepositoryProvider).resetAll();
       ref.invalidate(skillProfileProvider);
       ref.invalidate(placementCompletedProvider);
       ref.invalidate(reviewQueueProvider);
       ref.invalidate(adaptiveRecommendationsProvider);
+      ref.invalidate(portfolioSnapshotProvider);
     }
   }
 }
@@ -197,6 +208,9 @@ class _FeatureGrid extends StatelessWidget {
     required this.onReview,
     required this.onWorkspace,
     required this.onBoss,
+    required this.onPandas,
+    required this.onDashboard,
+    required this.onPortfolio,
   });
 
   final int reviewCount;
@@ -204,6 +218,9 @@ class _FeatureGrid extends StatelessWidget {
   final VoidCallback onReview;
   final VoidCallback onWorkspace;
   final VoidCallback onBoss;
+  final VoidCallback onPandas;
+  final VoidCallback onDashboard;
+  final VoidCallback onPortfolio;
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +235,15 @@ class _FeatureGrid extends StatelessWidget {
         onReview,
       ),
       ('SQL Workstation', 'Schemas + scratchpad', Icons.storage, onWorkspace),
+      ('Pandas Lab', 'Guided dataframe work', Icons.code, onPandas),
+      (
+        'Dashboard Lab',
+        'KPIs + visual decisions',
+        Icons.dashboard_outlined,
+        onDashboard,
+      ),
       ('Boss Case', 'End-to-end case', Icons.emoji_events_outlined, onBoss),
+      ('Portfolio', 'Strongest evidence', Icons.work_outline, onPortfolio),
     ];
 
     return GridView.builder(
