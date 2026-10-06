@@ -29,7 +29,7 @@ Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #8)**
 
 ## Phase 4 — Python/Pandas Lab, dashboard decisions and portfolio evidence
 
-Status: **IMPLEMENTED — CI verification pending**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #10)**
 
 Implemented:
 1. Added an offline guided Python/Pandas simulator without bundling a heavy Python runtime.
@@ -42,7 +42,7 @@ Implemented:
 8. Added offline portfolio summary export via clipboard.
 9. Expanded Practice Gym with skill filtering and additional Beginner/Intermediate/Advanced tasks.
 10. Migrated SQLite schema to version 3 without deleting prior career, mastery or Boss Case data.
-11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.
+11. Added automated tests for Pandas-style grading, task-performance persistence and portfolio calculations.\n12. CI run #10 passed static analysis, all 23 tests, Android debug APK build, and artifact upload.
 
 ### Technical choice
 
