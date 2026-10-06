@@ -159,6 +159,38 @@ class BackupService {
     });
   }
 
+  Future<void> restoreWithRollback({
+    required BackupSnapshot snapshot,
+    required GameProgress currentProgress,
+    required ReminderSettings currentReminders,
+    required Future<void> Function(
+      GameProgress progress,
+      ReminderSettings reminders,
+    ) persistExternalState,
+  }) async {
+    validate(snapshot);
+    final safety = await createSnapshot(
+      progress: currentProgress,
+      reminders: currentReminders,
+    );
+
+    try {
+      await restoreDatabase(snapshot);
+      await persistExternalState(
+        GameProgress.fromJson(snapshot.progress),
+        ReminderSettings.fromJson(snapshot.reminderSettings),
+      );
+      await recordRestoreAsBackupTime();
+    } catch (_) {
+      await restoreDatabase(safety);
+      await persistExternalState(
+        GameProgress.fromJson(safety.progress),
+        ReminderSettings.fromJson(safety.reminderSettings),
+      );
+      rethrow;
+    }
+  }
+
   Future<DateTime?> lastBackupAt() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_lastBackupKey);
