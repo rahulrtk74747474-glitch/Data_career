@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 4,
+  "packId": "career-logistics-network-v1",
+  "tasks": [
+    {
+      "id": "logistics-sla-sql-001",
+      "title": "Measure Route SLA Performance",
+      "department": "Network Operations",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "Network leadership wants an offline route-level SLA view using synthetic delivered shipments.",
+      "goal": "Count total and on-time shipments at the correct route grain.",
+      "deliverable": "Return route_code, shipment_count and on_time_shipments.",
+      "answerType": "sql_result",
+      "prompt": "Query logistics_shipments. Group by route_code and count all rows plus rows where actual_hours <= promised_hours.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"route_code": "NS-1", "shipment_count": 2, "on_time_shipments": 0},
+        {"route_code": "NW-1", "shipment_count": 3, "on_time_shipments": 2},
+        {"route_code": "SN-1", "shipment_count": 2, "on_time_shipments": 1},
+        {"route_code": "WE-1", "shipment_count": 3, "on_time_shipments": 1}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "The table is already one row per synthetic shipment.",
+        "A shipment is on time when actual_hours <= promised_hours.",
+        "Use GROUP BY route_code and a conditional SUM or CASE expression."
+      ],
+      "explanation": "SLA analysis must preserve the route grain and distinguish total volume from on-time volume.",
+      "xp": 220,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "logistics-cleaning-001",
+      "title": "Validate the Shipment Extract",
+      "department": "Data Quality",
+      "skill": "Data Cleaning",
+      "skillKey": "cleaning",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "Before a network review, you receive synthetic shipment, route and cost data.",
+      "goal": "Apply operational data-quality checks before calculating SLA or cost KPIs.",
+      "deliverable": "Select every required validation action.",
+      "answerType": "multi_select",
+      "prompt": "Which checks should be completed before analysis?",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [
+        "Check shipment_id uniqueness.",
+        "Validate promised_hours, actual_hours, weight_kg and shipping_cost are non-negative.",
+        "Standardize route and hub category labels before grouping.",
+        "Confirm status definitions before mixing delivered and non-delivered shipments in SLA calculations."
+      ],
+      "hints": [
+        "Start with record identity and grain.",
+        "Then validate numeric domains.",
+        "Categorical consistency and status definitions affect grouping and denominators."
+      ],
+      "explanation": "Reliable logistics KPIs require valid identifiers, plausible numeric fields, standardized route labels and a documented SLA denominator.",
+      "xp": 195,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": [
+        "Check shipment_id uniqueness.",
+        "Validate promised_hours, actual_hours, weight_kg and shipping_cost are non-negative.",
+        "Standardize route and hub category labels before grouping.",
+        "Confirm status definitions before mixing delivered and non-delivered shipments in SLA calculations.",
+        "Delete every late shipment because it is an outlier.",
+        "Replace all high costs with the overall mean without investigation."
+      ]
+    },
+    {
+      "id": "logistics-sla-stats-001",
+      "title": "Interpret a Route SLA Difference",
+      "department": "Network Performance",
+      "skill": "Statistics",
+      "skillKey": "statistics",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "One route has a lower observed on-time percentage than another in a small synthetic sample.",
+      "goal": "Avoid overclaiming from small route samples.",
+      "deliverable": "Choose the strongest statistical interpretation.",
+      "answerType": "choice",
+      "prompt": "What should the analyst say?",
+      "expectedAnswer": "Treat the observed SLA gap as a signal, but compare more shipments and control for route distance, weight and operating conditions before claiming the route itself causes delays",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "Small denominators are noisy.",
+        "Route mix can differ in distance, weight or operating conditions.",
+        "Association is not automatically causation."
+      ],
+      "explanation": "A route-level SLA difference is useful for prioritizing investigation, but causal claims require larger and better-controlled evidence.",
+      "xp": 200,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Treat the observed SLA gap as a signal, but compare more shipments and control for route distance, weight and operating conditions before claiming the route itself causes delays",
+        "The route code alone definitely causes every delay",
+        "Ignore SLA because percentages are never useful",
+        "Remove all late shipments before comparing routes"
+      ]
+    },
+    {
+      "id": "logistics-throughput-gap-sql-001",
+      "title": "Find Network Throughput Gaps",
+      "department": "Capacity Planning",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "The network team has a day-of-week shipment forecast and planned processing throughput.",
+      "goal": "Identify days where expected demand exceeds planned throughput.",
+      "deliverable": "Return day_name and capacity_gap for positive gaps only.",
+      "answerType": "sql_result",
+      "prompt": "Query logistics_throughput_forecast. Return day_name and expected_shipments - planned_throughput AS capacity_gap where expected shipments exceed planned throughput.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"day_name": "Thursday", "capacity_gap": 10},
+        {"day_name": "Friday", "capacity_gap": 40},
+        {"day_name": "Saturday", "capacity_gap": 70},
+        {"day_name": "Sunday", "capacity_gap": 20}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Capacity gap = expected demand - planned throughput.",
+        "Keep only positive gaps.",
+        "The table is already one row per day name."
+      ],
+      "explanation": "This turns a forecast into an operational capacity signal while preserving uncertainty around the forecast itself.",
+      "xp": 220,
+      "datasetName": "logistics_throughput_forecast",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "logistics-warehouse-utilization-sql-001",
+      "title": "Find Peak Warehouse Utilization",
+      "department": "Warehouse Operations",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "Warehouse leaders want the highest observed ending-inventory utilization in each synthetic warehouse.",
+      "goal": "Convert ending inventory and capacity into a peak utilization percentage.",
+      "deliverable": "Return warehouse and peak_utilization_pct rounded to one decimal.",
+      "answerType": "sql_result",
+      "prompt": "Query logistics_inventory_flow. Calculate 100.0 * ending_units / capacity_units for each row, then return the maximum by warehouse rounded to one decimal.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"warehouse": "WH-North", "peak_utilization_pct": 95.0},
+        {"warehouse": "WH-West", "peak_utilization_pct": 97.8}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Utilization is ending_units divided by capacity_units.",
+        "Multiply by 100.0 to keep decimal division.",
+        "Use MAX after calculating row-level utilization."
+      ],
+      "explanation": "Peak utilization highlights congestion risk but should be paired with duration, throughput and service metrics before changing capacity.",
+      "xp": 220,
+      "datasetName": "logistics_inventory_flow",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "logistics-cost-sql-001",
+      "title": "Compare Route Cost per Kilogram",
+      "department": "Finance",
+      "skill": "SQL",
+      "skillKey": "sql",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "Finance wants a route-level normalized cost metric rather than raw shipping cost alone.",
+      "goal": "Calculate shipping cost per kilogram at the route level.",
+      "deliverable": "Return route_code and cost_per_kg rounded to one decimal.",
+      "answerType": "sql_result",
+      "prompt": "Query logistics_shipments. Return route_code and ROUND(SUM(shipping_cost) / SUM(weight_kg), 1) AS cost_per_kg grouped by route_code.",
+      "expectedAnswer": "",
+      "requiredTokens": [],
+      "expectedRows": [
+        {"route_code": "NS-1", "cost_per_kg": 35.4},
+        {"route_code": "NW-1", "cost_per_kg": 35.1},
+        {"route_code": "SN-1", "cost_per_kg": 32.2},
+        {"route_code": "WE-1", "cost_per_kg": 35.7}
+      ],
+      "expectedSelections": [],
+      "hints": [
+        "Normalize cost by shipment weight.",
+        "Aggregate cost and weight before dividing.",
+        "Round the route-level ratio to one decimal."
+      ],
+      "explanation": "Normalized cost supports fairer route comparison than raw cost, but still needs service level and route complexity context.",
+      "xp": 225,
+      "datasetName": "logistics_shipments",
+      "rows": [],
+      "options": []
+    },
+    {
+      "id": "logistics-route-cohort-001",
+      "title": "Design a Fair Route Cohort",
+      "department": "Network Strategy",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "A new dispatch process is introduced on one route and leadership asks whether it improved SLA.",
+      "goal": "Choose a defensible before/after comparison design.",
+      "deliverable": "Select the strongest route-cohort approach.",
+      "answerType": "choice",
+      "prompt": "How should the analyst structure the comparison?",
+      "expectedAnswer": "Compare the same route across comparable day and shipment-mix periods before and after the process change, while tracking volume, weight and capacity so mix shifts are visible",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "Keep the route context comparable.",
+        "Shipment volume and weight mix can change.",
+        "A before/after result is stronger when operating conditions are visible."
+      ],
+      "explanation": "Operational cohort design should reduce mix differences and surface other changes that could explain SLA movement.",
+      "xp": 205,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Compare the same route across comparable day and shipment-mix periods before and after the process change, while tracking volume, weight and capacity so mix shifts are visible",
+        "Compare one route before the change with a different route after the change",
+        "Ignore shipment volume because SLA percentage is enough",
+        "Remove late shipments before creating the cohorts"
+      ]
+    },
+    {
+      "id": "logistics-exec-communication-001",
+      "title": "Write the Network Executive Message",
+      "department": "Executive Office",
+      "skill": "Business Analytics",
+      "skillKey": "business",
+      "difficulty": "Advanced",
+      "companyKey": "logistics",
+      "minCareerLevel": 5,
+      "context": "The synthetic data shows weekend throughput gaps, route-level SLA variation and high warehouse utilization.",
+      "goal": "Communicate a bounded, actionable network recommendation.",
+      "deliverable": "Choose the strongest executive message.",
+      "answerType": "choice",
+      "prompt": "Which message is best?",
+      "expectedAnswer": "Weekend forecast demand exceeds planned throughput and some routes show weaker SLA while warehouses approach capacity; validate the pattern over more periods and test routing, staffing and capacity scenarios before rollout",
+      "requiredTokens": [],
+      "expectedRows": [],
+      "expectedSelections": [],
+      "hints": [
+        "State the observed signals first.",
+        "Do not claim one route code causes delay.",
+        "Recommend scenario testing before operational rollout."
+      ],
+      "explanation": "Strong logistics communication connects SLA, capacity and cost signals to controlled operational decisions without overstating causality.",
+      "xp": 215,
+      "datasetName": "",
+      "rows": [],
+      "options": [
+        "Weekend forecast demand exceeds planned throughput and some routes show weaker SLA while warehouses approach capacity; validate the pattern over more periods and test routing, staffing and capacity scenarios before rollout",
+        "Close the worst route immediately because the route code causes delays",
+        "Ignore warehouse utilization because only delivery time matters",
+        "Increase every warehouse and route budget without scenario analysis"
+      ]
+    }
+  ]
+}
