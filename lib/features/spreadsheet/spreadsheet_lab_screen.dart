@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/spreadsheet_challenge.dart';
 import '../../services/spreadsheet_simulator.dart';
+import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 
 class SpreadsheetLabScreen extends ConsumerStatefulWidget {
@@ -111,6 +112,8 @@ class _SpreadsheetChallengeScreenState
   int _revealedHints = 0;
   int _failedAttempts = 0;
   bool _solved = false;
+  bool _solutionViewed = false;
+  int _earnedXp = 0;
 
   @override
   void dispose() {
@@ -272,6 +275,20 @@ class _SpreadsheetChallengeScreenState
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            SolutionRevealCard(
+              solution: item.solutionText,
+              revealed: _solutionViewed,
+              penaltyApplies: !_solved,
+              onReveal: _solutionViewed
+                  ? null
+                  : () => setState(() => _solutionViewed = true),
+            ),
+            if (_earnedXp > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('XP earned: $_earnedXp'),
+              ),
             if (_solved) ...[
               const SizedBox(height: 12),
               Card(
@@ -314,6 +331,13 @@ class _SpreadsheetChallengeScreenState
         .clamp(40, 100)
         .toInt();
 
+    final earnedXp =
+        await ref.read(gameProgressProvider.notifier).awardLearningXp(
+              rewardId: 'spreadsheet:${widget.challenge.id}',
+              baseXp: widget.challenge.xp,
+              score: score,
+              solutionViewed: _solutionViewed,
+            );
     await ref.read(masteryRepositoryProvider).recordAttempt(
           widget.challenge.skillKey,
           score,
@@ -337,6 +361,7 @@ class _SpreadsheetChallengeScreenState
     setState(() {
       _result = result;
       _solved = true;
+      _earnedXp = earnedXp;
     });
   }
 }

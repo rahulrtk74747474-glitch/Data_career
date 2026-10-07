@@ -6,6 +6,7 @@ import '../../models/daily_challenge.dart';
 import '../../services/scoring_service.dart';
 import '../../services/sql_editor_helper.dart';
 import '../../services/sql_result_grader.dart';
+import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 import '../sql_workspace/sql_workspace_screen.dart';
 
@@ -37,6 +38,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   String? _feedback;
   bool _solved = false;
   bool _submitting = false;
+  bool _solutionViewed = false;
   List<String> _sqlColumns = const [];
   List<Map<String, Object?>> _sqlRows = const [];
 
@@ -251,6 +253,15 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                   ? () => setState(() => _revealedHints++)
                   : null,
             ),
+            const SizedBox(height: 12),
+            SolutionRevealCard(
+              solution: task.solutionText,
+              revealed: _solutionViewed,
+              penaltyApplies: !alreadyCompleted && !_solved,
+              onReveal: _solutionViewed
+                  ? null
+                  : () => setState(() => _solutionViewed = true),
+            ),
             if (_solved || alreadyCompleted) ...[
               const SizedBox(height: 18),
               Card(
@@ -345,11 +356,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
             dateKey: widget.dailyDateKey!,
             score: score,
             bonusXp: widget.dailyChallenge!.bonusXp,
+            solutionViewed: _solutionViewed,
           );
     } else {
       await ref.read(gameProgressProvider.notifier).completeTask(
             task,
             score: score,
+            solutionViewed: _solutionViewed,
           );
     }
     await ref
@@ -384,7 +397,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
           ? '${grade.feedback}\nDaily score: $score/100. Streak: ${progress.dailyStreak} day(s). Bonus XP awarded.'
           : widget.reviewMode
               ? '${grade.feedback}\nReview score: $score/100. Mastery and next review date updated.'
-              : '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.';
+              : '${grade.feedback}\nScore: $score/100. XP, company metrics and ${task.skill} mastery updated.${_solutionViewed ? '\nSolution viewed: 5 XP deducted from this task reward.' : ''}';
     });
   }
 }

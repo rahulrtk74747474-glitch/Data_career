@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/pandas_challenge.dart';
 import '../../services/pandas_simulator.dart';
+import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 
 class PandasLabScreen extends ConsumerWidget {
@@ -91,6 +92,7 @@ class _PandasChallengeScreenState
   int _failed = 0;
   PandasRunResult? _result;
   bool _completed = false;
+  bool _solutionViewed = false;
 
   PandasChallenge get challenge => widget.challenge;
 
@@ -198,6 +200,15 @@ class _PandasChallengeScreenState
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            SolutionRevealCard(
+              solution: challenge.solutionText,
+              revealed: _solutionViewed,
+              penaltyApplies: !_completed,
+              onReveal: _solutionViewed
+                  ? null
+                  : () => setState(() => _solutionViewed = true),
+            ),
             if (_completed) ...[
               const SizedBox(height: 12),
               Card(
@@ -227,6 +238,13 @@ class _PandasChallengeScreenState
 
     final score =
         (100 - (_hints * 15) - (_failed * 10)).clamp(40, 100).toInt();
+    final earnedXp =
+        await ref.read(gameProgressProvider.notifier).awardLearningXp(
+              rewardId: 'pandas:${challenge.id}',
+              baseXp: challenge.xp,
+              score: score,
+              solutionViewed: _solutionViewed,
+            );
     await ref.read(masteryRepositoryProvider).recordAttempt('python', score);
     await ref.read(taskPerformanceRepositoryProvider).record(
           id: challenge.id,
@@ -245,7 +263,7 @@ class _PandasChallengeScreenState
       _result = PandasRunResult(
         isCorrect: true,
         feedback:
-            '${result.feedback}\nScore: $score/100. Python/Pandas mastery and portfolio evidence updated.',
+            '${result.feedback}\nScore: $score/100. XP earned: $earnedXp. Python/Pandas mastery and portfolio evidence updated.${_solutionViewed ? '\nSolution viewed: 5 XP deducted from this task reward.' : ''}',
         rows: result.rows,
       );
     });
