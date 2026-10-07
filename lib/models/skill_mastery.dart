@@ -27,6 +27,8 @@ class SkillMastery {
         return 'Business';
       case 'python':
         return 'Python/Pandas';
+      case 'powerbi':
+        return 'Power BI';
       default:
         return skillKey;
     }
@@ -44,6 +46,8 @@ class SkillMastery {
         return 'Business';
       case 'python':
         return 'Pandas';
+      case 'powerbi':
+        return 'Power BI';
       default:
         return displayName;
     }

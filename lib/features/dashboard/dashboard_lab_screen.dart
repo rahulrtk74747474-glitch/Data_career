@@ -39,7 +39,7 @@ class DashboardLabScreen extends ConsumerWidget {
                     leading: const Icon(Icons.dashboard_outlined),
                     title: Text(challenge.title),
                     subtitle: Text(
-                      '${challenge.category} • ${challenge.difficulty}',
+                      '${challenge.category} • ${challenge.difficulty}${challenge.skillKey == 'powerbi' ? ' • Power BI' : ''}',
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
@@ -200,16 +200,22 @@ class _DashboardChallengeScreenState
               score: score,
               solutionViewed: _solutionViewed,
             );
-    await ref.read(masteryRepositoryProvider).recordAttempt('business', score);
+    await ref.read(masteryRepositoryProvider).recordAttempt(
+          challenge.skillKey,
+          score,
+        );
     await ref.read(taskPerformanceRepositoryProvider).record(
           id: challenge.id,
           title: challenge.title,
-          skillKey: 'business',
+          skillKey: challenge.skillKey,
           difficulty: challenge.difficulty,
           score: score,
+          mode: challenge.skillKey == 'powerbi' ? 'powerbi_lab' : 'dashboard_lab',
+          companyKey: challenge.companyKey,
         );
     ref.invalidate(skillProfileProvider);
     ref.invalidate(portfolioSnapshotProvider);
+    ref.invalidate(jobReadinessProvider);
 
     if (!mounted) return;
     setState(() {

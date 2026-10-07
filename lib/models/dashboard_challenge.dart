@@ -11,6 +11,8 @@ class DashboardChallenge {
     required this.hints,
     required this.explanation,
     this.xp = 90,
+    this.skillKey = 'business',
+    this.companyKey = 'training',
   });
 
   final String id;
@@ -24,6 +26,8 @@ class DashboardChallenge {
   final List<String> hints;
   final String explanation;
   final int xp;
+  final String skillKey;
+  final String companyKey;
 
   String get solutionText =>
       'Correct decision:\n$correctOption\n\nWhy:\n$explanation';
@@ -41,6 +45,8 @@ class DashboardChallenge {
       hints: List<String>.from(json['hints'] as List<dynamic>),
       explanation: json['explanation'] as String,
       xp: (json['xp'] as num?)?.toInt() ?? 90,
+      skillKey: (json['skillKey'] as String?) ?? 'business',
+      companyKey: (json['companyKey'] as String?) ?? 'training',
     );
   }
 }

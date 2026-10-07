@@ -10,6 +10,23 @@ class MasteryRepository {
 
   Future<List<SkillMastery>> loadSkills() async {
     final db = await _appDatabase.database;
+    final batch = db.batch();
+    for (final skill in const [
+      'spreadsheets',
+      'sql',
+      'cleaning',
+      'statistics',
+      'business',
+      'python',
+      'powerbi',
+    ]) {
+      batch.insert(
+        'skill_mastery',
+        {'skill_key': skill},
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit(noResult: true);
     final rows = await db.query(
       'skill_mastery',
       orderBy: 'skill_key',
@@ -70,12 +87,25 @@ class MasteryRepository {
         whereArgs: [skillKey],
         limit: 1,
       );
-      if (rows.isEmpty) return;
+      final normalizedScore = score.clamp(0, 100).toDouble();
+      if (rows.isEmpty) {
+        await txn.insert(
+          'skill_mastery',
+          {
+            'skill_key': skillKey,
+            'mastery': normalizedScore,
+            'attempts': 1,
+            'correct_count': score >= 70 ? 1 : 0,
+            'next_review_at': _nextReview(score).toIso8601String(),
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        return;
+      }
 
       final row = rows.first;
       final attempts = (row['attempts'] as num).toInt();
       final currentMastery = (row['mastery'] as num).toDouble();
-      final normalizedScore = score.clamp(0, 100).toDouble();
       final updatedMastery = attempts == 0
           ? normalizedScore
           : ((currentMastery * 0.70) + (normalizedScore * 0.30))
