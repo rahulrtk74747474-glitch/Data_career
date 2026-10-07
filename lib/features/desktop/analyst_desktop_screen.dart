@@ -350,7 +350,7 @@ class _CompanyImpactCard extends StatelessWidget {
       ('Satisfaction', '${progress.satisfaction.toStringAsFixed(0)}%'),
       ('Manager trust', '${progress.managerTrust.toStringAsFixed(0)}%'),
       ('Data quality', '${progress.dataQuality.toStringAsFixed(0)}%'),
-      ('Risk', '${progress.riskIndex.toStringAsFixed(0)}'),
+      ('Risk', progress.riskIndex.toStringAsFixed(0)),
     ];
 
     return Card(
