@@ -7,6 +7,7 @@ import '../../models/analytics_challenge.dart';
 import '../../models/boss_case.dart';
 import '../../models/boss_case_result.dart';
 import '../../models/capstone.dart';
+import '../../models/career_mission.dart';
 import '../../models/capstone_result.dart';
 import '../../models/dashboard_challenge.dart';
 import '../../models/daily_challenge.dart';
@@ -197,6 +198,11 @@ final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
 
 final reminderSettingsProvider = FutureProvider<ReminderSettings>((ref) {
   return ref.read(reminderSettingsRepositoryProvider).load();
+});
+
+final careerMissionsProvider =
+    FutureProvider<List<CareerMission>>((ref) {
+  return ref.read(contentRepositoryProvider).loadCareerMissions();
 });
 
 final foundationLessonsProvider =
