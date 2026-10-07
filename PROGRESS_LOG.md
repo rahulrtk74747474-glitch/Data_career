@@ -688,7 +688,7 @@ Final CI verification passed in GitHub Actions run #380.
 
 ## v1.4 — Analyst Desktop + Knowledge OS
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #393)**
 
 Goal: make DataQuest feel like reporting to a real analyst job while also becoming a durable reference/revision system.
 
@@ -772,4 +772,20 @@ Added five synthetic mini case studies that teach growth quality, NRR concentrat
 - Bumped application to **v1.4.0+19**.
 - Updated backup/release diagnostics metadata.
 
-Final CI verification pending.
+Final CI verification passed in GitHub Actions run #393.
+
+
+### Remaining product-vision gaps after v1.4
+
+The wider product vision is not yet fully complete. The main remaining gaps are:
+- a true timed end-to-end Day-at-Work session that connects raw files, cleaning, SQL/Pandas, statistics, charting and manager review in one continuous scenario;
+- more open-ended advanced work where the app does not tell the learner which tool to use;
+- broader bad-data traps such as Simpson's paradox, survivorship bias and timezone defects;
+- a mandatory explanation-to-manager step after every advanced technical task;
+- five polished company capstones with GitHub-ready project exports;
+- mistake-specific feedback across every legacy task, not only the newer decision content;
+- optional adaptive AI Manager/AI Interviewer (current manager flows are scripted/offline);
+- deeper Lead/Head managerial gameplay;
+- stronger real-tool fidelity for Excel/Pandas/Power BI;
+- external subject-matter review of educational accuracy;
+- physical-device/retention testing, monetization design and Play Store conversion testing.
