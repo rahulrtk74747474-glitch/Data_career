@@ -440,7 +440,7 @@ Completed:
 
 ### Expansion Item 4 — SQL Lab expansion
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #354)**
 
 Completed:
 1. Preserved all 20 stable SQL core task IDs and existing player evidence.
@@ -456,6 +456,16 @@ Completed:
 11. Added automated execution/grading coverage for all 20 reference solutions.
 12. Added editor, safety, error and result-grader regression tests.
 13. Added `docs/SQL_LAB_v1_1.md`.
+14. CI run #354 passed static analysis, all **143 tests**, debug APK, release AAB, all three split APK builds, release-size budgets and artifact uploads.
+15. Verified run #354 outputs:
+   - release AAB: **55.54 MB**
+   - ARM32 release APK: **17.87 MB**
+   - ARM64 release APK: **20.12 MB**
+   - x86_64 release APK: **21.54 MB**
+   - content assets: **0.28 MB**
+   - debug APK artifact ID `11459248219`
+   - release AAB artifact ID `11459417624`
+   - release split APKs artifact ID `11459228251`
 
 ### Exact next expansion item — Item 5
 
