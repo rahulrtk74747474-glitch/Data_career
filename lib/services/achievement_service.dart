@@ -29,6 +29,16 @@ class AchievementService {
         : interviews
             .map((item) => item.bestScore)
             .reduce((a, b) => a > b ? a : b);
+    final careerProjects = progress.rewardedLearningIds
+        .where((id) => id.startsWith('mission:'))
+        .length;
+    final independentPasses = portfolio.taskPerformances
+        .where(
+          (item) =>
+              item.difficulty == 'Independent' &&
+              item.bestScore >= 70,
+        )
+        .length;
 
     return [
       AchievementBadge(
@@ -54,6 +64,28 @@ class AchievementService {
         title: 'Pandas Practitioner',
         description: 'Reach 70% Python/Pandas mastery.',
         unlocked: mastery('python') >= 70,
+      ),
+      AchievementBadge(
+        id: 'power-bi-builder',
+        title: 'Power BI Builder',
+        description:
+            'Reach 70% Power BI mastery and complete a passing BI task.',
+        unlocked:
+            mastery('powerbi') >= 70 && hasSkillEvidence('powerbi'),
+      ),
+      AchievementBadge(
+        id: 'independent-analyst',
+        title: 'Independent Analyst',
+        description:
+            'Pass five Independent-stage foundation tasks without relying only on guided work.',
+        unlocked: independentPasses >= 5,
+      ),
+      AchievementBadge(
+        id: 'project-analyst',
+        title: 'Project Analyst',
+        description:
+            'Complete three connected Career Campaign projects.',
+        unlocked: careerProjects >= 3,
       ),
       AchievementBadge(
         id: 'evidence-driven',
