@@ -44,7 +44,7 @@ void main() {
     expect(find.text('Analyst Career'), findsOneWidget);
     expect(find.text('Opening offline workspace...'), findsOneWidget);
 
-    for (var frame = 0; frame < 50; frame++) {
+    for (var frame = 0; frame < 200; frame++) {
       await tester.pump(const Duration(milliseconds: 100));
       if (find.text('E-commerce Co. • Commercial Analytics')
           .evaluate()
