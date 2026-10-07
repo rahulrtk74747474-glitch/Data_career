@@ -501,7 +501,7 @@ Completed:
 
 ## Home UI/UX simplification — post Item 5 maintenance
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #359)**
 
 Completed:
 1. Replaced the 21-card two-column feature grid with a clear information hierarchy.
@@ -515,6 +515,7 @@ Completed:
 9. Preserved every existing destination and all player progress/evidence behavior.
 10. Added Home widget assertions for the new navigation hierarchy.
 11. Bumped the app build to **v1.1.0+15**.
+12. CI run #359 passed static analysis, all automated tests including Home accessibility checks, debug APK, release AAB, all split APK builds, release-size budgets and artifact uploads.
 
 This maintenance change does not start Expansion Item 6.
 
