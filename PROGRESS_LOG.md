@@ -607,7 +607,7 @@ GitHub Actions run #367 passed static analysis, the complete automated test suit
 
 ## v1.3 — Career Game + Job-Ready Product Overhaul
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #380)**
 
 Goal: address the product flaws that make learning apps feel like isolated quizzes and make DataQuest substantially more engaging, realistic and job-oriented.
 
@@ -682,5 +682,94 @@ Goal: address the product flaws that make learning apps feel like isolated quizz
 ### Version
 - Bumped application to **v1.3.0+18**.
 - Updated backup/release diagnostic version metadata.
+
+Final CI verification passed in GitHub Actions run #380.
+
+
+## v1.4 — Analyst Desktop + Knowledge OS
+
+Status: **IMPLEMENTED — CI PENDING**
+
+Goal: make DataQuest feel like reporting to a real analyst job while also becoming a durable reference/revision system.
+
+### Analyst Desktop workday
+1. Added a simulated **DataQuest Workstation login**.
+2. After login, the player is visibly **Online** until they log out of the simulated desktop.
+3. Desktop includes Inbox, Workday, Notebook, Handbook, Metric Lab, Review Desk, Workflow, Recruiter View, Job Match, Analyst Stories, Portfolio and Interviews.
+4. Home sends the main **Report to Work** action through desktop login instead of bypassing the work environment.
+5. Role responsibility changes with Intern → Junior → Analyst → Senior → Lead → Head of Analytics.
+
+### Manager / CEO / team Inbox
+1. Added 12 realistic decision messages across e-commerce, SaaS, banking, hospital and logistics.
+2. Messages include vague requirements, causal overclaims, privacy problems, metric-definition conflicts, urgent executive requests, forecasting pressure and junior-analyst review requests.
+3. Decisions are partially scored rather than only right/wrong.
+4. Every choice has specific feedback and a scripted manager follow-up.
+5. Higher-level messages unlock with career progression.
+
+### Visible business consequences
+1. Added persistent **Manager Trust**, **Data Quality** and **Risk** metrics alongside Revenue, Churn, Cost and Satisfaction.
+2. Inbox/review/metric decisions can improve or damage company state.
+3. Career project completion increases Manager Trust.
+4. Normal company-ticket performance also affects trust/data quality.
+5. Work decisions are one-time and cannot be repeatedly farmed for XP or consequences.
+
+### Learning Notebook
+1. Added an automatic learning notebook.
+2. Completed Academy lessons, career tickets, Spreadsheet tasks, Pandas tasks, Analytics Studio tasks, BI/Dashboard tasks and Insight Coach work are converted into concise revision notes.
+3. Notes preserve a shortcut plus a longer explanation/solution.
+4. Added search and skill filtering.
+5. Added **Quick Revision** flashcard-style review.
+6. Added user-written manual notes with persistent offline save/delete.
+
+### Analyst Handbook
+1. Added 34 compact reference entries across SQL, Excel, Data Cleaning, Statistics, Python/Pandas, Power BI, Business Analytics and Dashboards.
+2. Each entry includes shortcut, formula/syntax, example, when to use, when not to use and a company scenario.
+3. Handbook is searchable and filterable.
+
+### Metric Relationship Lab
+1. Added 8 multi-metric business cases.
+2. Cases teach interactions such as:
+   - revenue growth vs margin/CAC/churn,
+   - NRR vs logo churn/concentration,
+   - conversion vs traffic/AOV,
+   - median vs P90 wait,
+   - shipping cost vs cost/kg,
+   - NPA ratio vs absolute NPAs/loan-book growth,
+   - MAU vs engagement depth,
+   - PAT vs operating cash flow/working capital.
+3. Answers use partial scoring and specific feedback.
+
+### Analyst Workflow / Operating System
+Added a reusable nine-step checklist:
+Understand request → Define metric & grain → Validate data → Analyze → Test assumptions → Visualize → Explain → Recommend → Monitor.
+
+### Review Desk
+1. Added 8 junior-analyst review cases.
+2. Learners review join duplication, outlier/mean interpretation, misleading charts, p-values, Power BI relationships, Excel refresh safety, privacy and forecasts.
+3. Review Desk is framed as a Senior Analyst responsibility and provides partial-credit coaching.
+
+### Recruiter View + Job Match
+1. Added Recruiter View showing evidence-based readiness instead of XP.
+2. Shows job-readiness score, completed career projects, independent evidence, interview performance and verified skill profile.
+3. Added Job Match profiles for:
+   - Junior Data Analyst,
+   - BI Analyst,
+   - Product Analyst,
+   - Operations Analyst,
+   - Risk Data Analyst.
+4. Job Match uses weighted demonstrated mastery plus project/evidence breadth and identifies the next gaps to close.
+
+### Analyst Stories
+Added five synthetic mini case studies that teach growth quality, NRR concentration, risky proxies, tail service metrics and workload-normalized costs.
+
+### Design safeguards
+- No extra feature grid was added to the main Home screen; the richer tools live behind the Analyst Desktop.
+- Core app remains offline-first.
+- Scripted manager follow-ups provide realistic offline interaction; no external AI/API is required for the learning loop.
+- Existing 5-XP full-solution penalty remains unchanged.
+
+### Version
+- Bumped application to **v1.4.0+19**.
+- Updated backup/release diagnostics metadata.
 
 Final CI verification pending.
