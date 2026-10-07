@@ -22,15 +22,21 @@ void main() {
     );
   });
 
+  tearDown(() async {
+    await database.close();
+  });
+
   testWidgets('Splash is the startup route and safely reaches Home', (
     tester,
   ) async {
+    await tester.runAsync(() => database.database);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
           contentPackLoaderProvider.overrideWithValue(
-            _FastContentPackLoader(database),
+            _NoopContentPackLoader(database),
           ),
         ],
         child: MaterialApp(
@@ -44,16 +50,20 @@ void main() {
     expect(find.text('Analyst Career'), findsOneWidget);
     expect(find.text('Opening offline workspace...'), findsOneWidget);
 
-    await _waitForHome(tester);
+    for (var frame = 0; frame < 30; frame++) {
+      await tester.pump(const Duration(milliseconds: 50));
+      if (find
+          .text('E-commerce Co. • Commercial Analytics')
+          .evaluate()
+          .isNotEmpty) {
+        break;
+      }
+    }
 
     expect(
       find.text('E-commerce Co. • Commercial Analytics'),
       findsOneWidget,
     );
-
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump();
-    await database.close();
   });
 
   testWidgets('unknown named route falls back to Home', (tester) async {
@@ -61,9 +71,6 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
-          contentPackLoaderProvider.overrideWithValue(
-            _FastContentPackLoader(database),
-          ),
         ],
         child: MaterialApp(
           initialRoute: '/unknown-route',
@@ -75,42 +82,16 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    expect(find.text('E-commerce Co. • Commercial Analytics'), findsOneWidget);
-
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump();
-    await database.close();
+    expect(
+      find.text('E-commerce Co. • Commercial Analytics'),
+      findsOneWidget,
+    );
   });
 }
 
-
-Future<void> _waitForHome(WidgetTester tester) async {
-  for (var attempt = 0; attempt < 100; attempt++) {
-    await tester.pump(const Duration(milliseconds: 50));
-    if (find
-        .text('E-commerce Co. • Commercial Analytics')
-        .evaluate()
-        .isNotEmpty) {
-      return;
-    }
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 10)),
-    );
-  }
-}
-
-
-class _FastContentPackLoader extends ContentPackLoader {
-  _FastContentPackLoader(super.database);
+class _NoopContentPackLoader extends ContentPackLoader {
+  _NoopContentPackLoader(super.database);
 
   @override
-  Future<List<PackInstallResult>> installBundledPacks() async {
-    return const [
-      PackInstallResult(
-        packId: 'test-startup-pack',
-        installed: false,
-        contentVersion: 1,
-      ),
-    ];
-  }
+  Future<List<PackInstallResult>> installBundledPacks() async => const [];
 }
