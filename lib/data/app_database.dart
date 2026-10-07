@@ -2,7 +2,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-  static const schemaVersion = 9;
+  static const schemaVersion = 10;
 
   AppDatabase({
     DatabaseFactory? factory,
@@ -25,6 +25,9 @@ class AppDatabase {
       path,
       options: OpenDatabaseOptions(
         version: schemaVersion,
+        onConfigure: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+        },
         onCreate: (db, version) async {
           await _createCoreSchema(db);
           await _seedCore(db);
@@ -42,6 +45,7 @@ class AppDatabase {
           await _createPhaseNineSchema(db);
           await _seedPhaseNine(db);
           await _createV11ContentSchema(db);
+          await _upgradeUnifiedContentSchema(db);
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
@@ -73,6 +77,9 @@ class AppDatabase {
           }
           if (oldVersion < 9) {
             await _createV11ContentSchema(db);
+          }
+          if (oldVersion < 10) {
+            await _upgradeUnifiedContentSchema(db);
           }
         },
       ),
@@ -361,6 +368,7 @@ class AppDatabase {
         company_key TEXT NOT NULL,
         answer_type TEXT NOT NULL,
         content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
         json_payload TEXT NOT NULL,
         FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
@@ -372,6 +380,7 @@ class AppDatabase {
         pack_id TEXT NOT NULL,
         name TEXT NOT NULL,
         content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
         json_payload TEXT NOT NULL,
         FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
@@ -383,6 +392,7 @@ class AppDatabase {
         pack_id TEXT NOT NULL,
         trigger_key TEXT NOT NULL,
         content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
         json_payload TEXT NOT NULL,
         FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
@@ -394,6 +404,7 @@ class AppDatabase {
         pack_id TEXT NOT NULL,
         kind TEXT NOT NULL,
         content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
         json_payload TEXT NOT NULL,
         FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
@@ -404,6 +415,7 @@ class AppDatabase {
         attempt_id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id TEXT NOT NULL,
         task_id TEXT NOT NULL,
+        task_content_version INTEGER NOT NULL DEFAULT 1,
         score INTEGER NOT NULL,
         answer_json TEXT NOT NULL,
         completed_at TEXT NOT NULL,
@@ -418,6 +430,7 @@ class AppDatabase {
         pack_id TEXT NOT NULL,
         event_type TEXT NOT NULL,
         content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
         json_payload TEXT NOT NULL,
         FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
@@ -426,10 +439,13 @@ class AppDatabase {
     await db.execute('''
       CREATE TABLE IF NOT EXISTS achievements (
         achievement_id TEXT PRIMARY KEY,
+        pack_id TEXT NOT NULL,
         title TEXT NOT NULL,
         description TEXT NOT NULL,
         rule_json TEXT NOT NULL,
-        content_version INTEGER NOT NULL
+        content_version INTEGER NOT NULL,
+        is_active INTEGER NOT NULL DEFAULT 1,
+        FOREIGN KEY (pack_id) REFERENCES content_packs(pack_id)
       )
     ''');
 
@@ -502,6 +518,104 @@ class AppDatabase {
       },
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
+  }
+
+
+  Future<void> _upgradeUnifiedContentSchema(Database db) async {
+    await _ensureColumn(
+      db,
+      'tasks',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'datasets',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'dialogues',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'rubrics',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'events',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'achievements',
+      'pack_id',
+      'TEXT',
+    );
+    await _ensureColumn(
+      db,
+      'achievements',
+      'is_active',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+    await _ensureColumn(
+      db,
+      'attempts',
+      'task_content_version',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_tasks_pack_active '
+      'ON tasks(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_datasets_pack_active '
+      'ON datasets(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_dialogues_pack_active '
+      'ON dialogues(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_rubrics_pack_active '
+      'ON rubrics(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_events_pack_active '
+      'ON events(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_achievements_pack_active '
+      'ON achievements(pack_id, is_active)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_attempts_user_completed '
+      'ON attempts(user_id, completed_at)',
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_attempts_task '
+      'ON attempts(task_id)',
+    );
+  }
+
+  Future<void> _ensureColumn(
+    Database db,
+    String table,
+    String column,
+    String definition,
+  ) async {
+    final info = await db.rawQuery('PRAGMA table_info($table)');
+    final exists = info.any((row) => row['name'] == column);
+    if (!exists) {
+      await db.execute('ALTER TABLE $table ADD COLUMN $column $definition');
+    }
   }
 
   Future<void> _seedCore(Database db) async {

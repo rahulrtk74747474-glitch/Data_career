@@ -404,20 +404,43 @@ Completed:
    - release AAB artifact ID `11457367787`
    - release split APKs artifact ID `11457083752`
 
-### Exact next expansion item — Item 3
+### Expansion Item 3 — Unified SQLite/content-pack architecture
 
-**Unified SQLite/content-pack architecture.**
+Status: **IMPLEMENTED — CI PENDING**
 
-Item 3 should:
-1. Audit and finalize canonical offline tables for users, progress, tasks, datasets, attempts, events and achievements without deleting existing v1.0/v1.1 state.
-2. Finalize the versioned JSON content-pack contract for tasks, datasets, dialogues, rubrics, events and achievements.
-3. Ensure bundled packs load from assets into SQLite offline and are idempotently versioned.
-4. Reject unsupported/newer pack schemas before mutation.
-5. Add/verify transactional pack upgrades so a failed pack cannot partially install.
-6. Add five complete sample tasks in the unified format with datasets, three-level hints, expected answers, rubrics and business context.
-7. Document the schema/content-pack format for future task generation.
-8. Add/verify automated migration, installation, upgrade and rollback tests.
-9. Preserve all existing player progress and learning content.
-10. Stop and ask for confirmation before Item 4.
+Completed:
+1. Bumped SQLite to schema version 10 with migration-safe upgrades from the existing v9 catalog.
+2. Enabled SQLite foreign keys on database configure.
+3. Preserved canonical offline tables for users, progress, tasks, datasets, attempts, events and achievements without deleting earlier career/mastery/evidence state.
+4. Added catalog lifecycle state (`is_active`) so pack upgrades retire removed content instead of deleting rows referenced by historical evidence.
+5. Added `pack_id` ownership to achievements and migration-safe claiming of pre-v10 legacy achievement rows.
+6. Added `task_content_version` to attempts so historical attempts retain the content version they were completed against.
+7. Added idempotent catalog/attempt indexes for pack and history queries.
+8. Upgraded the JSON content-pack contract to canonical schema v2 while retaining schema-v1 compatibility.
+9. Schema v2 validates all top-level collections, unique IDs, task/dataset/rubric references, exactly three hints, expected answer/result presence, dialogue/event completeness and rubric weights totaling 100.
+10. Unsupported/newer pack schemas are rejected before catalog mutation.
+11. Added cross-pack ID ownership checks to prevent one content pack from silently overwriting another pack's catalog IDs.
+12. Reworked pack upgrades to use one SQLite transaction and non-destructive in-place upserts.
+13. A failed SQLite write rolls the entire pack upgrade back to the previously installed version.
+14. Updated the bundled reference pack to schema v2/content version 2 with five complete sample tasks, four datasets, five rubrics, two manager dialogues, four random events and two achievements.
+15. Every reference task now includes business context, dataset/rubric references, exactly three hints and an expected answer/result.
+16. Added `docs/CONTENT_PACK_ARCHITECTURE_v1_1.md` as the canonical format for future generated task packs.
+17. Expanded automated tests for bundled offline install, idempotency, non-destructive upgrades, attempt preservation, retired rows, unsupported schemas, three-hint validation and forced transactional rollback.
+18. Added an explicit v9 -> v10 migration test proving player progress, task data, attempts and achievements survive the schema upgrade.
 
-Do not start Item 3 until the user explicitly confirms.
+### Exact next expansion item — Item 4
+
+**SQL Lab expansion.**
+
+Item 4 should:
+1. Build/finish the in-app SQL editor and touch-friendly keyword shortcut bar.
+2. Run learner SQL against local SQLite sample company databases.
+3. Show result tables and explain SQL errors in plain language.
+4. Auto-grade result sets against expected output.
+5. Use the standard three-level hint flow.
+6. Add the requested 20 SQL tasks from beginner queries through joins, aggregations, subqueries/CTEs and window functions.
+7. Preserve all existing SQL tasks and player evidence.
+8. Add automated grading/execution tests and verify CI.
+9. Stop and ask for confirmation before Item 5.
+
+Do not start Item 4 until the user explicitly confirms.

@@ -1,8 +1,17 @@
 {
   "packId": "mvp-sample-core",
-  "schemaVersion": 1,
-  "contentVersion": 1,
+  "schemaVersion": 2,
+  "contentVersion": 2,
   "datasets": [
+    {
+      "id": "sample-discount-orders",
+      "name": "discount_orders",
+      "columns": ["order_id", "gross_revenue", "discount_rate"],
+      "rows": [
+        {"order_id": "D1", "gross_revenue": 1000, "discount_rate": 0.10},
+        {"order_id": "D2", "gross_revenue": 1500, "discount_rate": 0.20}
+      ]
+    },
     {
       "id": "sample-sales-table",
       "name": "sample_sales",
@@ -12,17 +21,65 @@
         {"order_id": "S2", "region": "West", "revenue": 800, "status": "completed"},
         {"order_id": "S3", "region": "North", "revenue": 500, "status": "refunded"}
       ]
+    },
+    {
+      "id": "sample-vendor-orders",
+      "name": "vendor_orders",
+      "columns": ["order_id", "product_code", "order_date", "amount"],
+      "rows": [
+        {"order_id": "V1", "product_code": "P10", "order_date": "2026-09-01", "amount": 900},
+        {"order_id": "V2", "product_code": null, "order_date": "01/09/2026", "amount": 1200},
+        {"order_id": "V2", "product_code": null, "order_date": "01/09/2026", "amount": 1200}
+      ]
+    },
+    {
+      "id": "sample-ab-test",
+      "name": "checkout_ab_test",
+      "columns": ["variant", "users", "conversions"],
+      "rows": [
+        {"variant": "A", "users": 1000, "conversions": 100},
+        {"variant": "B", "users": 1000, "conversions": 120}
+      ]
     }
   ],
   "rubrics": [
     {
+      "id": "formula-exact-v1",
+      "kind": "formula",
+      "criteria": [
+        {"key": "correct_formula", "weight": 100, "description": "Uses gross revenue multiplied by one minus the discount rate."}
+      ]
+    },
+    {
+      "id": "sql-result-v1",
+      "kind": "sql_result",
+      "criteria": [
+        {"key": "correct_result", "weight": 100, "description": "Returns the expected completed revenue grouped by region."}
+      ]
+    },
+    {
+      "id": "cleaning-check-v1",
+      "kind": "multi_select",
+      "criteria": [
+        {"key": "confirm_grain", "weight": 50, "description": "Confirms what one row represents before deleting data."},
+        {"key": "business_key", "weight": 50, "description": "Identifies duplicates using a defensible business key."}
+      ]
+    },
+    {
+      "id": "statistics-interpretation-v1",
+      "kind": "choice",
+      "criteria": [
+        {"key": "defensible_interpretation", "weight": 100, "description": "Separates observed lift from a significance claim."}
+      ]
+    },
+    {
       "id": "insight-core-v1",
       "kind": "written_insight",
       "criteria": [
-        {"key": "clarity", "weight": 25},
-        {"key": "evidence", "weight": 30},
-        {"key": "recommendation", "weight": 25},
-        {"key": "businessImpact", "weight": 20}
+        {"key": "clarity", "weight": 25, "description": "States the finding directly."},
+        {"key": "evidence", "weight": 30, "description": "Uses the supplied numbers."},
+        {"key": "recommendation", "weight": 25, "description": "Proposes a bounded next action."},
+        {"key": "businessImpact", "weight": 20, "description": "Connects the recommendation to a business decision."}
       ]
     }
   ],
@@ -92,6 +149,8 @@
       "difficulty": "Beginner",
       "companyKey": "ecommerce",
       "answerType": "formula",
+      "datasetId": "sample-discount-orders",
+      "rubricId": "formula-exact-v1",
       "context": "Sales wants net revenue after a percentage discount.",
       "prompt": "If B2 is gross revenue and C2 is discount rate, write the formula for net revenue.",
       "expectedAnswer": "=B2*(1-C2)",
@@ -104,8 +163,11 @@
       "difficulty": "Beginner",
       "companyKey": "ecommerce",
       "answerType": "sql_result",
+      "datasetId": "sample-sales-table",
+      "rubricId": "sql-result-v1",
       "context": "Operations wants completed revenue by region.",
       "prompt": "Group completed sample_sales rows by region and sum revenue.",
+      "expectedAnswer": "SELECT region, SUM(revenue) AS revenue FROM sample_sales WHERE status = 'completed' GROUP BY region ORDER BY region;",
       "expectedRows": [
         {"region": "North", "revenue": 1200},
         {"region": "West", "revenue": 800}
@@ -119,27 +181,32 @@
       "difficulty": "Beginner",
       "companyKey": "ecommerce",
       "answerType": "multi_select",
-      "context": "A vendor extract may contain duplicates.",
+      "datasetId": "sample-vendor-orders",
+      "rubricId": "cleaning-check-v1",
+      "context": "A vendor extract contains a repeated order, a missing product code and inconsistent date formatting.",
       "prompt": "Choose the checks that should happen before deduplication.",
+      "expectedAnswer": "Confirm row grain; Identify duplicate business keys",
       "expectedSelections": ["Confirm row grain", "Identify duplicate business keys"],
       "options": ["Confirm row grain", "Identify duplicate business keys", "Delete every repeated-looking row immediately"],
       "hints": ["Know what one row should represent.", "Use the business key.", "Do not delete before understanding grain."]
     },
     {
       "id": "sample-statistics-001",
-      "title": "Correlation Is Not Causation",
+      "title": "A/B Test Interpretation",
       "skillKey": "statistics",
       "difficulty": "Beginner",
       "companyKey": "ecommerce",
       "answerType": "choice",
-      "context": "Ad spend and sales rose together.",
-      "prompt": "What is the defensible conclusion?",
-      "expectedAnswer": "The variables moved together, but more evidence is needed before claiming ad spend caused the sales increase.",
+      "datasetId": "sample-ab-test",
+      "rubricId": "statistics-interpretation-v1",
+      "context": "Checkout variant B converted 120 of 1,000 users while A converted 100 of 1,000 users.",
+      "prompt": "What is the defensible conclusion before a significance test is run?",
+      "expectedAnswer": "Variant B has a higher observed conversion rate, but statistical uncertainty must be tested before declaring it the winner.",
       "options": [
-        "The variables moved together, but more evidence is needed before claiming ad spend caused the sales increase.",
-        "The correlation proves the ads caused all sales growth."
+        "Variant B has a higher observed conversion rate, but statistical uncertainty must be tested before declaring it the winner.",
+        "Variant B is proven to be better because 120 is larger than 100."
       ],
-      "hints": ["Association is not causation.", "Other factors can move both metrics.", "A controlled design is stronger for causal claims."]
+      "hints": ["Compare observed rates first.", "Observed lift is not the same as statistical significance.", "A hypothesis test quantifies uncertainty."]
     },
     {
       "id": "sample-insight-001",
@@ -148,9 +215,11 @@
       "difficulty": "Intermediate",
       "companyKey": "ecommerce",
       "answerType": "written_insight",
-      "context": "North delivered ₹1,200 completed revenue versus West ₹800 in the tiny sample.",
-      "prompt": "Write one short insight that states the evidence, avoids overclaiming, and recommends a next step.",
+      "datasetId": "sample-sales-table",
       "rubricId": "insight-core-v1",
+      "context": "North delivered ₹1,200 completed revenue versus West ₹800 in the small sample.",
+      "prompt": "Write one short insight that states the evidence, avoids overclaiming, and recommends a next step.",
+      "expectedAnswer": "North generated ₹1,200 completed revenue versus West ₹800 in this small sample; validate the pattern over a longer period, then investigate the North drivers before reallocating effort.",
       "hints": ["Lead with the finding.", "Include the numbers.", "Recommend a bounded next action."]
     }
   ]

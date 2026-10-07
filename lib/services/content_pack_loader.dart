@@ -40,6 +40,10 @@ class ContentPackLoader {
     String raw, {
     required String sourceAsset,
   }) async {
+    if (sourceAsset.trim().isEmpty) {
+      throw const FormatException('Content pack sourceAsset is required.');
+    }
+
     final decoded = jsonDecode(raw);
     if (decoded is! Map) {
       throw const FormatException('Content-pack root must be an object.');
@@ -69,6 +73,37 @@ class ContentPackLoader {
       }
     }
 
+    await _validateOwnership(db, 'tasks', 'task_id', pack.packId, pack.tasks);
+    await _validateOwnership(
+      db,
+      'datasets',
+      'dataset_id',
+      pack.packId,
+      pack.datasets,
+    );
+    await _validateOwnership(
+      db,
+      'dialogues',
+      'dialogue_id',
+      pack.packId,
+      pack.dialogues,
+    );
+    await _validateOwnership(
+      db,
+      'rubrics',
+      'rubric_id',
+      pack.packId,
+      pack.rubrics,
+    );
+    await _validateOwnership(db, 'events', 'event_id', pack.packId, pack.events);
+    await _validateOwnership(
+      db,
+      'achievements',
+      'achievement_id',
+      pack.packId,
+      pack.achievements,
+    );
+
     await db.transaction((txn) async {
       for (final table in const [
         'tasks',
@@ -76,38 +111,37 @@ class ContentPackLoader {
         'dialogues',
         'rubrics',
         'events',
+        'achievements',
       ]) {
-        await txn.delete(
+        await txn.update(
           table,
+          {'is_active': 0},
           where: 'pack_id = ?',
           whereArgs: [pack.packId],
         );
       }
 
-      await txn.insert(
-        'content_packs',
-        {
+      await _upsertByKey(
+        txn,
+        table: 'content_packs',
+        keyColumn: 'pack_id',
+        keyValue: pack.packId,
+        values: {
           'pack_id': pack.packId,
           'schema_version': pack.schemaVersion,
           'content_version': pack.contentVersion,
           'source_asset': sourceAsset,
           'installed_at': DateTime.now().toUtc().toIso8601String(),
         },
-        conflictAlgorithm: ConflictAlgorithm.replace,
       );
 
       for (final task in pack.tasks) {
-        _require(task, const [
-          'id',
-          'title',
-          'skillKey',
-          'difficulty',
-          'companyKey',
-          'answerType',
-        ], 'task');
-        await txn.insert(
-          'tasks',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'tasks',
+          keyColumn: 'task_id',
+          keyValue: task['id'],
+          values: {
             'task_id': task['id'],
             'pack_id': pack.packId,
             'title': task['title'],
@@ -116,88 +150,95 @@ class ContentPackLoader {
             'company_key': task['companyKey'],
             'answer_type': task['answerType'],
             'content_version': pack.contentVersion,
+            'is_active': 1,
             'json_payload': jsonEncode(task),
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
 
       for (final dataset in pack.datasets) {
-        _require(dataset, const ['id', 'name'], 'dataset');
-        await txn.insert(
-          'datasets',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'datasets',
+          keyColumn: 'dataset_id',
+          keyValue: dataset['id'],
+          values: {
             'dataset_id': dataset['id'],
             'pack_id': pack.packId,
             'name': dataset['name'],
             'content_version': pack.contentVersion,
+            'is_active': 1,
             'json_payload': jsonEncode(dataset),
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
 
       for (final dialogue in pack.dialogues) {
-        _require(dialogue, const ['id', 'triggerKey'], 'dialogue');
-        await txn.insert(
-          'dialogues',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'dialogues',
+          keyColumn: 'dialogue_id',
+          keyValue: dialogue['id'],
+          values: {
             'dialogue_id': dialogue['id'],
             'pack_id': pack.packId,
             'trigger_key': dialogue['triggerKey'],
             'content_version': pack.contentVersion,
+            'is_active': 1,
             'json_payload': jsonEncode(dialogue),
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
 
       for (final rubric in pack.rubrics) {
-        _require(rubric, const ['id', 'kind'], 'rubric');
-        await txn.insert(
-          'rubrics',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'rubrics',
+          keyColumn: 'rubric_id',
+          keyValue: rubric['id'],
+          values: {
             'rubric_id': rubric['id'],
             'pack_id': pack.packId,
             'kind': rubric['kind'],
             'content_version': pack.contentVersion,
+            'is_active': 1,
             'json_payload': jsonEncode(rubric),
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
 
       for (final event in pack.events) {
-        _require(event, const ['id', 'eventType'], 'event');
-        await txn.insert(
-          'events',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'events',
+          keyColumn: 'event_id',
+          keyValue: event['id'],
+          values: {
             'event_id': event['id'],
             'pack_id': pack.packId,
             'event_type': event['eventType'],
             'content_version': pack.contentVersion,
+            'is_active': 1,
             'json_payload': jsonEncode(event),
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
 
       for (final achievement in pack.achievements) {
-        _require(
-          achievement,
-          const ['id', 'title', 'description', 'rule'],
-          'achievement',
-        );
-        await txn.insert(
-          'achievements',
-          {
+        await _upsertByKey(
+          txn,
+          table: 'achievements',
+          keyColumn: 'achievement_id',
+          keyValue: achievement['id'],
+          values: {
             'achievement_id': achievement['id'],
+            'pack_id': pack.packId,
             'title': achievement['title'],
             'description': achievement['description'],
             'rule_json': jsonEncode(achievement['rule']),
             'content_version': pack.contentVersion,
+            'is_active': 1,
           },
-          conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
     });
@@ -209,16 +250,47 @@ class ContentPackLoader {
     );
   }
 
-  static void _require(
-    Map<String, dynamic> row,
-    List<String> keys,
-    String label,
-  ) {
-    for (final key in keys) {
-      final value = row[key];
-      if (value == null || value.toString().trim().isEmpty) {
-        throw FormatException('$label is missing required field $key.');
+  Future<void> _validateOwnership(
+    Database db,
+    String table,
+    String idColumn,
+    String packId,
+    List<Map<String, dynamic>> rows,
+  ) async {
+    for (final row in rows) {
+      final id = row['id'];
+      final existing = await db.query(
+        table,
+        columns: [idColumn, 'pack_id'],
+        where: '$idColumn = ?',
+        whereArgs: [id],
+        limit: 1,
+      );
+      if (existing.isEmpty) continue;
+      final owner = existing.first['pack_id']?.toString();
+      if (owner != null && owner.isNotEmpty && owner != packId) {
+        throw FormatException(
+          '$table id $id already belongs to content pack $owner.',
+        );
       }
+    }
+  }
+
+  Future<void> _upsertByKey(
+    DatabaseExecutor executor, {
+    required String table,
+    required String keyColumn,
+    required Object? keyValue,
+    required Map<String, Object?> values,
+  }) async {
+    final updated = await executor.update(
+      table,
+      values,
+      where: '$keyColumn = ?',
+      whereArgs: [keyValue],
+    );
+    if (updated == 0) {
+      await executor.insert(table, values);
     }
   }
 }
