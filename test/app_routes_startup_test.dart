@@ -44,14 +44,7 @@ void main() {
     expect(find.text('Analyst Career'), findsOneWidget);
     expect(find.text('Opening offline workspace...'), findsOneWidget);
 
-    for (var frame = 0; frame < 200; frame++) {
-      await tester.pump(const Duration(milliseconds: 100));
-      if (find.text('E-commerce Co. • Commercial Analytics')
-          .evaluate()
-          .isNotEmpty) {
-        break;
-      }
-    }
+    await _waitForHome(tester);
 
     expect(
       find.text('E-commerce Co. • Commercial Analytics'),
@@ -77,4 +70,20 @@ void main() {
 
     expect(find.text('E-commerce Co. • Commercial Analytics'), findsOneWidget);
   });
+}
+
+
+Future<void> _waitForHome(WidgetTester tester) async {
+  for (var attempt = 0; attempt < 100; attempt++) {
+    await tester.pump(const Duration(milliseconds: 50));
+    if (find
+        .text('E-commerce Co. • Commercial Analytics')
+        .evaluate()
+        .isNotEmpty) {
+      return;
+    }
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 10)),
+    );
+  }
 }
