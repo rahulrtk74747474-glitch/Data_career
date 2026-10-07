@@ -406,7 +406,7 @@ Completed:
 
 ### Expansion Item 3 — Unified SQLite/content-pack architecture
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #353)**
 
 Completed:
 1. Bumped SQLite to schema version 10 with migration-safe upgrades from the existing v9 catalog.
@@ -427,6 +427,16 @@ Completed:
 16. Added `docs/CONTENT_PACK_ARCHITECTURE_v1_1.md` as the canonical format for future generated task packs.
 17. Expanded automated tests for bundled offline install, idempotency, non-destructive upgrades, attempt preservation, retired rows, unsupported schemas, three-hint validation and forced transactional rollback.
 18. Added an explicit v9 -> v10 migration test proving player progress, task data, attempts and achievements survive the schema upgrade.
+19. CI run #353 passed static analysis, all **135 tests**, debug APK build, release AAB build, all three split release APK builds, release-size budgets and artifact uploads.
+20. Verified run #353 release outputs:
+   - release AAB: **55.52 MB**
+   - ARM32 release APK: **17.87 MB**
+   - ARM64 release APK: **20.12 MB**
+   - x86_64 release APK: **21.54 MB**
+   - content assets: **0.28 MB**
+   - debug APK artifact ID `11459071312`
+   - release AAB artifact ID `11459161024`
+   - release split APKs artifact ID `11459086294`
 
 ### Exact next expansion item — Item 4
 
