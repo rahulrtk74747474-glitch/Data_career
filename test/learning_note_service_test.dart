@@ -39,6 +39,9 @@ void main() {
       analytics: const [],
       dashboards: const [],
       insights: const [],
+      inboxMessages: const [],
+      metricCases: const [],
+      reviewCases: const [],
     );
 
     expect(notes, hasLength(2));
