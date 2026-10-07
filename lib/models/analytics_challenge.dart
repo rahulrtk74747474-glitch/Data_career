@@ -47,6 +47,15 @@ class AnalyticsChallenge {
 
   bool get isDashboard => mode == 'dashboard';
 
+  String get solutionText {
+    if (isDashboard) {
+      return 'Correct chart: $expectedChart\n'
+          'Correct KPIs: ${expectedKpis.join(', ')}\n\n'
+          'Why:\n$explanation';
+    }
+    return 'Correct interpretation:\n$expectedAnswer\n\nWhy:\n$explanation';
+  }
+
   factory AnalyticsChallenge.fromJson(Map<String, dynamic> json) {
     return AnalyticsChallenge(
       id: json['id'] as String,

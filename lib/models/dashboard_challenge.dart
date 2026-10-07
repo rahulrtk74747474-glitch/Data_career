@@ -10,6 +10,7 @@ class DashboardChallenge {
     required this.correctOption,
     required this.hints,
     required this.explanation,
+    this.xp = 90,
   });
 
   final String id;
@@ -22,6 +23,10 @@ class DashboardChallenge {
   final String correctOption;
   final List<String> hints;
   final String explanation;
+  final int xp;
+
+  String get solutionText =>
+      'Correct decision:\n$correctOption\n\nWhy:\n$explanation';
 
   factory DashboardChallenge.fromJson(Map<String, dynamic> json) {
     return DashboardChallenge(
@@ -35,6 +40,7 @@ class DashboardChallenge {
       correctOption: json['correctOption'] as String,
       hints: List<String>.from(json['hints'] as List<dynamic>),
       explanation: json['explanation'] as String,
+      xp: (json['xp'] as num?)?.toInt() ?? 90,
     );
   }
 }

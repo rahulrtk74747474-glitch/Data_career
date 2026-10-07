@@ -29,6 +29,47 @@ class PandasChallenge {
   final String explanation;
   final int xp;
 
+  String get solutionText {
+    final type = operation['type'] as String? ?? '';
+    switch (type) {
+      case 'filter_equals':
+        final column = operation['column'];
+        final value = operation['value'];
+        final selected = List<String>.from(operation['selectColumns'] as List);
+        return "df[df['$column'] == ${_literal(value)}][${selected.map((e) => "'$e'").toList()}]\n\n$explanation";
+      case 'fillna':
+        final column = operation['column'];
+        final value = operation['value'];
+        return "df['$column'] = df['$column'].fillna(${_literal(value)})\n\n$explanation";
+      case 'group_sum':
+        final groupBy = operation['groupBy'];
+        final valueColumn = operation['valueColumn'];
+        return "df.groupby('$groupBy')['$valueColumn'].sum()\n\n$explanation";
+      case 'sort_head':
+        final sortBy = operation['sortBy'];
+        final descending = operation['descending'] == true;
+        final head = operation['head'];
+        return "df.sort_values('$sortBy', ascending=${!descending}).head($head)\n\n$explanation";
+      case 'assign_ratio':
+        final numerator = operation['numerator'];
+        final denominator = operation['denominator'];
+        final newColumn = operation['newColumn'];
+        final multiplier = operation['multiplier'] ?? 1;
+        return "df['$newColumn'] = (df['$numerator'] / df['$denominator'] * $multiplier).round(1)\n\n$explanation";
+      case 'filter_group_sum':
+        final filterColumn = operation['filterColumn'];
+        final filterValue = operation['filterValue'];
+        final groupBy = operation['groupBy'];
+        final valueColumn = operation['valueColumn'];
+        return "df[df['$filterColumn'] == ${_literal(filterValue)}].groupby('$groupBy')['$valueColumn'].sum()\n\n$explanation";
+      default:
+        return 'Follow the requested Pandas operations in order.\n\n$explanation';
+    }
+  }
+
+  static String _literal(Object? value) =>
+      value is String ? "'$value'" : value.toString();
+
   factory PandasChallenge.fromJson(Map<String, dynamic> json) {
     return PandasChallenge(
       id: json['id'] as String,

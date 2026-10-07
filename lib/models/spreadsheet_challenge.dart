@@ -33,6 +33,9 @@ class SpreadsheetChallenge {
 
   bool get isFormula => expectedRows.isEmpty;
 
+  String get solutionText =>
+      'Use this workbook command:\n$expectedCommand\n\nWhy:\n$explanation';
+
   factory SpreadsheetChallenge.fromJson(Map<String, dynamic> json) {
     return SpreadsheetChallenge(
       id: json['id'] as String,

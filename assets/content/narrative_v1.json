@@ -28,7 +28,9 @@
         "margin",
         "growth",
         "customer"
-      ]
+      ],
+      "modelAnswer": "Revenue grew 12% while orders rose only 4%, with average order value up 7.7%, so most incremental growth appears to come from larger baskets rather than volume alone. Validate category mix and margin before shifting effort.",
+      "xp": 90
     },
     {
       "id": "insight-saas-retention-001",
@@ -56,7 +58,9 @@
         "churn",
         "ltv",
         "revenue"
-      ]
+      ],
+      "modelAnswer": "Month-3 retention improved from 62% to 71%, but the newer cohort is 40% smaller, so the improvement is encouraging but less precise. Compare cohort mix and segment retention, then monitor another cohort before changing the forecast.",
+      "xp": 90
     },
     {
       "id": "insight-bank-review-001",
@@ -84,7 +88,9 @@
         "risk",
         "operations",
         "customer"
-      ]
+      ],
+      "modelAnswer": "Online transactions are 2 of 7 observed transactions and both were review-flagged, which suggests concentrated review workload in this tiny sample but does not establish fraud. Validate the pattern on a larger sample before changing controls.",
+      "xp": 90
     },
     {
       "id": "insight-hospital-capacity-001",
@@ -112,7 +118,9 @@
         "wait",
         "throughput",
         "operations"
-      ]
+      ],
+      "modelAnswer": "Saturday forecast demand exceeds planned capacity by 25 versus 15 on Friday, so Saturday has the larger operational gap. Run staffing and capacity scenarios and monitor wait and throughput; this is an operations signal, not a clinical conclusion.",
+      "xp": 90
     },
     {
       "id": "insight-logistics-sla-001",
@@ -140,7 +148,9 @@
         "delay",
         "cost",
         "service"
-      ]
+      ],
+      "modelAnswer": "NS-1 has 2 of 2 late shipments versus 1 of 3 on NW-1, so the observed late rate is higher on NS-1 but the sample is too small to claim the route caused delay. Expand the sample and compare carrier, distance and handoff conditions.",
+      "xp": 90
     },
     {
       "id": "insight-ecommerce-refund-002",
@@ -169,7 +179,9 @@
         "customer",
         "revenue",
         "returns"
-      ]
+      ],
+      "modelAnswer": "Refund rate rose from 3.1% to 4.6% while orders grew 18%, and electronics contributes 52% of refund value. Segment electronics by product, reason and supplier to determine whether growth mix or a specific quality issue is driving margin pressure.",
+      "xp": 90
     },
     {
       "id": "insight-saas-expansion-002",
@@ -198,7 +210,9 @@
         "revenue",
         "churn",
         "growth"
-      ]
+      ],
+      "modelAnswer": "NRR improved from 96% to 103% because ₹420k expansion MRR more than offset ₹260k churned MRR. Track expansion concentration and churn by segment over several periods before treating the improvement as durable.",
+      "xp": 90
     },
     {
       "id": "insight-bank-delinquency-002",
@@ -227,7 +241,9 @@
         "portfolio",
         "exposure",
         "customer"
-      ]
+      ],
+      "modelAnswer": "Delinquent exposure is 6.8% overall and 11.2% in a segment that is only 9% of total exposure. The segment warrants review, but validate sample size, mix and underwriting characteristics before changing portfolio policy.",
+      "xp": 90
     },
     {
       "id": "insight-hospital-wait-002",
@@ -256,7 +272,9 @@
         "service",
         "throughput",
         "operations"
-      ]
+      ],
+      "modelAnswer": "Median wait improved from 46 to 39 minutes, but P90 remains 88 and Saturday demand is still above planned capacity. Typical experience improved while the long tail did not; segment high-wait periods and test capacity scenarios.",
+      "xp": 90
     },
     {
       "id": "insight-logistics-cost-002",
@@ -285,7 +303,9 @@
         "margin",
         "efficiency",
         "shipping"
-      ]
+      ],
+      "modelAnswer": "Average shipping cost rose 9% while shipment weight rose 14%, and cost per kilogram fell 4%. The absolute cost increase appears partly volume/mix driven, so monitor normalized cost per kilogram and route mix before pursuing blanket cost cuts.",
+      "xp": 90
     }
   ],
   "managerDialogues": [

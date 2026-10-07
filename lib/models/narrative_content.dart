@@ -9,6 +9,8 @@ class InsightScenario {
     required this.evidenceTerms,
     required this.recommendationTerms,
     required this.impactTerms,
+    this.modelAnswer = '',
+    this.xp = 90,
   });
 
   final String id;
@@ -20,6 +22,12 @@ class InsightScenario {
   final List<String> evidenceTerms;
   final List<String> recommendationTerms;
   final List<String> impactTerms;
+  final String modelAnswer;
+  final int xp;
+
+  String get solutionText => modelAnswer.trim().isNotEmpty
+      ? modelAnswer.trim()
+      : 'Lead with the supplied evidence, keep the claim bounded, recommend one concrete next action, and connect it to the business impact.';
 
   factory InsightScenario.fromJson(Map<String, dynamic> json) {
     return InsightScenario(
@@ -35,6 +43,8 @@ class InsightScenario {
           List<String>.from(json['recommendationTerms'] as List<dynamic>),
       impactTerms:
           List<String>.from(json['impactTerms'] as List<dynamic>),
+      modelAnswer: (json['modelAnswer'] as String?) ?? '',
+      xp: (json['xp'] as num?)?.toInt() ?? 90,
     );
   }
 }
