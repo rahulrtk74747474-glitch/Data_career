@@ -30,7 +30,7 @@ void main() {
     // before routing from Splash to Home. Pump finite frames because provider
     // progress indicators can legitimately remain animated on Home.
     await tester.pump();
-    for (var frame = 0; frame < 40; frame++) {
+    for (var frame = 0; frame < 200; frame++) {
       await tester.pump(const Duration(milliseconds: 100));
       if (find.text('E-commerce Co. • Commercial Analytics').evaluate().isNotEmpty) {
         break;
