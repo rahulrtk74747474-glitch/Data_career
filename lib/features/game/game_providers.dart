@@ -15,6 +15,7 @@ import '../../models/foundation_lesson.dart';
 import '../../models/interview.dart';
 import '../../models/interview_result.dart';
 import '../../models/job_readiness.dart';
+import '../../models/learning_note.dart';
 import '../../models/narrative_content.dart';
 import '../../models/pandas_challenge.dart';
 import '../../models/placement_question.dart';
@@ -48,6 +49,7 @@ import '../../services/content_pack_loader.dart';
 import '../../services/daily_challenge_service.dart';
 import '../../services/graduation_service.dart';
 import '../../services/job_readiness_service.dart';
+import '../../services/learning_note_service.dart';
 import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
 import '../../services/portfolio_pdf_export_service.dart';
@@ -310,6 +312,29 @@ final dashboardChallengesProvider =
 final spreadsheetChallengesProvider =
     FutureProvider<List<SpreadsheetChallenge>>((ref) {
   return ref.read(contentRepositoryProvider).loadSpreadsheetChallenges();
+});
+
+final learningNotesProvider =
+    FutureProvider<List<LearningNote>>((ref) async {
+  final progress = ref.watch(gameProgressProvider);
+  final foundation = await ref.watch(foundationLessonsProvider.future);
+  final tasks = await ref.watch(tasksProvider.future);
+  final spreadsheets = await ref.watch(spreadsheetChallengesProvider.future);
+  final pandas = await ref.watch(pandasChallengesProvider.future);
+  final analytics = await ref.watch(analyticsChallengesProvider.future);
+  final dashboards = await ref.watch(dashboardChallengesProvider.future);
+  final insights = await ref.watch(insightScenariosProvider.future);
+
+  return LearningNoteService.build(
+    progress: progress,
+    foundation: foundation,
+    tasks: tasks,
+    spreadsheets: spreadsheets,
+    pandas: pandas,
+    analytics: analytics,
+    dashboards: dashboards,
+    insights: insights,
+  );
 });
 
 final dailyChallengeDefinitionsProvider =
