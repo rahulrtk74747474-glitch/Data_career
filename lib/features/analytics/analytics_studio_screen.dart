@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analytics_challenge.dart';
 import '../../services/analytics_scoring_service.dart';
+import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 
 class AnalyticsStudioScreen extends ConsumerStatefulWidget {
@@ -112,6 +113,8 @@ class _AnalyticsChallengeScreenState
   int _revealedHints = 0;
   AnalyticsScore? _score;
   bool _solved = false;
+  bool _solutionViewed = false;
+  int _earnedXp = 0;
 
   @override
   void dispose() {
@@ -260,6 +263,20 @@ class _AnalyticsChallengeScreenState
                 ),
               ),
             ),
+            const SizedBox(height: 12),
+            SolutionRevealCard(
+              solution: item.solutionText,
+              revealed: _solutionViewed,
+              penaltyApplies: !_solved,
+              onReveal: _solutionViewed
+                  ? null
+                  : () => setState(() => _solutionViewed = true),
+            ),
+            if (_earnedXp > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('XP earned: $_earnedXp'),
+              ),
             if (_solved) ...[
               const SizedBox(height: 12),
               Card(
@@ -306,6 +323,13 @@ class _AnalyticsChallengeScreenState
       insightText: _insightController.text,
     );
 
+    final earnedXp =
+        await ref.read(gameProgressProvider.notifier).awardLearningXp(
+              rewardId: 'analytics:${item.id}',
+              baseXp: item.xp,
+              score: result.total,
+              solutionViewed: _solutionViewed,
+            );
     await ref.read(masteryRepositoryProvider).recordAttempt(
           item.skillKey,
           result.total,
@@ -329,6 +353,7 @@ class _AnalyticsChallengeScreenState
     setState(() {
       _score = result;
       _solved = result.total >= 70;
+      _earnedXp = earnedXp;
     });
   }
 }

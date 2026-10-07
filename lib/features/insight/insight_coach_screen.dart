@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/narrative_content.dart';
 import '../../services/insight_scoring_service.dart';
+import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 
 class InsightCoachScreen extends ConsumerWidget {
@@ -72,6 +73,8 @@ class _InsightScenarioScreenState
   final _controller = TextEditingController();
   InsightRubricScore? _score;
   ManagerDialogue? _manager;
+  bool _solutionViewed = false;
+  int _earnedXp = 0;
 
   @override
   void dispose() {
@@ -141,6 +144,20 @@ class _InsightScenarioScreenState
                 ),
               ),
             ],
+            const SizedBox(height: 12),
+            SolutionRevealCard(
+              solution: item.solutionText,
+              revealed: _solutionViewed,
+              penaltyApplies: _score == null,
+              onReveal: _solutionViewed
+                  ? null
+                  : () => setState(() => _solutionViewed = true),
+            ),
+            if (_earnedXp > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('XP earned: $_earnedXp'),
+              ),
             if (_manager != null) ...[
               const SizedBox(height: 10),
               Card(
@@ -175,6 +192,13 @@ class _InsightScenarioScreenState
       orElse: () => dialogues.last,
     );
 
+    final earnedXp =
+        await ref.read(gameProgressProvider.notifier).awardLearningXp(
+              rewardId: 'insight:${widget.scenario.id}',
+              baseXp: widget.scenario.xp,
+              score: score.total,
+              solutionViewed: _solutionViewed,
+            );
     await ref.read(masteryRepositoryProvider).recordAttempt(
           'business',
           score.total,
@@ -196,6 +220,7 @@ class _InsightScenarioScreenState
     setState(() {
       _score = score;
       _manager = manager;
+      _earnedXp = earnedXp;
     });
   }
 }
