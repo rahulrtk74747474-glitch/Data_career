@@ -91,20 +91,28 @@ void main() {
     );
   });
 
-  test('Pandas/business expansion totals 15 new learning tasks', () async {
-    final pandas =
+  test('Pandas curriculum reaches 15 guided tasks plus business metrics', () async {
+    final core = await _asset('assets/content/pandas_challenges_v1.json');
+    final expansion =
         await _asset('assets/content/pandas_expansion_v1.json');
     final business =
         await _asset('assets/content/business_metrics_v1.json');
 
-    expect(pandas['challenges'] as List<dynamic>, hasLength(8));
+    final pandasTasks = <dynamic>[
+      ...(core['challenges'] as List<dynamic>),
+      ...(expansion['challenges'] as List<dynamic>),
+    ];
+    expect(pandasTasks, hasLength(15));
     expect(business['tasks'] as List<dynamic>, hasLength(7));
+    for (final item in pandasTasks) {
+      expect((item as Map)['hints'] as List<dynamic>, hasLength(3));
+    }
   });
 
   test('narrative pack includes requested events and insight coaching', () async {
     final narrative = await _asset('assets/content/narrative_v1.json');
 
-    expect(narrative['insightScenarios'] as List<dynamic>, hasLength(5));
+    expect(narrative['insightScenarios'] as List<dynamic>, hasLength(10));
     expect(narrative['events'] as List<dynamic>, hasLength(4));
     final titles = (narrative['events'] as List<dynamic>)
         .map((item) => (item as Map)['title'])

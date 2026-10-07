@@ -519,17 +519,51 @@ Completed:
 
 This maintenance change does not start Expansion Item 6.
 
-### Exact next expansion item — Item 6
+### Expansion Items 6–12 — Final v1.1 completion pass
 
-**Statistics + chart/dashboard builder.**
+Status: **IMPLEMENTED — CI PENDING**
 
-Item 6 should:
-1. Build/finish statistics tasks for mean/median, distributions, correlation, A/B testing and hypothesis tests with interpretation.
-2. Finish the chart/dashboard builder where the learner selects the right chart and KPIs.
-3. Grade chart choice plus written insight/business interpretation.
-4. Deliver/verify the requested 15 statistics/chart/dashboard tasks.
-5. Preserve existing analytics tasks, evidence and mastery.
-6. Add automated scoring/content tests and verify CI.
-7. Stop and ask for confirmation before Item 7.
+User instruction changed on 2026-10-07: complete all remaining expansion items in one continuous pass.
 
-Do not start Item 6 until the user explicitly confirms.
+#### Item 6 — Statistics + chart/dashboard builder
+- Verified the existing 15-task Analytics Studio curriculum: 8 statistics + 7 dashboard/KPI tasks.
+- Preserved technical-choice + written-insight grading and three-level hints.
+- Coverage includes mean/median, distributions, correlation, A/B testing, power, multiple testing, hypothesis-test interpretation, seasonality, chart choice and KPI selection.
+
+#### Item 7 — Guided Pandas + business metrics
+- Expanded the guided Pandas curriculum from 14 to **15** total tasks.
+- Added gross-margin percentage analysis using the production dataframe simulator.
+- Preserved existing business-metric career content and player evidence.
+
+#### Item 8 — Insight writing + manager simulation
+- Expanded Insight Coach from 5 to **10** scenarios.
+- Added a second scenario for each company chapter.
+- Preserved the 4-band manager-feedback rubric, four random professional events and monthly performance review.
+
+#### Item 9 — Career / interview / portfolio
+- Verified existing interview modes, native Portfolio PDF export/share, badges, streaks, Daily Challenge, Weekly Boss Cases, certificates, Job Readiness and skill radar.
+- Preserved immutable evidence and graduation rules.
+
+#### Item 10 — Optional cloud features
+- Verified optional account/cloud save, deterministic conflict merge, privacy-minimized leaderboard, cached/remote weekly packs and offline/online diagnostics.
+- Core learning remains fully offline-first.
+
+#### Item 11 — Final QA + release
+- Added `docs/RELEASE_CHECKLIST_v1_1.md`.
+- Retained CI gates for analyze, full tests, accessibility, low-memory budget, debug APK, release AAB, split APKs and size budgets.
+- Physical-device QA, owner signing keys and Play Console publication remain owner-controlled release operations.
+
+#### Item 12 — task-pack generator
+- Added `TaskPackGenerator` for arbitrary non-empty skill + level.
+- Default output is **25 validated schema-v2 tasks** across all five company contexts.
+- Added CLI `tool/generate_task_pack.dart`.
+- Generated packs are validated through production `ContentPack` rules before output.
+- Added automated generator and final completion-matrix tests.
+
+#### Release version
+- Bumped app/build metadata to **v1.1.0+16**.
+- Updated backup/release diagnostics version metadata.
+
+### v1.1 expansion status
+
+**All requested Expansion Items 1–12 are implemented in source. Final CI verification is pending for this completion pass.**

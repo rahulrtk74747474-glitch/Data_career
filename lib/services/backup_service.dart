@@ -25,7 +25,7 @@ class BackupExportResult {
 class BackupService {
   const BackupService(this._database);
 
-  static const appVersion = '1.1.0+11';
+  static const appVersion = '1.1.0+16';
   static const _lastBackupKey = 'dataquest_last_backup_at_v1';
 
   static const stateTables = <String>[

@@ -141,6 +141,151 @@
         "cost",
         "service"
       ]
+    },
+    {
+      "id": "insight-ecommerce-refund-002",
+      "title": "Explain Refund Pressure",
+      "companyKey": "ecommerce",
+      "difficulty": "Intermediate",
+      "context": "Refund rate rose from 3.1% to 4.6% while order volume increased 18%. Electronics accounts for 52% of refund value.",
+      "prompt": "Write a manager-ready insight that separates overall growth from the refund problem and recommends one next analysis.",
+      "evidenceTerms": [
+        "3.1",
+        "4.6",
+        "18",
+        "52",
+        "refund",
+        "electronics"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "investigate",
+        "compare",
+        "review",
+        "test"
+      ],
+      "impactTerms": [
+        "margin",
+        "customer",
+        "revenue",
+        "returns"
+      ]
+    },
+    {
+      "id": "insight-saas-expansion-002",
+      "title": "Explain Expansion Revenue",
+      "companyKey": "saas",
+      "difficulty": "Advanced",
+      "context": "NRR improved from 96% to 103%. Expansion MRR added ₹420k while churned MRR was ₹260k.",
+      "prompt": "Explain what moved NRR above 100% and what should be monitored before calling the improvement durable.",
+      "evidenceTerms": [
+        "96",
+        "103",
+        "420",
+        "260",
+        "nrr",
+        "expansion"
+      ],
+      "recommendationTerms": [
+        "monitor",
+        "segment",
+        "validate",
+        "compare",
+        "track"
+      ],
+      "impactTerms": [
+        "retention",
+        "revenue",
+        "churn",
+        "growth"
+      ]
+    },
+    {
+      "id": "insight-bank-delinquency-002",
+      "title": "Explain Delinquency Mix",
+      "companyKey": "bank",
+      "difficulty": "Advanced",
+      "context": "Delinquent exposure is 6.8% overall but 11.2% in one small segment representing only 9% of total exposure.",
+      "prompt": "Write a governance-safe portfolio insight that avoids overreacting to a small segment.",
+      "evidenceTerms": [
+        "6.8",
+        "11.2",
+        "9",
+        "delinquent",
+        "exposure",
+        "segment"
+      ],
+      "recommendationTerms": [
+        "validate",
+        "monitor",
+        "review",
+        "compare",
+        "investigate"
+      ],
+      "impactTerms": [
+        "risk",
+        "portfolio",
+        "exposure",
+        "customer"
+      ]
+    },
+    {
+      "id": "insight-hospital-wait-002",
+      "title": "Explain Wait-Time Change",
+      "companyKey": "hospital",
+      "difficulty": "Advanced",
+      "context": "Median wait fell from 46 to 39 minutes, but the 90th percentile stayed at 88 minutes and Saturday demand remains above planned capacity.",
+      "prompt": "Write an operational insight that distinguishes typical experience from the long-tail problem.",
+      "evidenceTerms": [
+        "46",
+        "39",
+        "88",
+        "median",
+        "90th",
+        "saturday"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "monitor",
+        "capacity",
+        "investigate",
+        "plan"
+      ],
+      "impactTerms": [
+        "wait",
+        "service",
+        "throughput",
+        "operations"
+      ]
+    },
+    {
+      "id": "insight-logistics-cost-002",
+      "title": "Explain Cost per Shipment",
+      "companyKey": "logistics",
+      "difficulty": "Advanced",
+      "context": "Average shipping cost rose 9%, but average shipment weight rose 14% and cost per kilogram fell 4%.",
+      "prompt": "Write a decision-ready cost insight and state which normalized metric should guide the next review.",
+      "evidenceTerms": [
+        "9",
+        "14",
+        "4",
+        "cost",
+        "weight",
+        "kilogram"
+      ],
+      "recommendationTerms": [
+        "monitor",
+        "compare",
+        "normalize",
+        "segment",
+        "review"
+      ],
+      "impactTerms": [
+        "cost",
+        "margin",
+        "efficiency",
+        "shipping"
+      ]
     }
   ],
   "managerDialogues": [

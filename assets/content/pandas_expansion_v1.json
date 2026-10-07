@@ -445,6 +445,72 @@
       ],
       "explanation": "Cost per conversion normalizes spend by outcomes and supports channel efficiency comparisons.",
       "xp": 130
+    },
+    {
+      "id": "pandas-gross-margin-003",
+      "title": "Create Gross Margin Percent",
+      "difficulty": "Advanced",
+      "context": "Finance needs a comparable profitability metric across product lines with different revenue scale.",
+      "datasetName": "product_margin",
+      "rows": [
+        {
+          "product_line": "Core",
+          "revenue": 5000,
+          "gross_profit": 1750
+        },
+        {
+          "product_line": "Premium",
+          "revenue": 8000,
+          "gross_profit": 3600
+        },
+        {
+          "product_line": "Value",
+          "revenue": 3000,
+          "gross_profit": 750
+        }
+      ],
+      "prompt": "Assign gross_margin_pct = gross_profit / revenue * 100 rounded to one decimal.",
+      "requiredFragments": [
+        "gross_margin_pct",
+        "gross_profit",
+        "revenue",
+        "100"
+      ],
+      "operation": {
+        "type": "assign_ratio",
+        "numerator": "gross_profit",
+        "denominator": "revenue",
+        "newColumn": "gross_margin_pct",
+        "multiplier": 100,
+        "precision": 1
+      },
+      "expectedRows": [
+        {
+          "product_line": "Core",
+          "revenue": 5000,
+          "gross_profit": 1750,
+          "gross_margin_pct": 35
+        },
+        {
+          "product_line": "Premium",
+          "revenue": 8000,
+          "gross_profit": 3600,
+          "gross_margin_pct": 45
+        },
+        {
+          "product_line": "Value",
+          "revenue": 3000,
+          "gross_profit": 750,
+          "gross_margin_pct": 25
+        }
+      ],
+      "hints": [
+        "Create a derived profitability column.",
+        "Gross profit is the numerator and revenue is the denominator.",
+        "Multiply the ratio by 100 to express gross margin as a percentage."
+      ],
+      "explanation": "Gross margin percentage normalizes gross profit by revenue, making profitability comparable across product lines of different size.",
+      "xp": 135
     }
   ]
 }
