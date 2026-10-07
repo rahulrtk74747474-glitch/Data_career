@@ -51,6 +51,7 @@ import '../../services/portfolio_pdf_export_service.dart';
 import '../../services/release_diagnostics_service.dart';
 import '../../services/reminder_scheduler.dart';
 import '../../services/sql_runner.dart';
+import '../../services/startup_service.dart';
 import '../../services/weekly_case_service.dart';
 import 'game_progress.dart';
 
@@ -69,6 +70,13 @@ final appDatabaseProvider = Provider<AppDatabase>((ref) {
 
 final contentPackLoaderProvider = Provider<ContentPackLoader>((ref) {
   return ContentPackLoader(ref.watch(appDatabaseProvider));
+});
+
+final startupServiceProvider = Provider<StartupService>((ref) {
+  return OfflineStartupService(
+    ref.watch(appDatabaseProvider),
+    ref.watch(contentPackLoaderProvider),
+  );
 });
 
 final startupInitializationProvider = FutureProvider<void>((ref) async {
