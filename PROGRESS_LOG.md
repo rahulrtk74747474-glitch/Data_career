@@ -576,7 +576,7 @@ CI run #361 passed static analysis, the complete automated test suite, debug APK
 
 ## v1.2 — Zero-to-Analyst learning expansion
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #367)**
 
 Requested goal: a learner with no prior SQL, Excel, cleaning, statistics, Pandas, dashboard or business-analytics knowledge must be able to learn inside the game through realistic company scenarios.
 
@@ -597,4 +597,4 @@ Implemented:
 14. Added automated tests for the 56-lesson curriculum, progress serialization and the exact 5-XP penalty.
 15. Bumped app version to **v1.2.0+17**.
 
-Final CI verification pending.
+CI run #367 passed static analysis, all automated tests, debug APK, release AAB, split release APKs, release-size budgets and artifact uploads.
