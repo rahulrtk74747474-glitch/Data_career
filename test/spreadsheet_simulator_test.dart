@@ -11,11 +11,10 @@ void main() {
       ),
       r'formula = $B2 * (1 - C2)',
     );
-
     expect(result.isCorrect, isTrue);
   });
 
-  test('sort task requires the requested row order', () {
+  test('sort task requires requested row order and valid direction', () {
     final challenge = _challenge(
       rows: const [
         {'id': 'A', 'revenue': 100},
@@ -38,9 +37,37 @@ void main() {
       SpreadsheetSimulator.run(challenge, 'SORT revenue ASC').isCorrect,
       isFalse,
     );
+    expect(
+      SpreadsheetSimulator.run(challenge, 'SORT revenue SIDEWAYS').feedback,
+      contains('ASC or DESC'),
+    );
   });
 
-  test('pivot sums and cleaning date normalization are deterministic', () {
+  test('lookup and filter are case-insensitive but preserve source values', () {
+    final lookup = SpreadsheetSimulator.executeRows(
+      const [
+        {'customer_id': 'C001', 'segment': 'Retail'},
+        {'customer_id': 'C002', 'segment': 'SMB'},
+      ],
+      'LOOKUP CUSTOMER_ID c002 SEGMENT',
+    );
+    final filter = SpreadsheetSimulator.executeRows(
+      const [
+        {'id': 1, 'status': 'Completed'},
+        {'id': 2, 'status': 'Refunded'},
+      ],
+      'FILTER STATUS = completed',
+    );
+
+    expect(lookup, const [
+      {'customer_id': 'C002', 'segment': 'SMB'},
+    ]);
+    expect(filter, const [
+      {'id': 1, 'status': 'Completed'},
+    ]);
+  });
+
+  test('pivot sums and date normalization are deterministic', () {
     final pivot = SpreadsheetSimulator.run(
       _challenge(
         rows: const [
@@ -74,6 +101,41 @@ void main() {
 
     expect(pivot.isCorrect, isTrue);
     expect(clean.isCorrect, isTrue);
+  });
+
+  test('IQR cleaning removes statistical outliers and keeps normal rows', () {
+    final cleaned = SpreadsheetSimulator.executeRows(
+      const [
+        {'id': 1, 'amount': 10},
+        {'id': 2, 'amount': 11},
+        {'id': 3, 'amount': 12},
+        {'id': 4, 'amount': 12},
+        {'id': 5, 'amount': 13},
+        {'id': 6, 'amount': 1000},
+      ],
+      'CLEAN OUTLIERS_IQR amount',
+    );
+
+    expect(cleaned, hasLength(5));
+    expect(cleaned.any((row) => row['amount'] == 1000), isFalse);
+  });
+
+  test('invalid columns fail with a specific workbook message', () {
+    final result = SpreadsheetSimulator.run(
+      _challenge(
+        rows: const [
+          {'id': 'A', 'revenue': 100},
+        ],
+        expectedCommand: 'SORT revenue DESC',
+        expectedRows: const [
+          {'id': 'A', 'revenue': 100},
+        ],
+      ),
+      'SORT missing DESC',
+    );
+
+    expect(result.isCorrect, isFalse);
+    expect(result.feedback, contains('Column "missing" does not exist'));
   });
 }
 

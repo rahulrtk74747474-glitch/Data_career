@@ -467,17 +467,39 @@ Completed:
    - release AAB artifact ID `11459417624`
    - release split APKs artifact ID `11459228251`
 
-### Exact next expansion item — Item 5
+### Expansion Item 5 — Spreadsheet simulator + data-cleaning module
 
-**Spreadsheet simulator + data-cleaning module.**
+Status: **IMPLEMENTED — CI PENDING**
 
-Item 5 should:
-1. Finish the touch-friendly spreadsheet simulator.
-2. Support formulas, lookups, sorting, filters and pivot-builder workflows with auto-grading.
-3. Finish the data-cleaning module for nulls, duplicates, outliers and format normalization.
-4. Deliver/verify the requested 15 spreadsheet + cleaning tasks.
-5. Preserve all existing player evidence and adaptive mastery behavior.
-6. Add automated simulator/grading/content tests and verify CI.
-7. Stop and ask for confirmation before Item 6.
+Completed:
+1. Preserved all 15 existing spreadsheet/cleaning task IDs and player evidence.
+2. Kept the touch-first horizontal workbook shortcut bar and swipeable result tables.
+3. Added a tappable **Workbook action syntax** panel for formulas, lookups, sorting, filtering, pivots and cleaning actions.
+4. Preserved formula grading with whitespace/case/absolute-reference normalization.
+5. Hardened lookup, sort, filter and pivot command validation.
+6. Made text lookups and filters case-insensitive while preserving original source values.
+7. Added explicit missing-column and invalid-sort-direction feedback.
+8. Preserved pivot SUM and COUNT auto-grading.
+9. Preserved cleaning for nulls/blanks, duplicate business keys, categorical labels, impossible negatives and date formats.
+10. Added `CLEAN OUTLIERS_IQR <numericColumn>` using the standard 1.5×IQR rule for statistical outlier exclusion.
+11. Added numeric-data and minimum-observation validation for outlier actions.
+12. Preserved the existing mastery, task-performance, portfolio and job-readiness evidence pipeline.
+13. Verified the requested 15-task inventory as 10 spreadsheet + 5 cleaning tasks with exactly three hints each.
+14. Added automated execution/grading of every shipped task's expected workbook command.
+15. Added regression tests for formula normalization, sorting, lookup/filter behavior, pivots, dates, outliers and invalid commands.
+16. Added `docs/SPREADSHEET_CLEANING_LAB_v1_1.md`.
 
-Do not start Item 5 until the user explicitly confirms.
+### Exact next expansion item — Item 6
+
+**Statistics + chart/dashboard builder.**
+
+Item 6 should:
+1. Build/finish statistics tasks for mean/median, distributions, correlation, A/B testing and hypothesis tests with interpretation.
+2. Finish the chart/dashboard builder where the learner selects the right chart and KPIs.
+3. Grade chart choice plus written insight/business interpretation.
+4. Deliver/verify the requested 15 statistics/chart/dashboard tasks.
+5. Preserve existing analytics tasks, evidence and mastery.
+6. Add automated scoring/content tests and verify CI.
+7. Stop and ask for confirmation before Item 7.
+
+Do not start Item 6 until the user explicitly confirms.

@@ -174,7 +174,32 @@ class _SpreadsheetChallengeScreenState
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: const Text('Workbook action syntax'),
+              subtitle: const Text(
+                'Formula, lookup, sort, filter, pivot and cleaning commands',
+              ),
+              children: [
+                for (final entry in SpreadsheetSimulator.commandHelp.entries)
+                  ListTile(
+                    dense: true,
+                    title: Text(entry.key),
+                    subtitle: Text(entry.value),
+                    onTap: _solved
+                        ? null
+                        : () {
+                            _commandController.text = entry.value;
+                            _commandController.selection =
+                                TextSelection.collapsed(
+                              offset: _commandController.text.length,
+                            );
+                          },
+                  ),
+              ],
+            ),
+            const SizedBox(height: 6),
             TextField(
               controller: _commandController,
               enabled: !_solved,
