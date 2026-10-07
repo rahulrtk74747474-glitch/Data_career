@@ -598,3 +598,8 @@ Implemented:
 15. Bumped app version to **v1.2.0+17**.
 
 CI run #367 passed static analysis, all automated tests, debug APK, release AAB, split release APKs, release-size budgets and artifact uploads.
+
+
+### v1.2 final verification
+
+GitHub Actions run #367 passed static analysis, the complete automated test suite, debug APK build, release AAB build, all split release APK builds, release-size budgets and artifact uploads.
