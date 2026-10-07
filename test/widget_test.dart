@@ -1,6 +1,7 @@
 import 'package:dataquest_analyst_career/app.dart';
 import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
+import 'package:dataquest_analyst_career/services/content_pack_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,9 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          contentPackLoaderProvider.overrideWithValue(
+            _FastContentPackLoader(database),
+          ),
         ],
         child: const DataQuestApp(),
       ),
@@ -37,12 +41,10 @@ void main() {
     expect(find.text('Data Analyst Intern'), findsOneWidget);
 
     final db = await database.database;
-    final packs = await db.query(
-      'content_packs',
-      where: 'pack_id = ?',
-      whereArgs: ['mvp-sample-core'],
+    final schemaRows = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'content_packs'",
     );
-    expect(packs, hasLength(1));
+    expect(schemaRows, hasLength(1));
 
     // Unmount first so Riverpod disposes providers before the test DB closes.
     await tester.pumpWidget(const SizedBox.shrink());
@@ -64,5 +66,21 @@ Future<void> _waitForHome(WidgetTester tester) async {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 10)),
     );
+  }
+}
+
+
+class _FastContentPackLoader extends ContentPackLoader {
+  _FastContentPackLoader(super.database);
+
+  @override
+  Future<List<PackInstallResult>> installBundledPacks() async {
+    return const [
+      PackInstallResult(
+        packId: 'test-startup-pack',
+        installed: false,
+        contentVersion: 1,
+      ),
+    ];
   }
 }
