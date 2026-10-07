@@ -1,7 +1,6 @@
 import 'package:dataquest_analyst_career/core/navigation/app_routes.dart';
 import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
-import 'package:dataquest_analyst_career/features/home/home_screen.dart';
 import 'package:dataquest_analyst_career/features/splash/splash_screen.dart';
 import 'package:dataquest_analyst_career/services/content_pack_loader.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +22,11 @@ void main() {
       factory: databaseFactoryFfi,
       overridePath: inMemoryDatabasePath,
     );
+
+    // sqflite_common_ffi performs real asynchronous I/O. Open the database
+    // outside Flutter's fake async clock so Splash only waits on an already
+    // initialized database during this navigation regression test.
+    await tester.runAsync(() => database.database);
 
     Route<dynamic> routeFactory(RouteSettings settings) {
       if (settings.name == AppRoutes.splash) {
@@ -56,6 +60,11 @@ void main() {
 
     await tester.pump();
     expect(find.text('Analyst Career'), findsOneWidget);
+
+    await tester.runAsync(() async {
+      await Future<void>.delayed(Duration.zero);
+    });
+    await tester.pump();
 
     for (var frame = 0; frame < 30; frame++) {
       await tester.pump(const Duration(milliseconds: 50));
