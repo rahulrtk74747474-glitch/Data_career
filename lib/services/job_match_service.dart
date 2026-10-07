@@ -86,3 +86,79 @@ class JobMatchService {
     }
   }
 }
+
+class JobDescriptionMatchResult {
+  const JobDescriptionMatchResult({
+    required this.score,
+    required this.detectedSkills,
+    required this.gaps,
+  });
+
+  final int score;
+  final List<String> detectedSkills;
+  final List<String> gaps;
+}
+
+extension JobDescriptionMatcher on JobMatchService {
+  static JobDescriptionMatchResult calculateDescription({
+    required String description,
+    required List<SkillMastery> skills,
+  }) {
+    final text = description.toLowerCase();
+    final keywordMap = <String, List<String>>{
+      'sql': ['sql', 'query', 'database', 'joins'],
+      'spreadsheets': ['excel', 'spreadsheet', 'pivot', 'xlookup', 'vlookup'],
+      'cleaning': ['data cleaning', 'data quality', 'etl', 'wrangling'],
+      'statistics': [
+        'statistics',
+        'statistical',
+        'hypothesis',
+        'a/b',
+        'experiment',
+        'regression',
+      ],
+      'python': ['python', 'pandas', 'numpy'],
+      'powerbi': ['power bi', 'powerbi', 'dax', 'power query', 'tableau', 'bi tool'],
+      'business': [
+        'stakeholder',
+        'business analysis',
+        'kpi',
+        'communication',
+        'insight',
+        'presentation',
+      ],
+    };
+
+    final mastery = {
+      for (final skill in skills) skill.skillKey: skill.mastery.clamp(0, 100),
+    };
+    final detected = <String>[];
+    final gaps = <String>[];
+    var total = 0.0;
+
+    for (final entry in keywordMap.entries) {
+      final found = entry.value.any(text.contains);
+      if (!found) continue;
+      detected.add(_label(entry.key));
+      final score = (mastery[entry.key] ?? 0).toDouble();
+      total += score;
+      if (score < 70) {
+        gaps.add('${_label(entry.key)} ${score.toStringAsFixed(0)}%');
+      }
+    }
+
+    if (detected.isEmpty) {
+      return const JobDescriptionMatchResult(
+        score: 0,
+        detectedSkills: [],
+        gaps: ['No supported analyst-skill keywords detected.'],
+      );
+    }
+
+    return JobDescriptionMatchResult(
+      score: (total / detected.length).round().clamp(0, 100).toInt(),
+      detectedSkills: detected,
+      gaps: gaps,
+    );
+  }
+}

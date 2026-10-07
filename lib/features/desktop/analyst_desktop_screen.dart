@@ -5,6 +5,7 @@ import '../../models/career_mission.dart';
 import '../../models/workday_content.dart';
 import '../campaign/career_campaign_screen.dart';
 import '../interview/interview_mode_screen.dart';
+import '../insight/insight_coach_screen.dart';
 import '../portfolio/portfolio_screen.dart';
 import '../game/game_progress.dart';
 import '../game/game_providers.dart';
@@ -200,6 +201,12 @@ class AnalystDesktopScreen extends ConsumerWidget {
                   label: 'Metric Lab',
                   onTap: () =>
                       _open(context, const MetricRelationshipLabScreen()),
+                ),
+                _DesktopApp(
+                  icon: Icons.chat_outlined,
+                  label: 'Manager Coach',
+                  onTap: () =>
+                      _open(context, const InsightCoachScreen()),
                 ),
                 _DesktopApp(
                   icon: Icons.rate_review_outlined,
