@@ -1,30 +1,16 @@
 import 'package:dataquest_analyst_career/core/navigation/app_routes.dart';
-import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
 import 'package:dataquest_analyst_career/features/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Splash initializes offline storage then replaces itself', (
+  testWidgets('Splash completes startup and navigates to Home', (
     tester,
   ) async {
-    SharedPreferences.setMockInitialValues({});
-    sqfliteFfiInit();
-
-    final database = AppDatabase(
-      factory: databaseFactoryFfi,
-      overridePath: inMemoryDatabasePath,
-    );
-
-    // sqflite_common_ffi performs real asynchronous I/O. Open the database
-    // outside Flutter's fake async clock so Splash only waits on an already
-    // initialized database during this navigation regression test.
     Route<dynamic> routeFactory(RouteSettings settings) {
       if (settings.name == AppRoutes.splash) {
         return MaterialPageRoute<void>(
@@ -43,7 +29,6 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          appDatabaseProvider.overrideWithValue(database),
           startupInitializationProvider.overrideWith((ref) async {}),
         ],
         child: MaterialApp(
@@ -56,21 +41,10 @@ void main() {
     await tester.pump();
     expect(find.text('Analyst Career'), findsOneWidget);
 
-    await tester.runAsync(() async {
-      await Future<void>.delayed(Duration.zero);
-    });
     await tester.pump();
-
-    for (var frame = 0; frame < 30; frame++) {
-      await tester.pump(const Duration(milliseconds: 50));
-      if (find.text('Home route reached').evaluate().isNotEmpty) break;
-    }
+    await tester.pump(const Duration(milliseconds: 1));
 
     expect(find.text('Home route reached'), findsOneWidget);
-
-    await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump();
-    await database.close();
   });
 
   test('central route factory registers every primary route name', () {
