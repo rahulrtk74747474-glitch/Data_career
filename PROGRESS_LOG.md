@@ -603,3 +603,84 @@ CI run #367 passed static analysis, all automated tests, debug APK, release AAB,
 ### v1.2 final verification
 
 GitHub Actions run #367 passed static analysis, the complete automated test suite, debug APK build, release AAB build, all split release APK builds, release-size budgets and artifact uploads.
+
+
+## v1.3 — Career Game + Job-Ready Product Overhaul
+
+Status: **IMPLEMENTED — CI PENDING**
+
+Goal: address the product flaws that make learning apps feel like isolated quizzes and make DataQuest substantially more engaging, realistic and job-oriented.
+
+### Product audit
+- Added `docs/PRODUCT_AUDIT_v1_3.md` covering the major UX, learning-depth, game-loop and job-readiness gaps.
+- Design principle: every major feature must help the learner Learn, Practice, Apply, Explain or Prove job readiness.
+
+### Beginner-to-independent learning
+1. Expanded the Zero-to-Analyst Academy from **56 to 80 foundation lessons**.
+2. Curriculum now includes:
+   - SQL: 10
+   - Excel / Spreadsheets: 10
+   - Data Cleaning: 10
+   - Statistics: 12
+   - Python / Pandas: 12
+   - Dashboards & KPIs: 10
+   - Power BI & BI Modeling: 8
+   - Business Analytics & Insight: 8
+3. Added Python fundamentals before Pandas: variables/types, collections, control flow, functions/imports/errors.
+4. Deepened statistics with test selection, chi-square, regression/R²/residuals, power, MDE and practical significance.
+5. Added spreadsheet QA, SQL NULL/date QA, join reconciliation, automated data-quality tests and dashboard release QA.
+6. Rebuilt Academy UX as a skill-path map instead of one flat list.
+7. Each track now unlocks sequentially and visibly moves through **Guided → Assisted → Independent**.
+8. Independent-stage lessons hide the worked example by default so the learner attempts the business problem before requesting support.
+9. Existing three-level hints and full-solution support remain available; solution viewing still costs 5 XP.
+
+### Power BI as a first-class skill
+1. Added an 8-lesson Power BI / BI Modeling foundation path.
+2. Coverage: Power Query, types, star schema, relationships/cardinality, measures vs columns, filter context/CALCULATE, date tables/time intelligence, RLS, performance and publish QA.
+3. Expanded the BI/Dashboard Lab from 5 to **13** challenges, including 8 Power BI application challenges.
+4. Power BI has its own mastery key and appears separately in the skill profile.
+5. Mastery persistence is now future-proof: missing skill rows can be created safely rather than silently ignored.
+6. Power BI is now a core Job Readiness domain and therefore contributes to graduation readiness.
+
+### Connected Career Campaign
+1. Added **12 multi-skill career projects** across all five companies.
+2. Every project includes:
+   - manager briefing,
+   - business deadline,
+   - 2–5 connected existing analyst tickets,
+   - project XP bonus,
+   - manager feedback,
+   - resume-ready portfolio statement.
+3. Mission order:
+   - 3 e-commerce projects,
+   - 2 SaaS projects,
+   - 2 banking projects,
+   - 2 hospital projects,
+   - 3 logistics projects.
+4. Projects unlock in sequence and respect the company journey.
+5. Completed missions are recorded as portfolio evidence with mode `career_mission`.
+6. Home now shows Career Campaign progress and makes the next career project the primary continuation loop after onboarding.
+7. The Challenges & Career section also exposes Career Campaign directly.
+
+### Better onboarding
+1. First-time Home CTA no longer assumes everyone should take a placement test.
+2. New learners can choose **“I'm new — start from zero.”**
+3. Experienced learners can choose **“I know some skills — placement test.”**
+4. This removes an unnecessary confidence barrier for absolute beginners.
+
+### Job-ready skill map
+1. Skills screen upgraded from a radar-only view to **Skills & Job Readiness**.
+2. Every core skill shows four stages:
+   - Learn
+   - Practice
+   - Project
+   - Interview-ready
+3. Stage logic uses foundation completion, retained mastery and independent/project evidence.
+4. The screen shows a concrete next action instead of only a percentage.
+5. Power BI is included as its own job-ready area.
+
+### Version
+- Bumped application to **v1.3.0+18**.
+- Updated backup/release diagnostic version metadata.
+
+Final CI verification pending.
