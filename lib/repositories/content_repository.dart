@@ -15,9 +15,83 @@ import '../models/narrative_content.dart';
 import '../models/pandas_challenge.dart';
 import '../models/placement_question.dart';
 import '../models/spreadsheet_challenge.dart';
+import '../models/workday_content.dart';
 
 class ContentRepository {
   const ContentRepository();
+
+  Future<Map<String, dynamic>> _loadAnalystDesktop() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/analyst_desktop_v1.json',
+    );
+    return jsonDecode(raw) as Map<String, dynamic>;
+  }
+
+  Future<List<WorkInboxMessage>> loadWorkInboxMessages() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['inboxMessages'] as List<dynamic>)
+        .map(
+          (item) => WorkInboxMessage.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<HandbookEntry>> loadHandbookEntries() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['handbookEntries'] as List<dynamic>)
+        .map(
+          (item) => HandbookEntry.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<MetricRelationshipCase>> loadMetricRelationshipCases() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['metricCases'] as List<dynamic>)
+        .map(
+          (item) => MetricRelationshipCase.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<ReviewDeskCase>> loadReviewDeskCases() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['reviewCases'] as List<dynamic>)
+        .map(
+          (item) => ReviewDeskCase.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<AnalystStory>> loadAnalystStories() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['stories'] as List<dynamic>)
+        .map(
+          (item) => AnalystStory.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<JobRoleProfile>> loadJobRoleProfiles() async {
+    final decoded = await _loadAnalystDesktop();
+    return (decoded['jobRoles'] as List<dynamic>)
+        .map(
+          (item) => JobRoleProfile.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList();
+  }
 
   Future<List<CareerMission>> loadCareerMissions() async {
     final raw = await rootBundle.loadString(

@@ -1,0 +1,1812 @@
+{
+  "schemaVersion": 1,
+  "packId": "analyst-desktop-v1",
+  "inboxMessages": [
+    {
+      "id": "inbox-ceo-causality-001",
+      "companyKey": "ecommerce",
+      "minCareerLevel": 0,
+      "sender": "Rhea",
+      "senderRole": "CEO",
+      "subject": "Did marketing cause the sales lift?",
+      "urgency": "High",
+      "body": "Revenue is up 14% in the same period that paid-search spend increased. I need one sentence for the board: can we say the campaign caused the lift?",
+      "choices": [
+        {
+          "text": "Say the campaign caused the lift because the timing matches.",
+          "score": 20,
+          "feedback": "Timing and correlation are not enough for a causal claim.",
+          "followUp": "Rhea replies: “Finance is challenging that statement. What evidence do we actually have?”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -4,
+            "dataQuality": 0,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Report the association, quantify the lift, and say causality needs an experiment or stronger design.",
+          "score": 100,
+          "feedback": "Strong analyst response: useful evidence without overstating what the data proves.",
+          "followUp": "Rhea replies: “Good. Put the observed association on the slide and add the experiment plan underneath.”",
+          "impact": {
+            "revenue": 1,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 1,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Refuse to discuss marketing until a perfect randomized experiment exists.",
+          "score": 65,
+          "feedback": "You protected against overclaiming, but you also threw away useful observational evidence.",
+          "followUp": "Rhea replies: “I still need the best answer we can support today.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": 0,
+            "trust": -1,
+            "dataQuality": 1,
+            "risk": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-finance-mismatch-001",
+      "companyKey": "general",
+      "minCareerLevel": 0,
+      "sender": "Kabir",
+      "senderRole": "Finance Director",
+      "subject": "Your dashboard and my ledger disagree",
+      "urgency": "Critical",
+      "body": "Your dashboard shows ₹14.8M revenue. Finance has ₹13.4M for the same month. The review starts in 30 minutes. Which number should we present?",
+      "choices": [
+        {
+          "text": "Use the larger number because it is better for the meeting.",
+          "score": 10,
+          "feedback": "Choosing the favorable number without reconciliation destroys trust.",
+          "followUp": "Kabir replies: “We cannot defend that. Find the definition difference.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -2,
+            "trust": -5,
+            "dataQuality": -3,
+            "risk": 5
+          }
+        },
+        {
+          "text": "Average the two values and label it an estimate.",
+          "score": 35,
+          "feedback": "Averaging inconsistent definitions creates a third number that is not a source of truth.",
+          "followUp": "Kabir replies: “That does not reconcile either source.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -3,
+            "dataQuality": -2,
+            "risk": 3
+          }
+        },
+        {
+          "text": "Reconcile date window, status filters, tax/returns treatment and refresh time before presenting either number.",
+          "score": 100,
+          "feedback": "Correct. Conflicting reports are a definition and lineage problem before they are a presentation problem.",
+          "followUp": "Kabir replies: “Good. I’ll hold the slide until we agree the metric definition.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 5,
+            "risk": -4
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-product-conversion-001",
+      "companyKey": "saas",
+      "minCareerLevel": 1,
+      "sender": "Maya",
+      "senderRole": "Product Manager",
+      "subject": "Conversion fell after the redesign",
+      "urgency": "High",
+      "body": "Signup-to-activation conversion dropped from 41% to 36% after the new onboarding flow launched. Can I roll it back now?",
+      "choices": [
+        {
+          "text": "Roll it back immediately because conversion is lower.",
+          "score": 45,
+          "feedback": "The signal matters, but you have not checked sample size, instrumentation, mix or uncertainty.",
+          "followUp": "Maya replies: “Could traffic mix have changed too?”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": -1,
+            "trust": -1,
+            "dataQuality": 0,
+            "risk": 1
+          }
+        },
+        {
+          "text": "Check instrumentation, segment mix, sample size and uncertainty, then recommend rollback only if the decline remains decision-relevant.",
+          "score": 100,
+          "feedback": "Strong: validate measurement first, then combine effect size and uncertainty with business cost.",
+          "followUp": "Maya replies: “Great. Break it down by device and acquisition channel before the decision.”",
+          "impact": {
+            "revenue": 1,
+            "churn": -0.2,
+            "cost": 0,
+            "satisfaction": 1,
+            "trust": 3,
+            "dataQuality": 3,
+            "risk": -2
+          }
+        },
+        {
+          "text": "Ignore the drop because five percentage points is too small to matter.",
+          "score": 20,
+          "feedback": "A 5-point change can be commercially large. Practical significance depends on scale and context.",
+          "followUp": "Maya replies: “That change represents thousands of users.”",
+          "impact": {
+            "revenue": -2,
+            "churn": 0.3,
+            "cost": 0,
+            "satisfaction": -2,
+            "trust": -4,
+            "dataQuality": 0,
+            "risk": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-risk-list-001",
+      "companyKey": "bank",
+      "minCareerLevel": 2,
+      "sender": "Arvind",
+      "senderRole": "Risk VP",
+      "subject": "Email me the high-risk customer list",
+      "urgency": "Critical",
+      "body": "Send me the full customer-level risk file with names, phone numbers and flags. I’ll forward it to the regional heads.",
+      "choices": [
+        {
+          "text": "Send the full file because the VP requested it.",
+          "score": 15,
+          "feedback": "Authority does not remove privacy, minimum-necessary and access-control obligations.",
+          "followUp": "Arvind replies: “Compliance is asking why sensitive fields were distributed broadly.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": -4,
+            "trust": -5,
+            "dataQuality": 0,
+            "risk": 7
+          }
+        },
+        {
+          "text": "Provide the minimum necessary fields through an approved access-controlled channel and confirm the purpose/recipients.",
+          "score": 100,
+          "feedback": "Correct: minimize sensitive data and use governed distribution.",
+          "followUp": "Arvind replies: “Use the secure workspace and omit contact details. Good catch.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": 2,
+            "trust": 5,
+            "dataQuality": 1,
+            "risk": -6
+          }
+        },
+        {
+          "text": "Refuse all risk analysis because customer data is sensitive.",
+          "score": 60,
+          "feedback": "Privacy controls should enable legitimate analysis, not block it completely.",
+          "followUp": "Arvind replies: “We still need the portfolio review—just handle it correctly.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": 0,
+            "trust": -1,
+            "dataQuality": 0,
+            "risk": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-outlier-delete-001",
+      "companyKey": "general",
+      "minCareerLevel": 0,
+      "sender": "Nikhil",
+      "senderRole": "Operations Manager",
+      "subject": "Delete the weird rows",
+      "urgency": "Normal",
+      "body": "There are a few huge values in the file. Please delete all outliers so the average looks normal.",
+      "choices": [
+        {
+          "text": "Delete every value beyond 1.5×IQR automatically.",
+          "score": 40,
+          "feedback": "IQR is useful for detection, not automatic proof that a value is wrong.",
+          "followUp": "Nikhil replies: “One of the deleted rows was our largest enterprise customer.”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -2,
+            "dataQuality": -3,
+            "risk": 2
+          }
+        },
+        {
+          "text": "Flag statistical outliers, verify business context/source evidence, then choose robust summaries or exclusions with documentation.",
+          "score": 100,
+          "feedback": "Correct: unusual is not the same as erroneous.",
+          "followUp": "Nikhil replies: “Keep the enterprise account and show median plus P90 beside the mean.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": 1,
+            "trust": 3,
+            "dataQuality": 4,
+            "risk": -2
+          }
+        },
+        {
+          "text": "Keep every row and never investigate outliers.",
+          "score": 55,
+          "feedback": "You avoided arbitrary deletion but missed a necessary quality check.",
+          "followUp": "Nikhil replies: “Some of those rows really are import errors.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": 0,
+            "trust": -1,
+            "dataQuality": -1,
+            "risk": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-hospital-cause-001",
+      "companyKey": "hospital",
+      "minCareerLevel": 3,
+      "sender": "Dr. Isha",
+      "senderRole": "Operations Lead",
+      "subject": "Can we say staffing caused the wait-time drop?",
+      "urgency": "High",
+      "body": "Median wait fell after staffing changed, but several other operational changes happened that week. Leadership wants a causal statement.",
+      "choices": [
+        {
+          "text": "State that staffing caused the improvement.",
+          "score": 25,
+          "feedback": "The timing is suggestive but multiple simultaneous changes create confounding.",
+          "followUp": "Dr. Isha replies: “Clinical operations says routing changed too. Reframe this.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -2,
+            "trust": -4,
+            "dataQuality": 0,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Report the observed improvement, list competing changes, and recommend a stronger comparison/design before attributing cause.",
+          "score": 100,
+          "feedback": "Correct: useful operational evidence with causal restraint.",
+          "followUp": "Dr. Isha replies: “Good. Segment by day and department, then propose a controlled comparison.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 2,
+            "trust": 4,
+            "dataQuality": 2,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Say no conclusion of any kind can be made.",
+          "score": 55,
+          "feedback": "You can still describe the observed change even when causal attribution is uncertain.",
+          "followUp": "Dr. Isha replies: “I need the descriptive result and the caveat together.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": 0,
+            "trust": -1,
+            "dataQuality": 1,
+            "risk": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-logistics-forecast-001",
+      "companyKey": "logistics",
+      "minCareerLevel": 4,
+      "sender": "Arjun",
+      "senderRole": "Network Director",
+      "subject": "Give me the exact peak-week volume",
+      "urgency": "High",
+      "body": "Capacity planning needs one exact shipment number for festival week. Finance does not want a range.",
+      "choices": [
+        {
+          "text": "Give the point forecast with no uncertainty because leadership asked for one number.",
+          "score": 30,
+          "feedback": "Operational plans built on false precision are fragile.",
+          "followUp": "Arjun replies: “What happens if we are 10% high or low?”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 2,
+            "satisfaction": -1,
+            "trust": -3,
+            "dataQuality": 0,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Provide the point forecast plus downside/base/upside scenarios, assumptions and capacity actions for each.",
+          "score": 100,
+          "feedback": "Strong planning response: a forecast becomes useful when uncertainty is connected to actions.",
+          "followUp": "Arjun replies: “Use the base for budget, but staff the contingency trigger at the upside threshold.”",
+          "impact": {
+            "revenue": 1,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 1,
+            "risk": -4
+          }
+        },
+        {
+          "text": "Refuse to forecast because the future is uncertain.",
+          "score": 20,
+          "feedback": "Uncertainty is exactly why structured forecasts and scenarios are needed.",
+          "followUp": "Arjun replies: “We still have to make a capacity decision.”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": -1,
+            "trust": -4,
+            "dataQuality": 0,
+            "risk": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-active-user-001",
+      "companyKey": "saas",
+      "minCareerLevel": 1,
+      "sender": "Leena",
+      "senderRole": "Head of Product",
+      "subject": "Why do our active-user numbers disagree?",
+      "urgency": "High",
+      "body": "Product says 82k MAU. Finance says 69k. Both teams swear their SQL is correct.",
+      "choices": [
+        {
+          "text": "Pick the query with fewer lines because it is easier to audit.",
+          "score": 25,
+          "feedback": "Query length does not resolve a metric-definition conflict.",
+          "followUp": "Leena replies: “The teams are still arguing about what counts as active.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -2,
+            "dataQuality": -2,
+            "risk": 2
+          }
+        },
+        {
+          "text": "Define activity event, time window, account/user grain, test-account exclusions and timezone, then reconcile both queries to that definition.",
+          "score": 100,
+          "feedback": "Correct: metric governance starts with a shared definition and grain.",
+          "followUp": "Leena replies: “We found Finance excludes internal accounts and Product does not. Standardize it.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 5,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Average 82k and 69k for the dashboard.",
+          "score": 10,
+          "feedback": "Averaging incompatible definitions creates a meaningless number.",
+          "followUp": "Leena replies: “That number has no business definition.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -2,
+            "trust": -5,
+            "dataQuality": -4,
+            "risk": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-powerbi-slow-001",
+      "companyKey": "general",
+      "minCareerLevel": 2,
+      "sender": "Sara",
+      "senderRole": "BI Lead",
+      "subject": "The executive report takes 14 seconds to load",
+      "urgency": "Normal",
+      "body": "The page has 38 visuals, a wide flat table and several complex measures. Leadership wants it faster without losing the decision story.",
+      "choices": [
+        {
+          "text": "Add more pages but keep all 38 visuals on the landing page.",
+          "score": 30,
+          "feedback": "The landing page remains cognitively and computationally heavy.",
+          "followUp": "Sara replies: “It is still slow and executives still cannot find the headline.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": -1,
+            "trust": -2,
+            "dataQuality": 0,
+            "risk": 1
+          }
+        },
+        {
+          "text": "Reduce landing-page visuals, remove unused columns, restore a star schema, simplify expensive measures and profile remaining bottlenecks.",
+          "score": 100,
+          "feedback": "Correct: improve model and visual design before micro-optimizing.",
+          "followUp": "Sara replies: “Load time is down and the executive hierarchy is clearer.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": -2,
+            "satisfaction": 2,
+            "trust": 3,
+            "dataQuality": 2,
+            "risk": -1
+          }
+        },
+        {
+          "text": "Convert every numeric field to text to reduce calculations.",
+          "score": 10,
+          "feedback": "That damages modeling, compression and calculation behavior.",
+          "followUp": "Sara replies: “The model is now larger and several measures broke.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 2,
+            "satisfaction": -2,
+            "trust": -4,
+            "dataQuality": -3,
+            "risk": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-ceo-urgent-001",
+      "companyKey": "general",
+      "minCareerLevel": 2,
+      "sender": "Rhea",
+      "senderRole": "CEO",
+      "subject": "Need a number in 10 minutes",
+      "urgency": "Critical",
+      "body": "What is customer churn this quarter? Just send me a number—no time for definitions.",
+      "choices": [
+        {
+          "text": "Send the first churn number you can query.",
+          "score": 25,
+          "feedback": "A fast wrong metric is still wrong. Churn depends on denominator, cohort and period definition.",
+          "followUp": "Rhea replies: “Customer Success has a different number. Which one is right?”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -4,
+            "dataQuality": -3,
+            "risk": 3
+          }
+        },
+        {
+          "text": "Confirm the existing approved churn definition, state the number plus denominator/window, and flag if the definition is not settled.",
+          "score": 100,
+          "feedback": "Strong: move quickly without abandoning metric governance.",
+          "followUp": "Rhea replies: “Perfect. Put the definition in the footnote and send it.”",
+          "impact": {
+            "revenue": 0,
+            "churn": -0.1,
+            "cost": 0,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 3,
+            "risk": -2
+          }
+        },
+        {
+          "text": "Tell the CEO analytics cannot work under deadlines.",
+          "score": 30,
+          "feedback": "Good analysts manage urgency while protecting the minimum quality bar.",
+          "followUp": "Rhea replies: “I need a defensible answer, not a lecture.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -3,
+            "dataQuality": 1,
+            "risk": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-junior-sql-001",
+      "companyKey": "general",
+      "minCareerLevel": 3,
+      "sender": "Dev",
+      "senderRole": "Junior Analyst",
+      "subject": "My revenue doubled after the JOIN",
+      "urgency": "Normal",
+      "body": "I joined orders to customer_tags and revenue is exactly 2.1× higher. The SQL runs without errors. Can I publish it?",
+      "choices": [
+        {
+          "text": "Publish it because syntactically valid SQL is trustworthy.",
+          "score": 10,
+          "feedback": "A query can run perfectly and still be logically wrong.",
+          "followUp": "Dev replies: “I found customers with multiple tags. Each order is repeated.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -2,
+            "trust": -4,
+            "dataQuality": -5,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Check join cardinality, duplicate keys and before/after row counts; aggregate tags or choose the intended grain before summing revenue.",
+          "score": 100,
+          "feedback": "Correct senior-review behavior: validate grain and cardinality before trusting totals.",
+          "followUp": "Dev replies: “Fixed. Revenue now reconciles to the source ledger.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 1,
+            "trust": 4,
+            "dataQuality": 5,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Divide the doubled revenue by 2.1.",
+          "score": 15,
+          "feedback": "A correction factor hides the modeling error and will fail when tag counts change.",
+          "followUp": "Dev replies: “The factor changed on another day.”",
+          "impact": {
+            "revenue": 0,
+            "churn": 0,
+            "cost": 0,
+            "satisfaction": -1,
+            "trust": -4,
+            "dataQuality": -4,
+            "risk": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "inbox-head-priority-001",
+      "companyKey": "general",
+      "minCareerLevel": 4,
+      "sender": "Board Office",
+      "senderRole": "Executive Office",
+      "subject": "Three requests, one analyst",
+      "urgency": "High",
+      "body": "You have capacity for one deep analysis today: (A) a cosmetic dashboard redesign, (B) a suspected revenue-recognition mismatch before earnings review, or (C) a new low-impact chart requested for next month.",
+      "choices": [
+        {
+          "text": "Prioritize the revenue-recognition mismatch because decision risk and immediacy are highest.",
+          "score": 100,
+          "feedback": "Correct prioritization: impact, risk and deadline outrank cosmetic preference.",
+          "followUp": "Board Office replies: “Finance found a filter defect before the pack went out.”",
+          "impact": {
+            "revenue": 1,
+            "churn": 0,
+            "cost": -1,
+            "satisfaction": 1,
+            "trust": 5,
+            "dataQuality": 4,
+            "risk": -5
+          }
+        },
+        {
+          "text": "Prioritize the cosmetic dashboard redesign because executives see it most.",
+          "score": 35,
+          "feedback": "Visibility does not automatically equal business risk or urgency.",
+          "followUp": "Board Office replies: “The financial mismatch reached the meeting unresolved.”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 1,
+            "satisfaction": -1,
+            "trust": -3,
+            "dataQuality": -2,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Start all three and finish none deeply.",
+          "score": 20,
+          "feedback": "Spreading limited capacity across every request can increase overall decision risk.",
+          "followUp": "Board Office replies: “We needed one issue resolved, not three half-finished.”",
+          "impact": {
+            "revenue": -1,
+            "churn": 0,
+            "cost": 2,
+            "satisfaction": -1,
+            "trust": -4,
+            "dataQuality": -2,
+            "risk": 3
+          }
+        }
+      ]
+    }
+  ],
+  "handbookEntries": [
+    {
+      "id": "hb-sql-select",
+      "skill": "SQL",
+      "title": "SELECT + WHERE",
+      "shortcut": "SELECT columns FROM table WHERE condition",
+      "formula": "SELECT order_id, revenue FROM orders WHERE status = 'completed';",
+      "example": "Return only completed order IDs and revenue.",
+      "whenUse": "When you need a specific subset of rows/columns.",
+      "whenNotUse": "Do not use SELECT * by default in production analysis when only a few fields are needed.",
+      "scenario": "E-commerce order review",
+      "tags": [
+        "sql",
+        "filter",
+        "select"
+      ]
+    },
+    {
+      "id": "hb-sql-group",
+      "skill": "SQL",
+      "title": "GROUP BY",
+      "shortcut": "Change output grain, then aggregate.",
+      "formula": "SELECT segment, SUM(revenue) FROM orders GROUP BY segment;",
+      "example": "One result row per customer segment.",
+      "whenUse": "When the business question asks for totals/averages/counts by a dimension.",
+      "whenNotUse": "Do not GROUP BY just to remove duplicates; fix the grain/key problem instead.",
+      "scenario": "Segment revenue review",
+      "tags": [
+        "sql",
+        "groupby",
+        "aggregation"
+      ]
+    },
+    {
+      "id": "hb-sql-join",
+      "skill": "SQL",
+      "title": "JOIN cardinality",
+      "shortcut": "Define expected 1:1, 1:M or M:M before joining.",
+      "formula": "orders o JOIN customers c ON o.customer_id = c.customer_id",
+      "example": "Many orders to one customer dimension.",
+      "whenUse": "When attributes/measures live in related tables.",
+      "whenNotUse": "Do not join on descriptive text or ignore duplicate keys.",
+      "scenario": "Customer segmentation",
+      "tags": [
+        "sql",
+        "join",
+        "grain"
+      ]
+    },
+    {
+      "id": "hb-sql-window",
+      "skill": "SQL",
+      "title": "Window functions",
+      "shortcut": "Calculate across related rows without collapsing detail.",
+      "formula": "ROW_NUMBER() OVER (PARTITION BY segment ORDER BY revenue DESC)",
+      "example": "Rank customers inside each segment.",
+      "whenUse": "Ranks, running totals, LAG/LEAD, moving averages.",
+      "whenNotUse": "Do not replace a simple GROUP BY with a window if row-level detail is unnecessary.",
+      "scenario": "Top customers by segment",
+      "tags": [
+        "sql",
+        "window",
+        "rank"
+      ]
+    },
+    {
+      "id": "hb-excel-xlookup",
+      "skill": "Excel",
+      "title": "XLOOKUP",
+      "shortcut": "Key → matching value from another table.",
+      "formula": "=XLOOKUP(A2,Customers!A:A,Customers!B:B,\"Unknown\")",
+      "example": "Map customer_id to segment.",
+      "whenUse": "When you have a stable lookup key.",
+      "whenNotUse": "Do not use an unstable descriptive label as the key.",
+      "scenario": "Customer enrichment",
+      "tags": [
+        "excel",
+        "xlookup",
+        "lookup"
+      ]
+    },
+    {
+      "id": "hb-excel-sumifs",
+      "skill": "Excel",
+      "title": "SUMIFS",
+      "shortcut": "Sum a measure only for rows meeting conditions.",
+      "formula": "=SUMIFS(Revenue,Region,\"North\",Status,\"Completed\")",
+      "example": "Completed North-region revenue.",
+      "whenUse": "Fast conditional summaries in structured spreadsheets.",
+      "whenNotUse": "For large repeatable pipelines, SQL/Pandas may be more auditable.",
+      "scenario": "Regional sales sheet",
+      "tags": [
+        "excel",
+        "sumifs",
+        "aggregation"
+      ]
+    },
+    {
+      "id": "hb-excel-pivot",
+      "skill": "Excel",
+      "title": "Pivot table",
+      "shortcut": "Rows/Columns = dimensions; Values = measures.",
+      "formula": "Rows: Region | Columns: Status | Values: SUM Revenue",
+      "example": "Revenue matrix by region and status.",
+      "whenUse": "Fast exploratory summaries and business reviews.",
+      "whenNotUse": "Do not trust a pivot until source grain and aggregation are understood.",
+      "scenario": "Weekly management review",
+      "tags": [
+        "excel",
+        "pivot",
+        "summary"
+      ]
+    },
+    {
+      "id": "hb-excel-absolute",
+      "skill": "Excel",
+      "title": "Absolute references",
+      "shortcut": "$ locks a row/column when copying formulas.",
+      "formula": "=B2*(1+$F$1)",
+      "example": "Apply one tax/discount rate stored in F1 to many rows.",
+      "whenUse": "When one parameter should stay fixed while a formula is copied.",
+      "whenNotUse": "Do not lock references that should move row-by-row.",
+      "scenario": "Pricing model",
+      "tags": [
+        "excel",
+        "formula",
+        "reference"
+      ]
+    },
+    {
+      "id": "hb-clean-grain",
+      "skill": "Data Cleaning",
+      "title": "Row grain",
+      "shortcut": "Before cleaning, answer: what does one row represent?",
+      "formula": "Order line grain → unique key may be order_id + line_id",
+      "example": "Repeated order_id can be valid when an order has many lines.",
+      "whenUse": "Before deduplication, joins and aggregation.",
+      "whenNotUse": "Never delete duplicates before defining the business key.",
+      "scenario": "Vendor order export",
+      "tags": [
+        "cleaning",
+        "grain",
+        "duplicates"
+      ]
+    },
+    {
+      "id": "hb-clean-missing",
+      "skill": "Data Cleaning",
+      "title": "Missing values",
+      "shortcut": "NULL ≠ zero ≠ unknown ≠ not applicable.",
+      "formula": "Impute only when business semantics justify it.",
+      "example": "No support tickets may mean 0; missing plan name means Unknown.",
+      "whenUse": "Any dataset with blanks/nulls.",
+      "whenNotUse": "Do not fill every numeric null with zero automatically.",
+      "scenario": "SaaS CRM export",
+      "tags": [
+        "cleaning",
+        "null",
+        "missing"
+      ]
+    },
+    {
+      "id": "hb-clean-date",
+      "skill": "Data Cleaning",
+      "title": "Dates & types",
+      "shortcut": "Validate meaning first, then normalize types.",
+      "formula": "ISO date: YYYY-MM-DD",
+      "example": "01/02/2026 is ambiguous without locale context.",
+      "whenUse": "Before time filtering, joins and time-series analysis.",
+      "whenNotUse": "Do not silently guess day/month conventions.",
+      "scenario": "Hospital daily operations",
+      "tags": [
+        "cleaning",
+        "date",
+        "types"
+      ]
+    },
+    {
+      "id": "hb-clean-reconcile",
+      "skill": "Data Cleaning",
+      "title": "Join/reconciliation QA",
+      "shortcut": "Compare before/after row counts, keys and totals.",
+      "formula": "source rows → joined rows → unmatched keys → duplicate keys → total reconciliation",
+      "example": "A many-to-many join can double revenue without any SQL error.",
+      "whenUse": "After merges/joins and before publishing metrics.",
+      "whenNotUse": "Do not assume a successful join is logically correct.",
+      "scenario": "Finance reconciliation",
+      "tags": [
+        "cleaning",
+        "join",
+        "qa"
+      ]
+    },
+    {
+      "id": "hb-stat-median",
+      "skill": "Statistics",
+      "title": "Mean vs median",
+      "shortcut": "Use median for a typical value when extreme values distort the mean.",
+      "formula": "Median = middle ordered value",
+      "example": "₹600, ₹650, ₹700, ₹720, ₹7,500 → median ₹700.",
+      "whenUse": "Skewed distributions or strong outliers.",
+      "whenNotUse": "Median can hide total magnitude when totals/means are the actual business quantity.",
+      "scenario": "Typical order value",
+      "tags": [
+        "statistics",
+        "mean",
+        "median"
+      ]
+    },
+    {
+      "id": "hb-stat-sd",
+      "skill": "Statistics",
+      "title": "Standard deviation",
+      "shortcut": "Spread in the original unit.",
+      "formula": "SD = sqrt(variance)",
+      "example": "40±4 minutes is more consistent than 40±20 minutes.",
+      "whenUse": "Quantify variability around a mean when appropriate.",
+      "whenNotUse": "For heavily skewed data, pair with median/percentiles.",
+      "scenario": "Wait-time consistency",
+      "tags": [
+        "statistics",
+        "spread",
+        "sd"
+      ]
+    },
+    {
+      "id": "hb-stat-ci",
+      "skill": "Statistics",
+      "title": "Confidence interval",
+      "shortcut": "Effect estimate + plausible uncertainty range.",
+      "formula": "estimate ± critical value × standard error",
+      "example": "Conversion lift +2.1 pp, 95% CI [0.4, 3.8].",
+      "whenUse": "Communicate precision of estimates.",
+      "whenNotUse": "Do not interpret a 95% CI as 95% probability the fixed true value is inside after observing data.",
+      "scenario": "A/B test",
+      "tags": [
+        "statistics",
+        "ci",
+        "uncertainty"
+      ]
+    },
+    {
+      "id": "hb-stat-p",
+      "skill": "Statistics",
+      "title": "p-value",
+      "shortcut": "Compatibility with a null model—not probability the null is true.",
+      "formula": "Compare p to pre-specified alpha, but also report effect size.",
+      "example": "p=0.18 → insufficient evidence to reject at 0.05; not proof of no effect.",
+      "whenUse": "Formal hypothesis-testing workflows with valid assumptions.",
+      "whenNotUse": "Do not use p<0.05 as the only definition of business importance.",
+      "scenario": "Experiment readout",
+      "tags": [
+        "statistics",
+        "pvalue",
+        "testing"
+      ]
+    },
+    {
+      "id": "hb-stat-power",
+      "skill": "Statistics",
+      "title": "Power & MDE",
+      "shortcut": "Design the experiment around the smallest effect worth detecting.",
+      "formula": "Power depends on baseline, MDE, alpha, variance and sample size.",
+      "example": "If +1 pp is commercially meaningful, size the test to detect about that effect.",
+      "whenUse": "Before running A/B tests.",
+      "whenNotUse": "Do not choose sample size after looking at results just to reach significance.",
+      "scenario": "Retention experiment",
+      "tags": [
+        "statistics",
+        "power",
+        "mde"
+      ]
+    },
+    {
+      "id": "hb-pandas-filter",
+      "skill": "Python/Pandas",
+      "title": "Filter rows",
+      "shortcut": "Boolean mask → keep only qualifying rows.",
+      "formula": "df[df['status'] == 'completed']",
+      "example": "Completed orders only.",
+      "whenUse": "Subsetting analysis data.",
+      "whenNotUse": "Do not overwrite raw data before validating the filter logic.",
+      "scenario": "Order analysis",
+      "tags": [
+        "pandas",
+        "filter",
+        "python"
+      ]
+    },
+    {
+      "id": "hb-pandas-groupby",
+      "skill": "Python/Pandas",
+      "title": "groupby + agg",
+      "shortcut": "Split by dimension, summarize measures.",
+      "formula": "df.groupby('segment')['mrr'].sum()",
+      "example": "Total MRR per segment.",
+      "whenUse": "Grouped KPIs and summaries.",
+      "whenNotUse": "Do not aggregate before deciding the intended output grain.",
+      "scenario": "SaaS finance",
+      "tags": [
+        "pandas",
+        "groupby",
+        "aggregation"
+      ]
+    },
+    {
+      "id": "hb-pandas-merge",
+      "skill": "Python/Pandas",
+      "title": "merge validation",
+      "shortcut": "Merge on keys; validate cardinality and unmatched rows.",
+      "formula": "transactions.merge(accounts,on='account_id',how='left',validate='many_to_one')",
+      "example": "Attach account segment to transactions.",
+      "whenUse": "Combining related DataFrames.",
+      "whenNotUse": "Do not merge on non-unique keys without understanding row multiplication.",
+      "scenario": "Bank transactions",
+      "tags": [
+        "pandas",
+        "merge",
+        "join"
+      ]
+    },
+    {
+      "id": "hb-pandas-null",
+      "skill": "Python/Pandas",
+      "title": "Missing-value workflow",
+      "shortcut": "Inspect → understand meaning → fill/drop/flag deliberately.",
+      "formula": "df['plan'].isna().mean()",
+      "example": "Measure missing plan rate before choosing treatment.",
+      "whenUse": "Any incomplete DataFrame.",
+      "whenNotUse": "Do not call fillna(0) globally.",
+      "scenario": "CRM quality check",
+      "tags": [
+        "pandas",
+        "null",
+        "cleaning"
+      ]
+    },
+    {
+      "id": "hb-powerbi-star",
+      "skill": "Power BI",
+      "title": "Star schema",
+      "shortcut": "Facts measure events; dimensions describe them.",
+      "formula": "DimCustomer 1 → * FactOrders ← * 1 DimDate",
+      "example": "Revenue stays in FactOrders; region in DimCustomer.",
+      "whenUse": "Most analytical semantic models.",
+      "whenNotUse": "Avoid one giant flat table when it creates duplication/ambiguity.",
+      "scenario": "Executive revenue model",
+      "tags": [
+        "powerbi",
+        "star",
+        "model"
+      ]
+    },
+    {
+      "id": "hb-powerbi-measure",
+      "skill": "Power BI",
+      "title": "Measure vs calculated column",
+      "shortcut": "Measure = dynamic filter-context KPI; column = row-level stored value.",
+      "formula": "Total MRR = SUM(FactAccountMonth[MRR])",
+      "example": "MRR should change with month/segment slicers.",
+      "whenUse": "Measures for aggregates, ratios and report KPIs.",
+      "whenNotUse": "Do not store a grand total repeatedly in a calculated column.",
+      "scenario": "SaaS management report",
+      "tags": [
+        "powerbi",
+        "dax",
+        "measure"
+      ]
+    },
+    {
+      "id": "hb-powerbi-calc",
+      "skill": "Power BI",
+      "title": "CALCULATE",
+      "shortcut": "Evaluate a measure under modified filter context.",
+      "formula": "OnTime = CALCULATE(COUNTROWS(Fact), Fact[OnTime] = TRUE())",
+      "example": "Count only on-time shipments while retaining route/month filters.",
+      "whenUse": "Conditional measures and context transformation.",
+      "whenNotUse": "Do not use CALCULATE without understanding the filter context it changes.",
+      "scenario": "Logistics SLA",
+      "tags": [
+        "powerbi",
+        "calculate",
+        "filtercontext"
+      ]
+    },
+    {
+      "id": "hb-powerbi-date",
+      "skill": "Power BI",
+      "title": "Date table",
+      "shortcut": "Continuous calendar → reliable time intelligence.",
+      "formula": "DimDate[Date] 1 → * Fact[TransactionDate]",
+      "example": "Prior-month and YoY measures work even when fact dates are sparse.",
+      "whenUse": "Any time-series semantic model.",
+      "whenNotUse": "Do not rely only on month-name text in the fact table.",
+      "scenario": "Monthly finance dashboard",
+      "tags": [
+        "powerbi",
+        "date",
+        "timeintelligence"
+      ]
+    },
+    {
+      "id": "hb-powerbi-rls",
+      "skill": "Power BI",
+      "title": "Row-level security",
+      "shortcut": "Restrict which rows each user can see.",
+      "formula": "User/role mapping → allowed Region/BusinessUnit",
+      "example": "Regional managers see only their region; executives see all.",
+      "whenUse": "Governed reports with role-based data access.",
+      "whenNotUse": "Do not treat hidden visuals as security.",
+      "scenario": "Bank regional dashboard",
+      "tags": [
+        "powerbi",
+        "rls",
+        "security"
+      ]
+    },
+    {
+      "id": "hb-business-margin",
+      "skill": "Business Analytics",
+      "title": "Gross margin %",
+      "shortcut": "Gross profit normalized by revenue.",
+      "formula": "Gross Margin % = Gross Profit / Revenue × 100",
+      "example": "Revenue can grow while margin falls if discount/cost rises faster.",
+      "whenUse": "Compare profitability across products/periods of different scale.",
+      "whenNotUse": "Do not infer cash generation from gross margin alone.",
+      "scenario": "E-commerce profitability",
+      "tags": [
+        "business",
+        "margin",
+        "profit"
+      ]
+    },
+    {
+      "id": "hb-business-funnel",
+      "skill": "Business Analytics",
+      "title": "Funnel conversion",
+      "shortcut": "Each stage rate needs a clear denominator.",
+      "formula": "Stage conversion = next-stage users / current-stage users",
+      "example": "200 trials → 80 activations = 40%.",
+      "whenUse": "Diagnose drop-off across ordered user stages.",
+      "whenNotUse": "Do not compare rates with inconsistent stage definitions.",
+      "scenario": "SaaS onboarding",
+      "tags": [
+        "business",
+        "funnel",
+        "conversion"
+      ]
+    },
+    {
+      "id": "hb-business-nrr",
+      "skill": "Business Analytics",
+      "title": "Net Revenue Retention",
+      "shortcut": "Existing-base revenue after churn, contraction and expansion.",
+      "formula": "NRR = (Start - Churn - Contraction + Expansion) / Start × 100",
+      "example": "105% NRR can coexist with customer churn if expansion offsets losses.",
+      "whenUse": "Recurring-revenue health.",
+      "whenNotUse": "Do not use NRR alone to understand logo churn or acquisition.",
+      "scenario": "SaaS board metrics",
+      "tags": [
+        "business",
+        "nrr",
+        "retention"
+      ]
+    },
+    {
+      "id": "hb-business-cac",
+      "skill": "Business Analytics",
+      "title": "CAC, LTV & payback",
+      "shortcut": "Acquisition cost must be evaluated against customer value and recovery time.",
+      "formula": "CAC = acquisition spend / new customers",
+      "example": "₹5k CAC with ₹1k monthly gross profit ≈ 5-month simple payback.",
+      "whenUse": "Growth economics and channel decisions.",
+      "whenNotUse": "Do not use revenue-only LTV when gross margin/cost materially changes economics.",
+      "scenario": "Marketing budget",
+      "tags": [
+        "business",
+        "cac",
+        "ltv"
+      ]
+    },
+    {
+      "id": "hb-dashboard-line",
+      "skill": "Dashboards",
+      "title": "Line vs bar",
+      "shortcut": "Line for ordered time; bar for category comparison.",
+      "formula": "Time → x-axis; metric → y-axis",
+      "example": "12-month revenue trend = line; region revenue = bars.",
+      "whenUse": "Simple comparisons with a clear decision.",
+      "whenNotUse": "Do not use pie/donut for long time series.",
+      "scenario": "CEO weekly dashboard",
+      "tags": [
+        "dashboard",
+        "chart",
+        "line"
+      ]
+    },
+    {
+      "id": "hb-dashboard-scatter",
+      "skill": "Dashboards",
+      "title": "Scatter plot",
+      "shortcut": "Two numeric variables → relationship pattern.",
+      "formula": "x = possible driver; y = outcome; each point = entity/period",
+      "example": "Marketing spend vs conversions by campaign.",
+      "whenUse": "Relationships, clusters, non-linearity and outliers.",
+      "whenNotUse": "Do not infer causality from the plotted association alone.",
+      "scenario": "Growth analysis",
+      "tags": [
+        "dashboard",
+        "scatter",
+        "correlation"
+      ]
+    },
+    {
+      "id": "hb-dashboard-cohort",
+      "skill": "Dashboards",
+      "title": "Cohort heatmap",
+      "shortcut": "Start group × age/period.",
+      "formula": "Rows = acquisition cohort | Columns = months since signup | Cell = retention %",
+      "example": "Compare retention decay across signup months.",
+      "whenUse": "Retention and lifecycle analysis.",
+      "whenNotUse": "Do not mix calendar month with customer age without labeling clearly.",
+      "scenario": "Product retention",
+      "tags": [
+        "dashboard",
+        "cohort",
+        "retention"
+      ]
+    },
+    {
+      "id": "hb-dashboard-story",
+      "skill": "Dashboards",
+      "title": "Decision story",
+      "shortcut": "Finding → evidence → driver → action → monitor.",
+      "formula": "What changed? Why might it matter? What should we do next?",
+      "example": "Late SLA +4 pp, concentrated on two routes → investigate capacity/handoffs; monitor P90.",
+      "whenUse": "Executive and operational dashboards.",
+      "whenNotUse": "Do not add commentary that claims causes the data cannot support.",
+      "scenario": "Logistics network review",
+      "tags": [
+        "dashboard",
+        "story",
+        "insight"
+      ]
+    }
+  ],
+  "metricCases": [
+    {
+      "id": "metric-growth-quality-001",
+      "title": "Revenue Growth That Is Getting Worse",
+      "companyKey": "ecommerce",
+      "metrics": {
+        "Revenue": "+20%",
+        "Gross margin": "42% → 34%",
+        "CAC": "+31%",
+        "Churn": "+2.4 pp"
+      },
+      "prompt": "What is the strongest interpretation?",
+      "choices": [
+        {
+          "text": "The company is clearly healthier because revenue is up 20%.",
+          "score": 30,
+          "feedback": "Top-line growth can hide deteriorating unit economics and retention."
+        },
+        {
+          "text": "Growth is accelerating but its quality is deteriorating; investigate discount/mix, acquisition efficiency and churn before scaling further.",
+          "score": 100,
+          "feedback": "Correct. Read the metrics as a system, not as isolated wins/losses."
+        },
+        {
+          "text": "Stop all marketing immediately.",
+          "score": 55,
+          "feedback": "The warning signs matter, but the data supports diagnosis and targeted action before a blanket stop."
+        }
+      ]
+    },
+    {
+      "id": "metric-nrr-concentration-001",
+      "title": "NRR Above 100%—But Is It Safe?",
+      "companyKey": "saas",
+      "metrics": {
+        "NRR": "105%",
+        "Logo churn": "18%",
+        "Expansion MRR": "₹900k",
+        "Top account share of expansion": "64%"
+      },
+      "prompt": "What is the risk?",
+      "choices": [
+        {
+          "text": "No risk; NRR above 100% means retention is excellent.",
+          "score": 25,
+          "feedback": "Expansion can mask meaningful logo churn and concentration."
+        },
+        {
+          "text": "Expansion offsets losses, but customer churn and concentration make the result fragile; segment expansion and track dependency on the top account.",
+          "score": 100,
+          "feedback": "Correct. NRR needs logo and concentration context."
+        },
+        {
+          "text": "NRR is useless and should be removed.",
+          "score": 40,
+          "feedback": "NRR is useful; it just should not be interpreted alone."
+        }
+      ]
+    },
+    {
+      "id": "metric-funnel-mix-001",
+      "title": "Conversion Up, Revenue Flat",
+      "companyKey": "ecommerce",
+      "metrics": {
+        "Traffic": "-22%",
+        "Conversion": "3.8% → 4.6%",
+        "AOV": "-9%",
+        "Revenue": "Flat"
+      },
+      "prompt": "Which explanation is best?",
+      "choices": [
+        {
+          "text": "Conversion improved, so the business must be growing.",
+          "score": 30,
+          "feedback": "Conversion improved, but traffic and AOV moved against revenue."
+        },
+        {
+          "text": "Funnel efficiency improved, but lower traffic and basket value offset it; quantify each driver before changing the channel plan.",
+          "score": 100,
+          "feedback": "Correct driver-based interpretation."
+        },
+        {
+          "text": "AOV is the only metric that matters.",
+          "score": 40,
+          "feedback": "Revenue is driven by multiple interacting components."
+        }
+      ]
+    },
+    {
+      "id": "metric-hospital-tail-001",
+      "title": "Median Better, Tail Unchanged",
+      "companyKey": "hospital",
+      "metrics": {
+        "Median wait": "46 → 39 min",
+        "P90 wait": "88 → 88 min",
+        "Saturday demand": "+18% vs plan"
+      },
+      "prompt": "What should operations conclude?",
+      "choices": [
+        {
+          "text": "Wait time problem is solved because the median improved.",
+          "score": 35,
+          "feedback": "The long tail remains unchanged and capacity pressure persists."
+        },
+        {
+          "text": "Typical experience improved, but severe waits did not; segment high-wait periods and address Saturday capacity.",
+          "score": 100,
+          "feedback": "Correct: median and P90 answer different operational questions."
+        },
+        {
+          "text": "Ignore the median because only P90 matters.",
+          "score": 50,
+          "feedback": "Both central tendency and tail experience are useful."
+        }
+      ]
+    },
+    {
+      "id": "metric-logistics-normalized-001",
+      "title": "Shipping Cost Is Up—Efficiency Is Better",
+      "companyKey": "logistics",
+      "metrics": {
+        "Average shipment cost": "+9%",
+        "Average weight": "+14%",
+        "Cost/kg": "-4%",
+        "On-time SLA": "Flat"
+      },
+      "prompt": "What is the fairest interpretation?",
+      "choices": [
+        {
+          "text": "Shipping efficiency worsened because average cost rose.",
+          "score": 35,
+          "feedback": "Absolute cost rose alongside a larger workload."
+        },
+        {
+          "text": "Absolute cost rose, but normalized cost efficiency improved; review weight/route mix before cutting spend.",
+          "score": 100,
+          "feedback": "Correct: normalize the cost driver before judging efficiency."
+        },
+        {
+          "text": "Cost/kg falling proves total profit increased.",
+          "score": 25,
+          "feedback": "Profit needs revenue and other costs; normalized shipping cost alone cannot prove it."
+        }
+      ]
+    },
+    {
+      "id": "metric-bank-ratio-001",
+      "title": "NPA Ratio Down, NPA Amount Up",
+      "companyKey": "bank",
+      "metrics": {
+        "Gross NPA amount": "+6%",
+        "Loan book": "+18%",
+        "Gross NPA ratio": "4.2% → 3.8%",
+        "New delinquencies": "+9%"
+      },
+      "prompt": "Which statement is defensible?",
+      "choices": [
+        {
+          "text": "Credit quality definitely improved because the ratio fell.",
+          "score": 35,
+          "feedback": "The denominator grew faster, while absolute NPAs and new delinquencies still rose."
+        },
+        {
+          "text": "The ratio improved partly because the loan book expanded; investigate absolute NPAs and new delinquency cohorts before declaring lower risk.",
+          "score": 100,
+          "feedback": "Correct denominator-aware interpretation."
+        },
+        {
+          "text": "Ratios should never be used in risk analysis.",
+          "score": 30,
+          "feedback": "Ratios are useful when read alongside amounts and denominator changes."
+        }
+      ]
+    },
+    {
+      "id": "metric-product-engagement-001",
+      "title": "More Active Users, Weaker Depth",
+      "companyKey": "saas",
+      "metrics": {
+        "MAU": "+24%",
+        "Sessions/user": "-18%",
+        "Core feature adoption": "-11 pp",
+        "Paid conversion": "Flat"
+      },
+      "prompt": "What should Product investigate?",
+      "choices": [
+        {
+          "text": "Celebrate MAU growth and stop analysis.",
+          "score": 25,
+          "feedback": "Reach increased while depth and core adoption weakened."
+        },
+        {
+          "text": "Separate acquisition-driven reach from engagement quality; cohort new users and inspect activation/core-feature adoption.",
+          "score": 100,
+          "feedback": "Correct: breadth and depth can move in opposite directions."
+        },
+        {
+          "text": "Sessions/user alone proves the product is failing.",
+          "score": 45,
+          "feedback": "One engagement metric is not enough to make that conclusion."
+        }
+      ]
+    },
+    {
+      "id": "metric-cash-profit-001",
+      "title": "Profit Up, Cash Flow Down",
+      "companyKey": "ecommerce",
+      "metrics": {
+        "PAT": "+17%",
+        "Operating cash flow": "-12%",
+        "Receivables": "+28%",
+        "Inventory": "+21%"
+      },
+      "prompt": "What is the main question?",
+      "choices": [
+        {
+          "text": "PAT is up, so cash flow does not matter.",
+          "score": 15,
+          "feedback": "Accounting profit and cash conversion can diverge materially."
+        },
+        {
+          "text": "Why is working capital absorbing cash despite higher profit? Investigate receivables, inventory and payment timing.",
+          "score": 100,
+          "feedback": "Correct: connect profit to cash conversion and working capital."
+        },
+        {
+          "text": "Inventory growth proves demand will rise.",
+          "score": 20,
+          "feedback": "Inventory growth may reflect demand planning, overstock or timing; it is not proof of future sales."
+        }
+      ]
+    }
+  ],
+  "reviewCases": [
+    {
+      "id": "review-join-001",
+      "title": "Junior Analyst: Revenue Doubled After JOIN",
+      "companyKey": "ecommerce",
+      "artifact": "SELECT SUM(o.revenue) FROM orders o JOIN customer_tags t ON o.customer_id=t.customer_id;",
+      "prompt": "What should you review first?",
+      "choices": [
+        {
+          "text": "Join cardinality and duplicate customer_tags keys.",
+          "score": 100,
+          "feedback": "Correct. Many tags per customer can duplicate each order before aggregation."
+        },
+        {
+          "text": "SQL capitalization.",
+          "score": 20,
+          "feedback": "Formatting is not the cause of doubled revenue."
+        },
+        {
+          "text": "Divide the result by 2.",
+          "score": 10,
+          "feedback": "A correction factor hides the underlying grain error."
+        }
+      ]
+    },
+    {
+      "id": "review-mean-001",
+      "title": "Junior Analyst: Typical Order = Mean",
+      "companyKey": "ecommerce",
+      "artifact": "Orders: ₹620, ₹680, ₹710, ₹740, ₹12,500. Report says: “Typical order is ₹3,050.”",
+      "prompt": "What is the core issue?",
+      "choices": [
+        {
+          "text": "The mean is distorted by an extreme value; compare median/percentiles.",
+          "score": 100,
+          "feedback": "Correct. Typical-value language needs a robust summary here."
+        },
+        {
+          "text": "The mean formula is mathematically invalid.",
+          "score": 35,
+          "feedback": "The arithmetic can be correct while the business interpretation is poor."
+        },
+        {
+          "text": "Remove the ₹12,500 order automatically.",
+          "score": 45,
+          "feedback": "First verify whether it is a valid high-value order."
+        }
+      ]
+    },
+    {
+      "id": "review-chart-001",
+      "title": "Junior Analyst: Satisfaction Bar Chart",
+      "companyKey": "saas",
+      "artifact": "Product A = 98, Product B = 96. Bar axis starts at 95.",
+      "prompt": "What feedback is strongest?",
+      "choices": [
+        {
+          "text": "The truncated bar baseline visually exaggerates a two-point difference.",
+          "score": 100,
+          "feedback": "Correct. Bar length is interpreted relative to its baseline."
+        },
+        {
+          "text": "Use more colors.",
+          "score": 20,
+          "feedback": "Color does not fix the distortion."
+        },
+        {
+          "text": "Bars cannot show percentages.",
+          "score": 10,
+          "feedback": "Bars can show percentages; the baseline is the issue."
+        }
+      ]
+    },
+    {
+      "id": "review-pvalue-001",
+      "title": "Junior Analyst: p = 0.08 Means No Effect",
+      "companyKey": "hospital",
+      "artifact": "“p=0.08, therefore the scheduling change definitely has no effect.”",
+      "prompt": "What correction is needed?",
+      "choices": [
+        {
+          "text": "Call the result inconclusive at the chosen threshold and report effect size/uncertainty.",
+          "score": 100,
+          "feedback": "Correct. Failure to reject is not proof of no effect."
+        },
+        {
+          "text": "Change alpha to 0.10 after seeing the result so it becomes significant.",
+          "score": 15,
+          "feedback": "Post-hoc threshold changes inflate false-positive risk."
+        },
+        {
+          "text": "Delete the test from the report.",
+          "score": 30,
+          "feedback": "The test can still be informative when interpreted correctly."
+        }
+      ]
+    },
+    {
+      "id": "review-powerbi-001",
+      "title": "Junior Analyst: Bidirectional Everything",
+      "companyKey": "bank",
+      "artifact": "The model has five bidirectional many-to-many relationships. Slicers change unrelated totals.",
+      "prompt": "What should you recommend?",
+      "choices": [
+        {
+          "text": "Return to explicit fact/dimension grain and simpler one-to-many filter paths.",
+          "score": 100,
+          "feedback": "Correct. Simplify the model before adding more filter paths."
+        },
+        {
+          "text": "Add more bidirectional relationships.",
+          "score": 10,
+          "feedback": "That usually increases ambiguity."
+        },
+        {
+          "text": "Hide the slicers.",
+          "score": 30,
+          "feedback": "That hides the symptom rather than fixing the model."
+        }
+      ]
+    },
+    {
+      "id": "review-excel-hidden-001",
+      "title": "Junior Analyst: Workbook Total Looks Right",
+      "companyKey": "logistics",
+      "artifact": "SUM uses B2:B450, but new data now runs to B612. Several rows are hidden by an old filter.",
+      "prompt": "What is the review finding?",
+      "choices": [
+        {
+          "text": "The workbook is not refresh-safe; fix the range/table design and clear/validate filters.",
+          "score": 100,
+          "feedback": "Correct. Static ranges and stale filters create silent reporting errors."
+        },
+        {
+          "text": "The total looks close enough.",
+          "score": 10,
+          "feedback": "A management workbook needs traceable completeness."
+        },
+        {
+          "text": "Increase decimal precision.",
+          "score": 20,
+          "feedback": "Precision is unrelated to missing rows."
+        }
+      ]
+    },
+    {
+      "id": "review-privacy-001",
+      "title": "Junior Analyst: Customer Risk CSV in Email",
+      "companyKey": "bank",
+      "artifact": "Attachment contains name, phone, address and risk flag sent to 40 recipients.",
+      "prompt": "What is the main feedback?",
+      "choices": [
+        {
+          "text": "Use minimum necessary fields and an approved access-controlled distribution method.",
+          "score": 100,
+          "feedback": "Correct. Privacy and access control are part of analytical professionalism."
+        },
+        {
+          "text": "Compress the CSV first.",
+          "score": 20,
+          "feedback": "Compression does not solve data-minimization or access risk."
+        },
+        {
+          "text": "Rename the file confidential.csv.",
+          "score": 10,
+          "feedback": "A filename is not a security control."
+        }
+      ]
+    },
+    {
+      "id": "review-forecast-001",
+      "title": "Junior Analyst: Exact Forecast Promise",
+      "companyKey": "logistics",
+      "artifact": "“Peak-week volume will be exactly 112,430 shipments.” No interval, assumptions or scenarios.",
+      "prompt": "What would you change?",
+      "choices": [
+        {
+          "text": "Add assumptions, forecast error/uncertainty and decision scenarios.",
+          "score": 100,
+          "feedback": "Correct. Forecasts support decisions; they are not certainties."
+        },
+        {
+          "text": "Add more decimal places.",
+          "score": 10,
+          "feedback": "More precision can make false certainty worse."
+        },
+        {
+          "text": "Remove all forecasts because forecasts can be wrong.",
+          "score": 25,
+          "feedback": "Uncertainty is a reason to plan with scenarios, not avoid forecasting."
+        }
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "id": "story-ecom-metric",
+      "title": "The Dashboard That Grew Revenue and Lost Money",
+      "companyKey": "ecommerce",
+      "setup": "A fast-growing marketplace celebrated 28% revenue growth. The team optimized only for gross merchandise value.",
+      "turningPoint": "Finance added discount depth, gross margin, return rate and fulfilment cost to the review. The highest-growth category was destroying contribution margin.",
+      "lesson": "Top-line growth is not the same as healthy growth. Metric trees and unit economics prevent local optimization.",
+      "takeaways": [
+        "Pair growth metrics with profitability.",
+        "Use a driver tree, not one headline KPI.",
+        "Check whether the incentive encourages the wrong behavior."
+      ]
+    },
+    {
+      "id": "story-saas-churn",
+      "title": "NRR Looked Great Until One Customer Left",
+      "companyKey": "saas",
+      "setup": "A SaaS company reported NRR above 105% for four quarters.",
+      "turningPoint": "One enterprise customer generated most expansion. Logo churn was rising quietly. When that account contracted, NRR fell sharply.",
+      "lesson": "A strong aggregate can hide concentration and weak breadth. Pair NRR with logo retention and expansion concentration.",
+      "takeaways": [
+        "Segment recurring-revenue metrics.",
+        "Track concentration risk.",
+        "Ask what can reverse the headline metric."
+      ]
+    },
+    {
+      "id": "story-bank-proxy",
+      "title": "The Convenient Risk Proxy",
+      "companyKey": "bank",
+      "setup": "A team found that one customer attribute was highly correlated with manual-review flags.",
+      "turningPoint": "Governance review showed the attribute was a weak proxy with fairness and data-quality concerns.",
+      "lesson": "Predictive association does not automatically justify a high-stakes policy. Governance is part of analytics.",
+      "takeaways": [
+        "Challenge proxies in high-stakes decisions.",
+        "Separate routing signals from proof.",
+        "Minimize sensitive data."
+      ]
+    },
+    {
+      "id": "story-hospital-tail",
+      "title": "The Average Wait Improved—Patients Still Complained",
+      "companyKey": "hospital",
+      "setup": "Average and median wait time fell after an operations change.",
+      "turningPoint": "P90 wait remained extremely high during weekend peaks. The typical experience improved while the worst experiences did not.",
+      "lesson": "Central tendency can hide operational tails. Percentiles often matter for service reliability.",
+      "takeaways": [
+        "Monitor median and tail percentiles.",
+        "Segment by time/department.",
+        "Tie metrics to capacity decisions."
+      ]
+    },
+    {
+      "id": "story-logistics-normalize",
+      "title": "The Route That Looked Expensive",
+      "companyKey": "logistics",
+      "setup": "One route had 18% higher average shipping cost and was targeted for cuts.",
+      "turningPoint": "The route handled much heavier shipments and cost per kilogram was actually lower than the network average.",
+      "lesson": "Normalize by workload before judging efficiency.",
+      "takeaways": [
+        "Choose the right denominator.",
+        "Separate absolute cost from unit efficiency.",
+        "Compare like with like."
+      ]
+    }
+  ],
+  "jobRoles": [
+    {
+      "id": "role-junior-data-analyst",
+      "title": "Junior Data Analyst",
+      "description": "Generalist reporting, SQL, Excel, cleaning and business communication.",
+      "weights": {
+        "sql": 0.22,
+        "spreadsheets": 0.18,
+        "cleaning": 0.16,
+        "statistics": 0.12,
+        "python": 0.1,
+        "powerbi": 0.12,
+        "business": 0.1
+      },
+      "minProjects": 2,
+      "minEvidence": 8
+    },
+    {
+      "id": "role-bi-analyst",
+      "title": "BI Analyst",
+      "description": "Semantic modeling, Power BI, SQL, KPI governance and stakeholder dashboards.",
+      "weights": {
+        "sql": 0.2,
+        "spreadsheets": 0.08,
+        "cleaning": 0.1,
+        "statistics": 0.08,
+        "python": 0.06,
+        "powerbi": 0.32,
+        "business": 0.16
+      },
+      "minProjects": 3,
+      "minEvidence": 10
+    },
+    {
+      "id": "role-product-analyst",
+      "title": "Product Analyst",
+      "description": "Funnels, retention, experiments, SQL and decision communication.",
+      "weights": {
+        "sql": 0.22,
+        "spreadsheets": 0.06,
+        "cleaning": 0.08,
+        "statistics": 0.24,
+        "python": 0.12,
+        "powerbi": 0.08,
+        "business": 0.2
+      },
+      "minProjects": 3,
+      "minEvidence": 10
+    },
+    {
+      "id": "role-operations-analyst",
+      "title": "Operations Analyst",
+      "description": "Process KPIs, Excel/SQL, data quality, forecasting and operational dashboards.",
+      "weights": {
+        "sql": 0.18,
+        "spreadsheets": 0.18,
+        "cleaning": 0.16,
+        "statistics": 0.14,
+        "python": 0.08,
+        "powerbi": 0.12,
+        "business": 0.14
+      },
+      "minProjects": 3,
+      "minEvidence": 10
+    },
+    {
+      "id": "role-risk-data-analyst",
+      "title": "Risk Data Analyst",
+      "description": "SQL, data quality, statistics, governance and decision-risk communication.",
+      "weights": {
+        "sql": 0.22,
+        "spreadsheets": 0.08,
+        "cleaning": 0.16,
+        "statistics": 0.22,
+        "python": 0.1,
+        "powerbi": 0.08,
+        "business": 0.14
+      },
+      "minProjects": 3,
+      "minEvidence": 12
+    }
+  ]
+}

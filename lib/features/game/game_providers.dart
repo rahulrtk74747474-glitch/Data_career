@@ -23,6 +23,7 @@ import '../../models/portfolio_snapshot.dart';
 import '../../models/skill_mastery.dart';
 import '../../models/spreadsheet_challenge.dart';
 import '../../models/sql_table_schema.dart';
+import '../../models/workday_content.dart';
 import '../../repositories/achievement_repository.dart';
 import '../../repositories/boss_case_result_repository.dart';
 import '../../repositories/capstone_result_repository.dart';
@@ -198,6 +199,36 @@ final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
 
 final reminderSettingsProvider = FutureProvider<ReminderSettings>((ref) {
   return ref.read(reminderSettingsRepositoryProvider).load();
+});
+
+final workInboxMessagesProvider =
+    FutureProvider<List<WorkInboxMessage>>((ref) {
+  return ref.read(contentRepositoryProvider).loadWorkInboxMessages();
+});
+
+final handbookEntriesProvider =
+    FutureProvider<List<HandbookEntry>>((ref) {
+  return ref.read(contentRepositoryProvider).loadHandbookEntries();
+});
+
+final metricRelationshipCasesProvider =
+    FutureProvider<List<MetricRelationshipCase>>((ref) {
+  return ref.read(contentRepositoryProvider).loadMetricRelationshipCases();
+});
+
+final reviewDeskCasesProvider =
+    FutureProvider<List<ReviewDeskCase>>((ref) {
+  return ref.read(contentRepositoryProvider).loadReviewDeskCases();
+});
+
+final analystStoriesProvider =
+    FutureProvider<List<AnalystStory>>((ref) {
+  return ref.read(contentRepositoryProvider).loadAnalystStories();
+});
+
+final jobRoleProfilesProvider =
+    FutureProvider<List<JobRoleProfile>>((ref) {
+  return ref.read(contentRepositoryProvider).loadJobRoleProfiles();
 });
 
 final careerMissionsProvider =
