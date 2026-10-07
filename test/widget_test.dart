@@ -36,6 +36,12 @@ void main() {
     );
     expect(find.text('Data Analyst Intern'), findsOneWidget);
     expect(find.text('Today'), findsOneWidget);
+
+    await tester.drag(
+      find.byType(ListView),
+      const Offset(0, -600),
+    );
+    await tester.pumpAndSettle();
     expect(find.text('Learning labs'), findsOneWidget);
     expect(find.text('Core analyst labs'), findsOneWidget);
 
