@@ -572,3 +572,29 @@ User instruction changed on 2026-10-07: complete all remaining expansion items i
 ### Final v1.1 verification
 
 CI run #361 passed static analysis, the complete automated test suite, debug APK, release AAB, all three split release APK builds, release-size budgets and artifact uploads.
+
+
+## v1.2 — Zero-to-Analyst learning expansion
+
+Status: **IMPLEMENTED — CI PENDING**
+
+Requested goal: a learner with no prior SQL, Excel, cleaning, statistics, Pandas, dashboard or business-analytics knowledge must be able to learn inside the game through realistic company scenarios.
+
+Implemented:
+1. Added **Zero-to-Analyst Academy** with **56 ordered foundation lessons**.
+2. Added 8 lessons each for SQL, Excel/Spreadsheets, Data Cleaning, Statistics, Python/Pandas, Dashboards/KPIs and Business Analytics/Insight.
+3. Every foundation lesson uses a realistic e-commerce, SaaS, banking, hospital or logistics scenario.
+4. Lesson loop is concept explanation → real-world scenario → worked example → mini task → 3 hints → optional full solution.
+5. Added a prominent Home entry: **New to data analytics? Start from zero**.
+6. Added full-solution help to career/daily tasks, spreadsheet/cleaning tasks, Pandas tasks, Analytics Studio, Dashboard Lab and Insight Coach.
+7. Existing task models expose a non-empty solution even when older JSON packs do not explicitly store one.
+8. Pandas solutions are derived from the challenge operation so learners see a usable Pandas-style expression.
+9. Insight Coach contains a manager-ready model response for all 10 scenarios.
+10. Added one-time XP rewards for Academy and specialist-lab completions.
+11. Opening a solution reduces that task's earned XP by **exactly 5 XP**; existing hint/failed-attempt scoring remains separate.
+12. The solution remains available to a player with 0 current XP because the penalty is taken from the task reward rather than blocking help.
+13. Added persistent `rewardedLearningIds` in local progress so specialist-lab/Academy XP cannot be farmed repeatedly.
+14. Added automated tests for the 56-lesson curriculum, progress serialization and the exact 5-XP penalty.
+15. Bumped app version to **v1.2.0+17**.
+
+Final CI verification pending.
