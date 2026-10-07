@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/analyst_task.dart';
+import '../../services/learning_reward_service.dart';
 
 class GameProgress {
   const GameProgress({
@@ -21,6 +22,7 @@ class GameProgress {
     this.companyChapter = -1,
     this.companyJourneyCompleted = false,
     this.completedEventIds = const <String>{},
+    this.rewardedLearningIds = const <String>{},
   });
 
   static const roleNames = [
@@ -87,6 +89,7 @@ class GameProgress {
   final int companyChapter;
   final bool companyJourneyCompleted;
   final Set<String> completedEventIds;
+  final Set<String> rewardedLearningIds;
 
   int get resolvedCompanyChapter {
     if (companyChapter >= 0) {
@@ -156,6 +159,7 @@ class GameProgress {
     int? companyChapter,
     bool? companyJourneyCompleted,
     Set<String>? completedEventIds,
+    Set<String>? rewardedLearningIds,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -174,6 +178,7 @@ class GameProgress {
       companyJourneyCompleted:
           companyJourneyCompleted ?? this.companyJourneyCompleted,
       completedEventIds: completedEventIds ?? this.completedEventIds,
+      rewardedLearningIds: rewardedLearningIds ?? this.rewardedLearningIds,
     );
   }
 
@@ -193,6 +198,7 @@ class GameProgress {
       'companyChapter': resolvedCompanyChapter,
       'companyJourneyCompleted': companyJourneyCompleted,
       'completedEventIds': completedEventIds.toList(),
+      'rewardedLearningIds': rewardedLearningIds.toList(),
     };
   }
 
@@ -228,6 +234,10 @@ class GameProgress {
           (json['companyJourneyCompleted'] as bool?) ?? false,
       completedEventIds: Set<String>.from(
         (json['completedEventIds'] as List<dynamic>?) ??
+            const <dynamic>[],
+      ),
+      rewardedLearningIds: Set<String>.from(
+        (json['rewardedLearningIds'] as List<dynamic>?) ??
             const <dynamic>[],
       ),
     );
@@ -272,10 +282,15 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
   Future<void> completeTask(
     AnalystTask task, {
     required int score,
+    bool solutionViewed = false,
   }) async {
     if (state.completedTaskIds.contains(task.id)) return;
 
-    final earnedXp = (task.xp * score / 100).round();
+    final earnedXp = LearningRewardService.earnedXp(
+      baseXp: task.xp,
+      score: score,
+      solutionViewed: solutionViewed,
+    );
     final completed = <String>{...state.completedTaskIds, task.id};
 
     var revenue = state.revenueIndex;
@@ -315,6 +330,7 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
     required String dateKey,
     required int score,
     required int bonusXp,
+    bool solutionViewed = false,
   }) async {
     if (state.completedDaily(dateKey)) return;
 
@@ -331,7 +347,11 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
       }
     }
 
-    final earnedXp = (bonusXp * score / 100).round();
+    final earnedXp = LearningRewardService.earnedXp(
+      baseXp: bonusXp,
+      score: score,
+      solutionViewed: solutionViewed,
+    );
     state = state.copyWith(
       xp: state.xp + earnedXp,
       dailyStreak: nextDailyStreak,
@@ -339,6 +359,29 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
       completedDailyDates: <String>{...state.completedDailyDates, dateKey},
     );
     await _save();
+  }
+
+  Future<int> awardLearningXp({
+    required String rewardId,
+    required int baseXp,
+    required int score,
+    bool solutionViewed = false,
+  }) async {
+    if (state.rewardedLearningIds.contains(rewardId)) return 0;
+    final earnedXp = LearningRewardService.earnedXp(
+      baseXp: baseXp,
+      score: score,
+      solutionViewed: solutionViewed,
+    );
+    state = state.copyWith(
+      xp: state.xp + earnedXp,
+      rewardedLearningIds: <String>{
+        ...state.rewardedLearningIds,
+        rewardId,
+      },
+    );
+    await _save();
+    return earnedXp;
   }
 
   Future<void> applyRandomEvent({

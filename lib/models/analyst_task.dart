@@ -23,6 +23,7 @@ class AnalystTask {
     this.difficulty = 'Beginner',
     this.companyKey = 'ecommerce',
     this.minCareerLevel = 0,
+    this.solution = '',
   });
 
   final String id;
@@ -48,6 +49,19 @@ class AnalystTask {
   final String difficulty;
   final String companyKey;
   final int minCareerLevel;
+  final String solution;
+
+  String get solutionText {
+    if (solution.trim().isNotEmpty) return solution.trim();
+    final answer = expectedAnswer.trim().isNotEmpty
+        ? expectedAnswer.trim()
+        : expectedSelections.isNotEmpty
+            ? expectedSelections.join('; ')
+            : expectedRows.isNotEmpty
+                ? expectedRows.toString()
+                : 'Use the explanation and business rules to construct the expected result.';
+    return 'Expected answer/result:\n$answer\n\nWhy:\n$explanation';
+  }
 
   factory AnalystTask.fromJson(Map<String, dynamic> json) {
     return AnalystTask(
@@ -87,6 +101,7 @@ class AnalystTask {
       difficulty: (json['difficulty'] as String?) ?? 'Beginner',
       companyKey: (json['companyKey'] as String?) ?? 'ecommerce',
       minCareerLevel: (json['minCareerLevel'] as num?)?.toInt() ?? 0,
+      solution: (json['solution'] as String?) ?? '',
     );
   }
 
