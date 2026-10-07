@@ -1,6 +1,7 @@
 import 'package:dataquest_analyst_career/core/navigation/app_routes.dart';
 import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
+import 'package:dataquest_analyst_career/services/content_pack_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +33,9 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          contentPackLoaderProvider.overrideWithValue(
+            _FastContentPackLoader(database),
+          ),
         ],
         child: MaterialApp(
           initialRoute: AppRoutes.splash,
@@ -57,6 +61,9 @@ void main() {
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
+          contentPackLoaderProvider.overrideWithValue(
+            _FastContentPackLoader(database),
+          ),
         ],
         child: MaterialApp(
           initialRoute: '/unknown-route',
@@ -85,5 +92,21 @@ Future<void> _waitForHome(WidgetTester tester) async {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 10)),
     );
+  }
+}
+
+
+class _FastContentPackLoader extends ContentPackLoader {
+  _FastContentPackLoader(super.database);
+
+  @override
+  Future<List<PackInstallResult>> installBundledPacks() async {
+    return const [
+      PackInstallResult(
+        packId: 'test-startup-pack',
+        installed: false,
+        contentVersion: 1,
+      ),
+    ];
   }
 }
