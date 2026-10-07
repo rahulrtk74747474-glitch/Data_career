@@ -521,7 +521,7 @@ This maintenance change does not start Expansion Item 6.
 
 ### Expansion Items 6–12 — Final v1.1 completion pass
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #361)**
 
 User instruction changed on 2026-10-07: complete all remaining expansion items in one continuous pass.
 
@@ -566,4 +566,9 @@ User instruction changed on 2026-10-07: complete all remaining expansion items i
 
 ### v1.1 expansion status
 
-**All requested Expansion Items 1–12 are implemented in source. Final CI verification is pending for this completion pass.**
+**All requested Expansion Items 1–12 are implemented and CI verified.**
+
+
+### Final v1.1 verification
+
+CI run #361 passed static analysis, the complete automated test suite, debug APK, release AAB, all three split release APK builds, release-size budgets and artifact uploads.
