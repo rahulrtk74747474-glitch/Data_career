@@ -338,3 +338,58 @@ Future maintenance must continue to preserve:
 ## Ready progress-log line for this phase
 
 `2026-10-06 — Phase 10 / v1.0: Added rollback-safe portable backups, optional deterministic Supabase cloud continuity, cached weekly cases, alias-only leaderboard, release diagnostics, accessibility/low-memory gates, and verified AAB + per-ABI release artifacts.`
+
+
+## v1.1 Expansion Program
+
+User instruction: complete the requested expansion **one item at a time** and request confirmation before beginning the next item.
+
+### Expansion Item 1 — Full GDD + MVP content matrix
+
+Status: **COMPLETE — documentation-only**
+
+Completed:
+1. Added `docs/GAME_DESIGN_DOCUMENT_v1_1.md`.
+2. Documented the full story and player fantasy.
+3. Documented the five-company timeline: e-commerce → SaaS → banking → hospital operations → logistics.
+4. Documented the Intern → Junior → Data Analyst → Senior → Lead → Head of Analytics level map.
+5. Documented unified scoring, hint penalties, mastery logic, XP economy and graduation thresholds.
+6. Defined company-growth formulas for revenue index, cost index, churn/exception rate, satisfaction and composite company health.
+7. Documented random-event and monthly-performance-review design.
+8. Audited the verified v1.0 primary content inventory:
+   - Career tasks: 37
+   - Guided Pandas tasks: 6
+   - Dashboard/KPI tasks: 5
+   - Primary learning items represented: 48
+9. Defined the expanded MVP target of **140 core learning tasks**:
+   - SQL 25
+   - Spreadsheets 15
+   - Data Cleaning 15
+   - Statistics 15
+   - Python/Pandas 15
+   - Dashboards & KPI Design 15
+   - Business Analytics 20
+   - Insight Writing / Communication 10
+   - Professionalism / Ethics 10
+10. Added skill progression maps for SQL, spreadsheets, cleaning, statistics, Pandas and business analytics.
+11. Documented Boss Case structure and all major game modes.
+12. Added a proposed badge catalog.
+13. Added a 12-week v1.1 development roadmap.
+14. Added a definition-of-done checklist for every new task/content item.
+15. Recorded the user-requested one-item-at-a-time execution order.
+
+### Exact next expansion item — Item 2
+
+**Flutter setup-from-scratch documentation + splash/navigation polish.**
+
+Item 2 should:
+1. Add Android Studio setup from a blank machine.
+2. Add GitHub Codespaces setup from a blank workspace.
+3. Document exact Flutter/Dart/Android SDK verification commands.
+4. Document exact clone/bootstrap/run/test/build commands.
+5. Document the clean folder architecture used by DataQuest.
+6. Document every package in `pubspec.yaml` and why it exists.
+7. Add/verify a production-friendly splash/startup experience.
+8. Review navigation structure and make the startup → home flow explicit.
+9. Preserve all v1.0/v1.1 Item 1 functionality and saves.
+10. Stop and ask for confirmation before Item 3.
