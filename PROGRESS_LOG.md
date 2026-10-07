@@ -499,6 +499,25 @@ Completed:
    - release AAB artifact ID `11460350517`
    - release split APKs artifact ID `11460440184`
 
+## Home UI/UX simplification — post Item 5 maintenance
+
+Status: **IMPLEMENTED — CI PENDING**
+
+Completed:
+1. Replaced the 21-card two-column feature grid with a clear information hierarchy.
+2. Added a prominent **What to do next** card driven by placement status, adaptive recommendations and review priority.
+3. Added a compact **Today** card containing Daily Challenge, Review Queue and Practice Gym.
+4. Grouped specialist features into collapsible **Learning labs**, **Challenges & career**, and **Progress & profile** sections.
+5. Moved Data & Cloud, Reminders and Reset into the app-bar overflow menu.
+6. Replaced the bulky adaptive-learning card with a compact **Current focus** strip.
+7. Moved company metrics and the full ticket list into collapsed sections so they remain available without dominating the home screen.
+8. Reworked copy so every section explains when the learner should use it.
+9. Preserved every existing destination and all player progress/evidence behavior.
+10. Added Home widget assertions for the new navigation hierarchy.
+11. Bumped the app build to **v1.1.0+15**.
+
+This maintenance change does not start Expansion Item 6.
+
 ### Exact next expansion item — Item 6
 
 **Statistics + chart/dashboard builder.**

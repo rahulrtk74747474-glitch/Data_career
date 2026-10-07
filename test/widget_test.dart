@@ -34,7 +34,7 @@ void main() {
       find.text('E-commerce Co. • Commercial Analytics'),
       findsOneWidget,
     );
-    expect(find.text('Data Analyst Intern'), findsOneWidget);
+    expect(find.text('Data Analyst Intern'), findsOneWidget);\n    expect(find.text('Today'), findsOneWidget);\n    expect(find.text('Learning labs'), findsOneWidget);\n    expect(find.text('Core analyst labs'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
