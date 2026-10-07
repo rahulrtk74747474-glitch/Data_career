@@ -9,7 +9,7 @@ void main() {
         expectedCommand: 'FORMULA =B2*(1-C2)',
         expectedRows: const [],
       ),
-      'formula = $B2 * (1 - C2)',
+      r'formula = $B2 * (1 - C2)',
     );
 
     expect(result.isCorrect, isTrue);
