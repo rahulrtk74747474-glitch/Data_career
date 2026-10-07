@@ -14,7 +14,7 @@ class DashboardLabScreen extends ConsumerWidget {
     final challenges = ref.watch(dashboardChallengesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard Decision Lab')),
+      appBar: AppBar(title: const Text('BI & Dashboard Lab')),
       body: SafeArea(
         child: challenges.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -30,7 +30,7 @@ class DashboardLabScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Practice KPI definition, chart choice, dashboard hierarchy and visual critique—the work that turns analysis into management decisions.',
+                'Practice Power BI modeling decisions, KPI definition, chart choice, dashboard hierarchy and visual critique—the work that turns analysis into management decisions.',
               ),
               const SizedBox(height: 16),
               for (final challenge in items)

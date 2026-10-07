@@ -52,6 +52,8 @@ class HomeScreen extends ConsumerWidget {
       context: context,
       placementComplete: placementComplete,
       recommendations: recommendations,
+      careerMissions: careerMissions,
+      progress: progress,
       reviewCount: reviewCount,
     );
 
@@ -220,8 +222,8 @@ class HomeScreen extends ConsumerWidget {
                     onTap: () => _open(context, const PandasLabScreen()),
                   ),
                   _MenuItem(
-                    title: 'Dashboard Lab',
-                    subtitle: 'Choose useful KPIs and visualisations',
+                    title: 'BI & Dashboard Lab',
+                    subtitle: 'Power BI, KPI design and visual decisions',
                     icon: Icons.dashboard_outlined,
                     onTap: () => _open(context, const DashboardLabScreen()),
                   ),
@@ -349,6 +351,8 @@ class HomeScreen extends ConsumerWidget {
     required BuildContext context,
     required AsyncValue<bool> placementComplete,
     required AsyncValue<List<AnalystTask>> recommendations,
+    required AsyncValue<List<CareerMission>> careerMissions,
+    required GameProgress progress,
     required int reviewCount,
   }) {
     return placementComplete.when(
@@ -376,6 +380,37 @@ class HomeScreen extends ConsumerWidget {
             secondaryButtonLabel: 'I know some skills — placement test',
             secondaryOnPressed: () =>
                 _open(context, const PlacementScreen()),
+          );
+        }
+
+        final missionItems =
+            careerMissions.valueOrNull ?? const <CareerMission>[];
+        CareerMission? nextMission;
+        for (var index = 0; index < missionItems.length; index++) {
+          final mission = missionItems[index];
+          if (progress.rewardedLearningIds.contains(mission.rewardId)) {
+            continue;
+          }
+          final previousComplete = index == 0 ||
+              progress.rewardedLearningIds
+                  .contains(missionItems[index - 1].rewardId);
+          if (previousComplete &&
+              progress.resolvedCompanyChapter >= mission.companyChapter) {
+            nextMission = mission;
+            break;
+          }
+        }
+
+        if (nextMission != null) {
+          return _NextStepCard(
+            icon: Icons.work_history_outlined,
+            eyebrow: 'REPORT TO WORK',
+            title: nextMission.title,
+            description:
+                '${nextMission.companyName} • ${nextMission.taskIds.length} connected tickets. Finish the project, report to your manager and add it to your portfolio.',
+            buttonLabel: 'Open career project',
+            onPressed: () =>
+                _open(context, const CareerCampaignScreen()),
           );
         }
 
