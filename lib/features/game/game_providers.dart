@@ -79,9 +79,8 @@ final startupServiceProvider = Provider<StartupService>((ref) {
   );
 });
 
-final startupInitializationProvider = FutureProvider<void>((ref) async {
-  await ref.read(appDatabaseProvider).database;
-  await ref.read(contentPackLoaderProvider).installBundledPacks();
+final startupInitializationProvider = FutureProvider<void>((ref) {
+  return ref.read(startupServiceProvider).initialize();
 });
 
 final achievementRepositoryProvider = Provider<AchievementRepository>((ref) {
