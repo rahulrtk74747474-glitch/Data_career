@@ -378,18 +378,46 @@ Completed:
 14. Added a definition-of-done checklist for every new task/content item.
 15. Recorded the user-requested one-item-at-a-time execution order.
 
-### Exact next expansion item — Item 2
+### Expansion Item 2 — Flutter setup + splash/navigation
 
-**Flutter setup-from-scratch documentation + splash/navigation polish.**
+Status: **COMPLETE — CI VERIFIED (GitHub Actions run #347)**
 
-Item 2 should:
-1. Add Android Studio setup from a blank machine.
-2. Add GitHub Codespaces setup from a blank workspace.
-3. Document exact Flutter/Dart/Android SDK verification commands.
-4. Document exact clone/bootstrap/run/test/build commands.
-5. Document the clean folder architecture used by DataQuest.
-6. Document every package in `pubspec.yaml` and why it exists.
-7. Add/verify a production-friendly splash/startup experience.
-8. Review navigation structure and make the startup → home flow explicit.
-9. Preserve all v1.0/v1.1 Item 1 functionality and saves.
-10. Stop and ask for confirmation before Item 3.
+Completed:
+1. Added `docs/FLUTTER_SETUP_ARCHITECTURE_v1_1.md`.
+2. Documented Android Studio setup from a blank development machine.
+3. Documented GitHub Codespaces setup from a blank workspace.
+4. Added exact Flutter, Dart, Java and `flutter doctor` verification commands.
+5. Added exact repository clone, Android-wrapper generation, Android configuration, dependency, analyze, test, run, APK, AAB and split-APK commands.
+6. Documented every current runtime/dev package in `pubspec.yaml` and why DataQuest uses it.
+7. Documented the actual feature-first clean architecture, folder responsibilities and dependency direction used by the repository.
+8. Documented the Material 3 light/dark theme and system theme selection.
+9. Documented the full named-route map and startup → Home → notification-deep-link flow.
+10. Verified the production Splash screen opens/migrates SQLite, installs versioned bundled content and retries safely without deleting player data.
+11. Added a dedicated `startupInitializationProvider` boundary so production startup remains unchanged while Splash navigation can be tested deterministically.
+12. Preserved notification-launch routing through Splash to Daily Challenge / Review Queue.
+13. Fixed an unrelated spreadsheet test literal so `$B2` is treated as a spreadsheet absolute reference rather than Dart interpolation.
+14. Made Home and Splash route widget tests deterministic by overriding the startup boundary instead of racing FFI SQLite/asset loading.
+15. Existing dedicated content-pack/database tests continue to verify real pack installation/versioning separately from route tests.
+16. CI run #347 passed Android wrapper generation/configuration, dependency installation, static analysis, all **129 tests**, debug APK build, release AAB build, split release APK builds, release-size budgets and all three artifact uploads.
+17. Verified run #347 artifacts:
+   - debug APK artifact ID `11457178541`
+   - release AAB artifact ID `11457367787`
+   - release split APKs artifact ID `11457083752`
+
+### Exact next expansion item — Item 3
+
+**Unified SQLite/content-pack architecture.**
+
+Item 3 should:
+1. Audit and finalize canonical offline tables for users, progress, tasks, datasets, attempts, events and achievements without deleting existing v1.0/v1.1 state.
+2. Finalize the versioned JSON content-pack contract for tasks, datasets, dialogues, rubrics, events and achievements.
+3. Ensure bundled packs load from assets into SQLite offline and are idempotently versioned.
+4. Reject unsupported/newer pack schemas before mutation.
+5. Add/verify transactional pack upgrades so a failed pack cannot partially install.
+6. Add five complete sample tasks in the unified format with datasets, three-level hints, expected answers, rubrics and business context.
+7. Document the schema/content-pack format for future task generation.
+8. Add/verify automated migration, installation, upgrade and rollback tests.
+9. Preserve all existing player progress and learning content.
+10. Stop and ask for confirmation before Item 4.
+
+Do not start Item 3 until the user explicitly confirms.
