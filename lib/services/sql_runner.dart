@@ -87,6 +87,18 @@ class SqlRunner {
     if (normalized.contains('misuse of aggregate')) {
       return 'SQL error: an aggregate such as SUM, AVG or COUNT is being used at the wrong query level. Check GROUP BY, HAVING and nested-query logic.';
     }
+    if (normalized.contains('misuse of window function')) {
+      return 'SQL error: a window function is being used where SQLite does not allow it. Calculate the window value in SELECT (or a CTE), then filter it in an outer query.';
+    }
+    if (normalized.contains('no such function')) {
+      return 'SQL error: SQLite does not recognize one of the functions. Check the function name and use SQLite-supported functions.';
+    }
+    if (normalized.contains('incomplete input')) {
+      return 'SQL syntax error: the query ends before SQLite has enough information. Check unfinished parentheses, CASE/END, JOIN conditions and CTEs.';
+    }
+    if (normalized.contains('circular reference')) {
+      return 'SQL error: a CTE refers back to itself without valid recursive CTE syntax. Check the CTE name and FROM clauses.';
+    }
     if (normalized.contains('syntax error') || normalized.contains('near')) {
       return 'SQL syntax error: check commas, parentheses, aliases, quotes and clause order (SELECT → FROM/JOIN → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT).';
     }

@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/analyst_task.dart';
 import '../../models/daily_challenge.dart';
 import '../../services/scoring_service.dart';
+import '../../services/sql_editor_helper.dart';
 import '../../services/sql_result_grader.dart';
 import '../game/game_providers.dart';
+import '../sql_workspace/sql_workspace_screen.dart';
 
 class TaskScreen extends ConsumerStatefulWidget {
   const TaskScreen({
@@ -130,24 +132,73 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                 },
               )
             else
-              TextField(
-                controller: _answerController,
-                minLines: _isSql ? 5 : 1,
-                maxLines: _isSql ? 12 : 3,
-                autocorrect: false,
-                enableSuggestions: false,
-                decoration: InputDecoration(
-                  labelText: task.answerType == 'formula'
-                      ? 'Your spreadsheet formula'
-                      : 'Your SQL query',
-                  hintText: task.answerType == 'formula' ? '=...' : 'SELECT ...',
-                  alignLabelWithHint: true,
-                ),
-                onChanged: (_) {
-                  if (_feedback != null) {
-                    setState(() => _feedback = null);
-                  }
-                },
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_isSql) ...[
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'SQL keyword shortcuts',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const SqlWorkspaceScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.table_view_outlined),
+                          label: const Text('Schema & scratchpad'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (final keyword in SqlEditorHelper.keywords)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: ActionChip(
+                                label: Text(keyword.trim()),
+                                onPressed: () => _insertSqlKeyword(keyword),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                  TextField(
+                    controller: _answerController,
+                    minLines: _isSql ? 5 : 1,
+                    maxLines: _isSql ? 12 : 3,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    keyboardType:
+                        _isSql ? TextInputType.multiline : TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: task.answerType == 'formula'
+                          ? 'Your spreadsheet formula'
+                          : 'Your SQL query',
+                      hintText:
+                          task.answerType == 'formula' ? '=...' : 'SELECT ...',
+                      alignLabelWithHint: true,
+                      border: const OutlineInputBorder(),
+                    ),
+                    onChanged: (_) {
+                      if (_feedback != null) {
+                        setState(() => _feedback = null);
+                      }
+                    },
+                  ),
+                ],
               ),
             const SizedBox(height: 12),
             FilledButton.icon(
@@ -223,6 +274,16 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
         ),
       ),
     );
+  }
+
+  void _insertSqlKeyword(String keyword) {
+    _answerController.value = SqlEditorHelper.insertKeyword(
+      _answerController.value,
+      keyword,
+    );
+    if (_feedback != null) {
+      setState(() => _feedback = null);
+    }
   }
 
   Future<void> _submit() async {

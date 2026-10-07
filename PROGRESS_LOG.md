@@ -438,19 +438,36 @@ Completed:
    - release AAB artifact ID `11459161024`
    - release split APKs artifact ID `11459086294`
 
-### Exact next expansion item — Item 4
+### Expansion Item 4 — SQL Lab expansion
 
-**SQL Lab expansion.**
+Status: **IMPLEMENTED — CI PENDING**
 
-Item 4 should:
-1. Build/finish the in-app SQL editor and touch-friendly keyword shortcut bar.
-2. Run learner SQL against local SQLite sample company databases.
-3. Show result tables and explain SQL errors in plain language.
-4. Auto-grade result sets against expected output.
-5. Use the standard three-level hint flow.
-6. Add the requested 20 SQL tasks from beginner queries through joins, aggregations, subqueries/CTEs and window functions.
-7. Preserve all existing SQL tasks and player evidence.
-8. Add automated grading/execution tests and verify CI.
-9. Stop and ask for confirmation before Item 5.
+Completed:
+1. Preserved all 20 stable SQL core task IDs and existing player evidence.
+2. Added one shared touch-friendly SQL shortcut helper to task and scratchpad editors.
+3. Added task-level **Schema & scratchpad** access.
+4. Kept execution fully offline against local SQLite company datasets.
+5. Preserved horizontal result tables and the three-level hint flow.
+6. Hardened result grading to validate aliases, row counts and column/value relationships.
+7. Expanded plain-language errors for window misuse, unsupported functions, incomplete input and circular CTEs.
+8. Preserved one-query/read-only execution and the 100-row result cap.
+9. Added hidden canonical reference SQL for all 20 tasks.
+10. Verified the content progression as 6 Beginner, 7 Intermediate and 7 Advanced tasks through window functions.
+11. Added automated execution/grading coverage for all 20 reference solutions.
+12. Added editor, safety, error and result-grader regression tests.
+13. Added `docs/SQL_LAB_v1_1.md`.
 
-Do not start Item 4 until the user explicitly confirms.
+### Exact next expansion item — Item 5
+
+**Spreadsheet simulator + data-cleaning module.**
+
+Item 5 should:
+1. Finish the touch-friendly spreadsheet simulator.
+2. Support formulas, lookups, sorting, filters and pivot-builder workflows with auto-grading.
+3. Finish the data-cleaning module for nulls, duplicates, outliers and format normalization.
+4. Deliver/verify the requested 15 spreadsheet + cleaning tasks.
+5. Preserve all existing player evidence and adaptive mastery behavior.
+6. Add automated simulator/grading/content tests and verify CI.
+7. Stop and ask for confirmation before Item 6.
+
+Do not start Item 5 until the user explicitly confirms.

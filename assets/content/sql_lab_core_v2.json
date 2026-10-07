@@ -16,7 +16,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "SELECT order_id and revenue for completed orders.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT order_id, revenue FROM orders WHERE status = 'completed';",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -74,7 +74,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return order_id and revenue for orders with revenue >= 2000.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT order_id, revenue FROM orders WHERE revenue >= 2000;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -120,7 +120,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return the three largest orders by revenue.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT order_id, revenue FROM orders ORDER BY revenue DESC LIMIT 3;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -162,7 +162,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return status and COUNT(*) AS order_count grouped by status.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -204,7 +204,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return status and SUM(revenue) AS revenue grouped by status.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT status, SUM(revenue) AS revenue FROM orders GROUP BY status;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -246,7 +246,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return channel and total conversions from campaign_performance.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT channel, SUM(conversions) AS conversions FROM campaign_performance GROUP BY channel;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -284,7 +284,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Join orders to customers and return completed revenue by segment.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT c.segment, SUM(o.revenue) AS revenue FROM orders o JOIN customers c ON c.customer_id = o.customer_id WHERE o.status = 'completed' GROUP BY c.segment;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -326,7 +326,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return completed_orders, refunded_orders and cancelled_orders using CASE inside aggregates.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed_orders, SUM(CASE WHEN status = 'refunded' THEN 1 ELSE 0 END) AS refunded_orders, SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders FROM orders;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -361,7 +361,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return completed-revenue segments with SUM(revenue) > 3000.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT c.segment, SUM(o.revenue) AS revenue FROM orders o JOIN customers c ON c.customer_id = o.customer_id WHERE o.status = 'completed' GROUP BY c.segment HAVING SUM(o.revenue) > 3000;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -399,7 +399,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return customer_id and completed revenue for customers whose completed revenue is above the average customer total.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH customer_revenue AS (SELECT customer_id, SUM(revenue) AS revenue FROM orders WHERE status = 'completed' GROUP BY customer_id) SELECT customer_id, revenue FROM customer_revenue WHERE revenue > (SELECT AVG(revenue) FROM customer_revenue);",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -437,7 +437,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Use a CTE to calculate completed revenue per customer, then keep customers with revenue >= 2000.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH customer_revenue AS (SELECT customer_id, SUM(revenue) AS revenue FROM orders WHERE status = 'completed' GROUP BY customer_id) SELECT customer_id, revenue FROM customer_revenue WHERE revenue >= 2000;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -483,7 +483,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return order_id and value_band where revenue >=2000 is High, >=1000 is Medium, otherwise Low.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT order_id, CASE WHEN revenue >= 2000 THEN 'High' WHEN revenue >= 1000 THEN 'Medium' ELSE 'Low' END AS value_band FROM orders;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -549,7 +549,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return each distinct region from customers.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT DISTINCT region FROM customers;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -591,7 +591,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return order_id, revenue and ROW_NUMBER() over revenue descending as revenue_rank.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT order_id, revenue, ROW_NUMBER() OVER (ORDER BY revenue DESC) AS revenue_rank FROM orders;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -666,7 +666,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Aggregate completed revenue per customer, then RANK customers by revenue descending.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH customer_revenue AS (SELECT customer_id, SUM(revenue) AS revenue FROM orders WHERE status = 'completed' GROUP BY customer_id) SELECT customer_id, revenue, RANK() OVER (ORDER BY revenue DESC) AS revenue_rank FROM customer_revenue;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -721,7 +721,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Aggregate completed daily revenue, then calculate cumulative revenue by date.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH daily_revenue AS (SELECT order_date, SUM(revenue) AS daily_revenue FROM orders WHERE status = 'completed' GROUP BY order_date) SELECT order_date, daily_revenue, SUM(daily_revenue) OVER (ORDER BY order_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_revenue FROM daily_revenue;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -781,7 +781,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return daily completed revenue and prior_day_revenue using LAG.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH daily_revenue AS (SELECT order_date, SUM(revenue) AS daily_revenue FROM orders WHERE status = 'completed' GROUP BY order_date) SELECT order_date, daily_revenue, LAG(daily_revenue) OVER (ORDER BY order_date) AS prior_day_revenue FROM daily_revenue;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -841,7 +841,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return order_date and a 3-row moving average of completed daily revenue rounded to one decimal.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH daily_revenue AS (SELECT order_date, SUM(revenue) AS daily_revenue FROM orders WHERE status = 'completed' GROUP BY order_date) SELECT order_date, ROUND(AVG(daily_revenue) OVER (ORDER BY order_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 1) AS moving_avg_3 FROM daily_revenue;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -895,7 +895,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return segment, completed revenue and revenue_share_pct using a window total.",
-      "expectedAnswer": "",
+      "expectedAnswer": "WITH segment_revenue AS (SELECT c.segment, SUM(o.revenue) AS revenue FROM orders o JOIN customers c ON c.customer_id = o.customer_id WHERE o.status = 'completed' GROUP BY c.segment) SELECT segment, revenue, ROUND(revenue * 100.0 / SUM(revenue) OVER (), 1) AS revenue_share_pct FROM segment_revenue;",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -940,7 +940,7 @@
       "deliverable": "Return exactly the requested columns and business grain.",
       "answerType": "sql_result",
       "prompt": "Return segment, order_id, revenue and ROW_NUMBER within each segment by revenue descending for completed orders.",
-      "expectedAnswer": "",
+      "expectedAnswer": "SELECT c.segment, o.order_id, o.revenue, ROW_NUMBER() OVER (PARTITION BY c.segment ORDER BY o.revenue DESC) AS segment_rank FROM orders o JOIN customers c ON c.customer_id = o.customer_id WHERE o.status = 'completed';",
       "requiredTokens": [],
       "expectedRows": [
         {
@@ -998,5 +998,6 @@
       "rows": [],
       "options": []
     }
-  ]
+  ],
+  "contentVersion": 3
 }

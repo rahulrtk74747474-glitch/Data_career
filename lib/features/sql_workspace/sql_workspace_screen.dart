@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/sql_table_schema.dart';
+import '../../services/sql_editor_helper.dart';
 import '../../services/sql_runner.dart';
 import '../game/game_providers.dart';
 
@@ -73,21 +74,7 @@ class _SqlWorkspaceScreenState extends ConsumerState<SqlWorkspaceScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (final keyword in const [
-                    'SELECT ',
-                    'FROM ',
-                    'WHERE ',
-                    'JOIN ',
-                    'ON ',
-                    'GROUP BY ',
-                    'HAVING ',
-                    'ORDER BY ',
-                    'WITH ',
-                    'CASE ',
-                    'OVER (',
-                    'PARTITION BY ',
-                    'LIMIT ',
-                  ])
+                  for (final keyword in SqlEditorHelper.keywords)
                     Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: ActionChip(
@@ -137,19 +124,9 @@ class _SqlWorkspaceScreenState extends ConsumerState<SqlWorkspaceScreen> {
   }
 
   void _insertKeyword(String keyword) {
-    final value = _queryController.value;
-    final start = value.selection.start < 0
-        ? value.text.length
-        : value.selection.start;
-    final end = value.selection.end < 0
-        ? start
-        : value.selection.end;
-    final nextText = value.text.replaceRange(start, end, keyword);
-    _queryController.value = TextEditingValue(
-      text: nextText,
-      selection: TextSelection.collapsed(
-        offset: start + keyword.length,
-      ),
+    _queryController.value = SqlEditorHelper.insertKeyword(
+      _queryController.value,
+      keyword,
     );
   }
 

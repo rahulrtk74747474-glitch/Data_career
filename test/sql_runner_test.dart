@@ -6,7 +6,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   late AppDatabase appDatabase;
-
   setUp(() {
     sqfliteFfiInit();
     appDatabase = AppDatabase(
@@ -14,38 +13,60 @@ void main() {
       overridePath: inMemoryDatabasePath,
     );
   });
+  tearDown(() => appDatabase.close());
 
-  tearDown(() async {
-    await appDatabase.close();
-  });
-
-  test('real SQLite query executes against seeded campaign data', () async {
+  test('real SQLite query executes and grades', () async {
     final result = await SqlRunner(appDatabase).runReadOnly(
-      '''
-      SELECT channel, SUM(conversions) AS total_conversions
-      FROM campaign_performance
-      GROUP BY channel
-      ''',
+      'SELECT channel, SUM(conversions) AS total_conversions '
+      'FROM campaign_performance GROUP BY channel',
     );
-
     expect(result.isSuccess, isTrue);
-    expect(result.rows, hasLength(2));
-
-    final grade = SqlResultGrader.grade(
-      actualRows: result.rows,
-      expectedRows: const [
-        {'channel': 'Search', 'total_conversions': 163},
-        {'channel': 'Social', 'total_conversions': 93},
-      ],
+    expect(
+      SqlResultGrader.grade(
+        actualRows: result.rows,
+        expectedRows: const [
+          {'channel': 'Search', 'total_conversions': 163},
+          {'channel': 'Social', 'total_conversions': 93},
+        ],
+      ).isCorrect,
+      isTrue,
     );
-
-    expect(grade.isCorrect, isTrue);
   });
 
-  test('SQL runner blocks mutating statements', () async {
-    final result = await SqlRunner(appDatabase).runReadOnly(
-      'DELETE FROM campaign_performance',
+  test('runner blocks mutations and multiple statements', () async {
+    final mutation =
+        await SqlRunner(appDatabase).runReadOnly('DELETE FROM orders');
+    final multiple =
+        await SqlRunner(appDatabase).runReadOnly('SELECT 1; SELECT 2;');
+    expect(mutation.isSuccess, isFalse);
+    expect(multiple.isSuccess, isFalse);
+    expect(mutation.error, contains('read-only'));
+  });
+
+  test('runner explains missing table and column plainly', () async {
+    final table =
+        await SqlRunner(appDatabase).runReadOnly('SELECT * FROM missing_table');
+    final column = await SqlRunner(appDatabase)
+        .runReadOnly('SELECT missing_column FROM orders');
+    expect(table.error, contains('table name does not exist'));
+    expect(column.error, contains('column names'));
+  });
+
+  test('grader preserves column-to-value relationships', () {
+    final grade = SqlResultGrader.grade(
+      actualRows: const [{'customer': 'A', 'revenue': 100}],
+      expectedRows: const [{'customer': '100', 'revenue': 'A'}],
     );
-    expect(result.isSuccess, isFalse);
+    expect(grade.isCorrect, isFalse);
+  });
+
+  test('grader identifies alias mismatch', () {
+    final grade = SqlResultGrader.grade(
+      actualRows: const [{'segment': 'SMB', 'sum(revenue)': 100}],
+      expectedRows: const [{'segment': 'SMB', 'revenue': 100}],
+    );
+    expect(grade.isCorrect, isFalse);
+    expect(grade.feedback, contains('output columns'));
+    expect(grade.feedback, contains('revenue'));
   });
 }
