@@ -13,6 +13,7 @@ import '../campaign/career_campaign_screen.dart';
 import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
+import '../desktop/analyst_desktop_screen.dart';
 import '../events/random_events_screen.dart';
 import '../academy/foundation_academy_screen.dart';
 import '../game/game_progress.dart';
@@ -167,7 +168,7 @@ class HomeScreen extends ConsumerWidget {
                 progress: progress,
                 missions: careerMissions,
                 onTap: () =>
-                    _open(context, const CareerCampaignScreen()),
+                    _open(context, const AnalystDesktopLoginScreen()),
               ),
               const SizedBox(height: 20),
               const _SectionHeading(
@@ -188,7 +189,7 @@ class HomeScreen extends ConsumerWidget {
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   subtitle: const Text(
-                    '56 guided lessons: SQL, Excel, cleaning, statistics, Pandas, dashboards and business analytics.',
+                    '80 lessons: SQL, Excel, cleaning, statistics, Python/Pandas, dashboards, Power BI and business analytics.',
                   ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () =>
@@ -249,12 +250,12 @@ class HomeScreen extends ConsumerWidget {
                     'Cases, interviews, reviews and promotion progress',
                 items: [
                   _MenuItem(
-                    title: 'Career Campaign',
+                    title: 'Analyst Desktop',
                     subtitle:
-                        'Connected workday projects with manager feedback',
-                    icon: Icons.work_history_outlined,
+                        'Log in, go Online, handle inbox and workday projects',
+                    icon: Icons.desktop_windows_outlined,
                     onTap: () =>
-                        _open(context, const CareerCampaignScreen()),
+                        _open(context, const AnalystDesktopLoginScreen()),
                   ),
                   _MenuItem(
                     title: 'Weekly Case',
@@ -408,9 +409,9 @@ class HomeScreen extends ConsumerWidget {
             title: nextMission.title,
             description:
                 '${nextMission.companyName} • ${nextMission.taskIds.length} connected tickets. Finish the project, report to your manager and add it to your portfolio.',
-            buttonLabel: 'Open career project',
+            buttonLabel: 'Log in to Analyst Desktop',
             onPressed: () =>
-                _open(context, const CareerCampaignScreen()),
+                _open(context, const AnalystDesktopLoginScreen()),
           );
         }
 
@@ -693,7 +694,7 @@ class _CampaignHomeCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Career Campaign • $completed/${items.length}',
+                          'Analyst Desktop • $completed/${items.length} projects',
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w700,
@@ -703,9 +704,9 @@ class _CampaignHomeCard extends StatelessWidget {
                         Text(
                           next == null
                               ? completed == items.length
-                                  ? 'Campaign complete — your project evidence is in the portfolio.'
-                                  : 'Finish the current company chapter to unlock the next project.'
-                              : 'Next project: ${next.title}',
+                                  ? 'Career campaign complete — log in for inbox, notes, reviews and job tools.'
+                                  : 'Log in → Online. Finish the company chapter to unlock more work.'
+                              : 'Log in → Online. Next project: ${next.title}',
                         ),
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
