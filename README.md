@@ -178,3 +178,8 @@ The DataQuest certificate is a training-completion credential, not an accredited
 Portfolio and certificate files are lightweight local HTML artifacts. They can be opened/shared from the app and converted to PDF through the browser's **Print → Save as PDF** workflow without bundling a heavyweight PDF renderer.
 
 Read `PROGRESS_LOG.md` before future maintenance changes.
+
+## v1.1 expansion documentation
+
+- Full game design and MVP content matrix: `docs/GAME_DESIGN_DOCUMENT_v1_1.md`
+- Flutter setup, Android Studio/Codespaces bootstrap, architecture, splash and navigation: `docs/FLUTTER_SETUP_v1_1.md`
