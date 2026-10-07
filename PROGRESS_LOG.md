@@ -469,7 +469,7 @@ Completed:
 
 ### Expansion Item 5 — Spreadsheet simulator + data-cleaning module
 
-Status: **IMPLEMENTED — CI PENDING**
+Status: **IMPLEMENTED — CI VERIFIED (GitHub Actions run #355)**
 
 Completed:
 1. Preserved all 15 existing spreadsheet/cleaning task IDs and player evidence.
@@ -488,6 +488,16 @@ Completed:
 14. Added automated execution/grading of every shipped task's expected workbook command.
 15. Added regression tests for formula normalization, sorting, lookup/filter behavior, pivots, dates, outliers and invalid commands.
 16. Added `docs/SPREADSHEET_CLEANING_LAB_v1_1.md`.
+17. CI run #355 passed static analysis, all **149 tests**, debug APK, release AAB, all three split APK builds, release-size budgets and artifact uploads.
+18. Verified run #355 outputs:
+   - release AAB: **55.64 MB**
+   - ARM32 release APK: **17.92 MB**
+   - ARM64 release APK: **20.12 MB**
+   - x86_64 release APK: **21.60 MB**
+   - content assets: **0.28 MB**
+   - debug APK artifact ID `11460185926`
+   - release AAB artifact ID `11460350517`
+   - release split APKs artifact ID `11460440184`
 
 ### Exact next expansion item — Item 6
 
