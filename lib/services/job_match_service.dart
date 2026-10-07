@@ -141,11 +141,11 @@ class JobDescriptionMatcher {
     for (final entry in keywordMap.entries) {
       final found = entry.value.any(text.contains);
       if (!found) continue;
-      detected.add(_label(entry.key));
+      detected.add(JobMatchService._label(entry.key));
       final score = (mastery[entry.key] ?? 0).toDouble();
       total += score;
       if (score < 70) {
-        gaps.add('${_label(entry.key)} ${score.toStringAsFixed(0)}%');
+        gaps.add('${JobMatchService._label(entry.key)} ${score.toStringAsFixed(0)}%');
       }
     }
 
