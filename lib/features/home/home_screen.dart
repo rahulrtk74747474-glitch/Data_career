@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
+import '../../models/career_mission.dart';
 import '../../models/skill_mastery.dart';
 import '../achievements/achievements_screen.dart';
 import '../analytics/analytics_studio_screen.dart';
 import '../boss_case/boss_case_screen.dart';
 import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
+import '../campaign/career_campaign_screen.dart';
 import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
@@ -43,6 +45,7 @@ class HomeScreen extends ConsumerWidget {
     final recommendations = ref.watch(adaptiveRecommendationsProvider);
     final reviewQueue = ref.watch(reviewQueueProvider);
     final cloudConfig = ref.watch(cloudRuntimeConfigProvider);
+    final careerMissions = ref.watch(careerMissionsProvider);
     final reviewCount = reviewQueue.valueOrNull?.length ?? 0;
 
     final nextStep = _buildNextStep(
@@ -158,6 +161,13 @@ class HomeScreen extends ConsumerWidget {
                 onGym: () => _open(context, const PracticeGymScreen()),
               ),
               const SizedBox(height: 20),
+              _CampaignHomeCard(
+                progress: progress,
+                missions: careerMissions,
+                onTap: () =>
+                    _open(context, const CareerCampaignScreen()),
+              ),
+              const SizedBox(height: 20),
               const _SectionHeading(
                 title: 'Learning labs',
                 subtitle:
@@ -236,6 +246,14 @@ class HomeScreen extends ConsumerWidget {
                 subtitle:
                     'Cases, interviews, reviews and promotion progress',
                 items: [
+                  _MenuItem(
+                    title: 'Career Campaign',
+                    subtitle:
+                        'Connected workday projects with manager feedback',
+                    icon: Icons.work_history_outlined,
+                    onTap: () =>
+                        _open(context, const CareerCampaignScreen()),
+                  ),
                   _MenuItem(
                     title: 'Weekly Case',
                     subtitle: 'Solve one larger analyst case',
@@ -347,13 +365,17 @@ class HomeScreen extends ConsumerWidget {
       data: (complete) {
         if (!complete) {
           return _NextStepCard(
-            icon: Icons.fact_check_outlined,
-            eyebrow: 'START HERE',
-            title: 'Take the 3-minute placement test',
+            icon: Icons.school_outlined,
+            eyebrow: 'START YOUR CAREER',
+            title: 'Choose the right starting point',
             description:
-                'This sets your starting skill levels so DataQuest can recommend the right difficulty.',
-            buttonLabel: 'Take placement test',
-            onPressed: () => _open(context, const PlacementScreen()),
+                'Never studied data analytics? Start from zero. Already know some SQL, Excel or statistics? Take the placement test and skip what you know.',
+            buttonLabel: "I'm new — start from zero",
+            onPressed: () =>
+                _open(context, const FoundationAcademyScreen()),
+            secondaryButtonLabel: 'I know some skills — placement test',
+            secondaryOnPressed: () =>
+                _open(context, const PlacementScreen()),
           );
         }
 
@@ -467,6 +489,8 @@ class _NextStepCard extends StatelessWidget {
     required this.description,
     required this.buttonLabel,
     required this.onPressed,
+    this.secondaryButtonLabel,
+    this.secondaryOnPressed,
   }) : loading = false;
 
   const _NextStepCard.loading()
@@ -477,6 +501,8 @@ class _NextStepCard extends StatelessWidget {
             'DataQuest is checking your progress and unfinished skills.',
         buttonLabel = '',
         onPressed = null,
+        secondaryButtonLabel = null,
+        secondaryOnPressed = null,
         loading = true;
 
   final IconData icon;
@@ -485,6 +511,8 @@ class _NextStepCard extends StatelessWidget {
   final String description;
   final String buttonLabel;
   final VoidCallback? onPressed;
+  final String? secondaryButtonLabel;
+  final VoidCallback? secondaryOnPressed;
   final bool loading;
 
   @override
@@ -531,17 +559,134 @@ class _NextStepCard extends StatelessWidget {
             if (loading)
               const LinearProgressIndicator()
             else
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: onPressed,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: Text(buttonLabel),
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FilledButton.icon(
+                    onPressed: onPressed,
+                    icon: const Icon(Icons.arrow_forward),
+                    label: Text(buttonLabel),
+                  ),
+                  if (secondaryButtonLabel != null &&
+                      secondaryOnPressed != null) ...[
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: secondaryOnPressed,
+                      child: Text(secondaryButtonLabel!),
+                    ),
+                  ],
+                ],
               ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CampaignHomeCard extends StatelessWidget {
+  const _CampaignHomeCard({
+    required this.progress,
+    required this.missions,
+    required this.onTap,
+  });
+
+  final GameProgress progress;
+  final AsyncValue<List<CareerMission>> missions;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return missions.when(
+      loading: () => const Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: Icon(Icons.work_history_outlined),
+          title: Text('Career Campaign'),
+          subtitle: Text('Loading your next company project…'),
+        ),
+      ),
+      error: (error, stackTrace) => Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: const Icon(Icons.work_history_outlined),
+          title: const Text('Career Campaign'),
+          subtitle: const Text(
+            'Open your connected company projects and portfolio work.',
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: onTap,
+        ),
+      ),
+      data: (items) {
+        final completed = items
+            .where(
+              (mission) =>
+                  progress.rewardedLearningIds.contains(mission.rewardId),
+            )
+            .length;
+        CareerMission? next;
+        for (var index = 0; index < items.length; index++) {
+          final mission = items[index];
+          final done =
+              progress.rewardedLearningIds.contains(mission.rewardId);
+          if (done) continue;
+          final previousDone = index == 0 ||
+              progress.rewardedLearningIds.contains(items[index - 1].rewardId);
+          if (previousDone &&
+              progress.resolvedCompanyChapter >= mission.companyChapter) {
+            next = mission;
+            break;
+          }
+        }
+
+        return Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    child: Icon(Icons.work_history_outlined),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Career Campaign • $completed/${items.length}',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          next == null
+                              ? completed == items.length
+                                  ? 'Campaign complete — your project evidence is in the portfolio.'
+                                  : 'Finish the current company chapter to unlock the next project.'
+                              : 'Next project: ${next.title}',
+                        ),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(
+                          value: items.isEmpty ? 0 : completed / items.length,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
