@@ -41,7 +41,7 @@ void main() {
       find.byType(ListView),
       const Offset(0, -600),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Learning labs'), findsOneWidget);
     expect(find.text('Core analyst labs'), findsOneWidget);
 
