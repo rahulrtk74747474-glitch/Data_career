@@ -1,0 +1,1519 @@
+{
+  "schemaVersion": 1,
+  "packId": "foundation-academy-v1",
+  "trackCount": 7,
+  "lessons": [
+    {
+      "id": "foundation-sql-01",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 1,
+      "title": "Tables, rows and columns",
+      "companyKey": "ecommerce",
+      "concept": "Tables, rows and columns",
+      "explanation": "A table is a structured set of rows and columns. Before writing SQL, identify the row grain: what one row represents.",
+      "scenario": "A commerce analyst receives an orders table where each row is one order.",
+      "workedExample": "orders(order_id, customer_id, status, revenue) — one row = one order.",
+      "question": "Which statement correctly describes the grain?",
+      "options": [
+        "One row represents one order.",
+        "One row represents one customer forever.",
+        "One column represents one order."
+      ],
+      "correctAnswer": "One row represents one order.",
+      "hints": [
+        "Focus on the core idea: tables, rows and columns.",
+        "Use the company scenario and worked example before guessing.",
+        "The order_id identifies each row, so the grain is one order."
+      ],
+      "solution": "The order_id identifies each row, so the grain is one order.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-sql-02",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 2,
+      "title": "SELECT only what you need",
+      "companyKey": "ecommerce",
+      "concept": "SELECT only what you need",
+      "explanation": "SELECT chooses columns. Listing only required columns makes queries easier to read and reduces unnecessary data exposure.",
+      "scenario": "A merchandising manager asks for order_id and revenue, not every field.",
+      "workedExample": "SELECT order_id, revenue FROM orders;",
+      "question": "Which query returns only order_id and revenue?",
+      "options": [
+        "SELECT order_id, revenue FROM orders;",
+        "SELECT * FROM orders;",
+        "DELETE order_id, revenue FROM orders;"
+      ],
+      "correctAnswer": "SELECT order_id, revenue FROM orders;",
+      "hints": [
+        "Focus on the core idea: select only what you need.",
+        "Use the company scenario and worked example before guessing.",
+        "Use SELECT order_id, revenue FROM orders;"
+      ],
+      "solution": "Use SELECT order_id, revenue FROM orders;",
+      "xp": 30
+    },
+    {
+      "id": "foundation-sql-03",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 3,
+      "title": "Filter rows with WHERE",
+      "companyKey": "bank",
+      "concept": "Filter rows with WHERE",
+      "explanation": "WHERE keeps rows that match a condition. Filters should reflect the business definition exactly.",
+      "scenario": "A bank operations team wants transactions already routed for review.",
+      "workedExample": "SELECT transaction_id FROM bank_transactions WHERE review_flag = 1;",
+      "question": "Which clause limits the result to review_flag = 1?",
+      "options": [
+        "WHERE review_flag = 1",
+        "GROUP BY review_flag = 1",
+        "ORDER BY review_flag = 1"
+      ],
+      "correctAnswer": "WHERE review_flag = 1",
+      "hints": [
+        "Focus on the core idea: filter rows with where.",
+        "Use the company scenario and worked example before guessing.",
+        "Use WHERE review_flag = 1."
+      ],
+      "solution": "Use WHERE review_flag = 1.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-sql-04",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 4,
+      "title": "Sort and limit results",
+      "companyKey": "logistics",
+      "concept": "Sort and limit results",
+      "explanation": "ORDER BY controls sort order. DESC means largest first; LIMIT keeps the requested number of rows.",
+      "scenario": "A logistics manager wants the five most expensive shipments.",
+      "workedExample": "SELECT shipment_id, shipping_cost FROM logistics_shipments ORDER BY shipping_cost DESC LIMIT 5;",
+      "question": "What combination returns the five highest costs?",
+      "options": [
+        "ORDER BY shipping_cost DESC LIMIT 5",
+        "ORDER BY shipping_cost ASC LIMIT 5",
+        "GROUP BY shipping_cost LIMIT 5"
+      ],
+      "correctAnswer": "ORDER BY shipping_cost DESC LIMIT 5",
+      "hints": [
+        "Focus on the core idea: sort and limit results.",
+        "Use the company scenario and worked example before guessing.",
+        "Use ORDER BY shipping_cost DESC LIMIT 5."
+      ],
+      "solution": "Use ORDER BY shipping_cost DESC LIMIT 5.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-05",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 5,
+      "title": "COUNT, SUM and AVG",
+      "companyKey": "hospital",
+      "concept": "COUNT, SUM and AVG",
+      "explanation": "Aggregate functions summarize many rows: COUNT counts, SUM totals, AVG calculates a mean.",
+      "scenario": "Hospital operations needs total arrivals and average wait time for a reporting period.",
+      "workedExample": "SELECT SUM(arrivals), AVG(avg_wait_minutes) FROM hospital_daily_ops;",
+      "question": "Which function calculates average wait time?",
+      "options": [
+        "AVG(avg_wait_minutes)",
+        "SUM(avg_wait_minutes)",
+        "COUNT(avg_wait_minutes)"
+      ],
+      "correctAnswer": "AVG(avg_wait_minutes)",
+      "hints": [
+        "Focus on the core idea: count, sum and avg.",
+        "Use the company scenario and worked example before guessing.",
+        "Use AVG(avg_wait_minutes)."
+      ],
+      "solution": "Use AVG(avg_wait_minutes).",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-06",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 6,
+      "title": "GROUP BY business segments",
+      "companyKey": "saas",
+      "concept": "GROUP BY business segments",
+      "explanation": "GROUP BY changes the grain from individual rows to one row per group and lets aggregate functions summarize each group.",
+      "scenario": "A SaaS finance team wants MRR by customer segment.",
+      "workedExample": "SELECT segment, SUM(mrr) AS total_mrr FROM accounts GROUP BY segment;",
+      "question": "Why is GROUP BY segment required here?",
+      "options": [
+        "To return one aggregated result per segment.",
+        "To sort segments alphabetically.",
+        "To remove the segment column."
+      ],
+      "correctAnswer": "To return one aggregated result per segment.",
+      "hints": [
+        "Focus on the core idea: group by business segments.",
+        "Use the company scenario and worked example before guessing.",
+        "GROUP BY segment creates one aggregate row per segment."
+      ],
+      "solution": "GROUP BY segment creates one aggregate row per segment.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-07",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 7,
+      "title": "JOIN related tables",
+      "companyKey": "ecommerce",
+      "concept": "JOIN related tables",
+      "explanation": "JOIN combines related tables using a key. Use the relationship key, not a convenient-looking text field.",
+      "scenario": "An analyst needs order revenue plus each customer's region from separate orders and customers tables.",
+      "workedExample": "SELECT o.order_id, c.region, o.revenue FROM orders o JOIN customers c ON o.customer_id = c.customer_id;",
+      "question": "Which join condition is defensible?",
+      "options": [
+        "o.customer_id = c.customer_id",
+        "o.revenue = c.customer_id",
+        "o.status = c.region"
+      ],
+      "correctAnswer": "o.customer_id = c.customer_id",
+      "hints": [
+        "Focus on the core idea: join related tables.",
+        "Use the company scenario and worked example before guessing.",
+        "Join on the shared customer_id key."
+      ],
+      "solution": "Join on the shared customer_id key.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-08",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 8,
+      "title": "CASE, CTEs and window thinking",
+      "companyKey": "saas",
+      "concept": "CASE, CTEs and window thinking",
+      "explanation": "CASE creates business categories, CTEs organize multi-step logic, and window functions calculate across related rows without collapsing detail.",
+      "scenario": "A senior analyst must bucket accounts by MRR and later rank them within segment.",
+      "workedExample": "WITH base AS (...) SELECT ..., ROW_NUMBER() OVER (PARTITION BY segment ORDER BY mrr DESC) AS rank_in_segment FROM base;",
+      "question": "Which feature ranks rows while keeping each account row visible?",
+      "options": [
+        "A window function such as ROW_NUMBER() OVER (...)",
+        "GROUP BY without selecting account rows",
+        "DELETE duplicates"
+      ],
+      "correctAnswer": "A window function such as ROW_NUMBER() OVER (...)",
+      "hints": [
+        "Focus on the core idea: case, ctes and window thinking.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a window function such as ROW_NUMBER() OVER (...) to rank without collapsing rows."
+      ],
+      "solution": "Use a window function such as ROW_NUMBER() OVER (...) to rank without collapsing rows.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-01",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 1,
+      "title": "Cells, rows and references",
+      "companyKey": "ecommerce",
+      "concept": "Cells, rows and references",
+      "explanation": "Spreadsheet formulas refer to cells by address. Columns use letters and rows use numbers.",
+      "scenario": "A sales workbook stores unit price in B2 and quantity in C2.",
+      "workedExample": "B2 means column B, row 2.",
+      "question": "What does C2 identify?",
+      "options": [
+        "Column C, row 2",
+        "Column 2, row C",
+        "The entire C column"
+      ],
+      "correctAnswer": "Column C, row 2",
+      "hints": [
+        "Focus on the core idea: cells, rows and references.",
+        "Use the company scenario and worked example before guessing.",
+        "C2 is column C, row 2."
+      ],
+      "solution": "C2 is column C, row 2.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-spreadsheets-02",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 2,
+      "title": "Arithmetic formulas",
+      "companyKey": "ecommerce",
+      "concept": "Arithmetic formulas",
+      "explanation": "Formulas begin with = and combine cell references with operators such as +, -, * and /.",
+      "scenario": "A sales analyst needs line revenue from price × quantity.",
+      "workedExample": "=B2*C2",
+      "question": "Which formula calculates price in B2 times quantity in C2?",
+      "options": [
+        "=B2*C2",
+        "B2 x C2",
+        "SUM(B2:C2)"
+      ],
+      "correctAnswer": "=B2*C2",
+      "hints": [
+        "Focus on the core idea: arithmetic formulas.",
+        "Use the company scenario and worked example before guessing.",
+        "Use =B2*C2."
+      ],
+      "solution": "Use =B2*C2.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-spreadsheets-03",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 3,
+      "title": "Relative and absolute references",
+      "companyKey": "saas",
+      "concept": "Relative and absolute references",
+      "explanation": "Relative references move when copied. Absolute references such as $F$1 stay fixed.",
+      "scenario": "A pricing model copies a formula down many rows while the tax rate stays in cell F1.",
+      "workedExample": "=B2*(1+$F$1)",
+      "question": "Which reference keeps the tax-rate cell fixed?",
+      "options": [
+        "$F$1",
+        "F1",
+        "F$"
+      ],
+      "correctAnswer": "$F$1",
+      "hints": [
+        "Focus on the core idea: relative and absolute references.",
+        "Use the company scenario and worked example before guessing.",
+        "Use $F$1 to lock both column and row."
+      ],
+      "solution": "Use $F$1 to lock both column and row.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-spreadsheets-04",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 4,
+      "title": "IF for business rules",
+      "companyKey": "bank",
+      "concept": "IF for business rules",
+      "explanation": "IF evaluates a condition and returns one value when true and another when false.",
+      "scenario": "A review sheet should label balances above 100000 as High.",
+      "workedExample": "=IF(B2>100000,\"High\",\"Normal\")",
+      "question": "Which function expresses this two-outcome business rule?",
+      "options": [
+        "IF",
+        "AVERAGE",
+        "CONCAT"
+      ],
+      "correctAnswer": "IF",
+      "hints": [
+        "Focus on the core idea: if for business rules.",
+        "Use the company scenario and worked example before guessing.",
+        "Use IF(condition, value_if_true, value_if_false)."
+      ],
+      "solution": "Use IF(condition, value_if_true, value_if_false).",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-05",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 5,
+      "title": "Lookups across tables",
+      "companyKey": "logistics",
+      "concept": "Lookups across tables",
+      "explanation": "XLOOKUP (or INDEX/MATCH in older workflows) retrieves a related value using a key.",
+      "scenario": "A shipment sheet has warehouse_id and a second table maps each warehouse to its city.",
+      "workedExample": "=XLOOKUP(A2,Warehouses!A:A,Warehouses!B:B,\"Unknown\")",
+      "question": "What should be used as the lookup key?",
+      "options": [
+        "warehouse_id",
+        "city name guessed from memory",
+        "row number only"
+      ],
+      "correctAnswer": "warehouse_id",
+      "hints": [
+        "Focus on the core idea: lookups across tables.",
+        "Use the company scenario and worked example before guessing.",
+        "Use the stable warehouse_id as the lookup key."
+      ],
+      "solution": "Use the stable warehouse_id as the lookup key.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-06",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 6,
+      "title": "SUMIFS and COUNTIFS",
+      "companyKey": "hospital",
+      "concept": "SUMIFS and COUNTIFS",
+      "explanation": "SUMIFS sums values meeting one or more conditions; COUNTIFS counts rows meeting conditions.",
+      "scenario": "Operations wants total arrivals for Saturdays only.",
+      "workedExample": "=SUMIFS(B:B,A:A,\"Saturday\")",
+      "question": "Which function sums arrivals only when day is Saturday?",
+      "options": [
+        "SUMIFS",
+        "COUNT",
+        "LEFT"
+      ],
+      "correctAnswer": "SUMIFS",
+      "hints": [
+        "Focus on the core idea: sumifs and countifs.",
+        "Use the company scenario and worked example before guessing.",
+        "Use SUMIFS because the task is a conditional sum."
+      ],
+      "solution": "Use SUMIFS because the task is a conditional sum.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-07",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 7,
+      "title": "Sort and filter safely",
+      "companyKey": "ecommerce",
+      "concept": "Sort and filter safely",
+      "explanation": "Filters hide rows that do not meet conditions; sorting changes display order. Neither should silently alter the underlying values.",
+      "scenario": "A manager asks to inspect completed orders above ₹5,000.",
+      "workedExample": "Filter status=completed and revenue>5000, then sort revenue descending.",
+      "question": "What is the safest first action?",
+      "options": [
+        "Apply explicit filters that match the requested business definition.",
+        "Delete every row below ₹5,000.",
+        "Overwrite the status column."
+      ],
+      "correctAnswer": "Apply explicit filters that match the requested business definition.",
+      "hints": [
+        "Focus on the core idea: sort and filter safely.",
+        "Use the company scenario and worked example before guessing.",
+        "Apply reversible filters that match the business definition, then sort if useful."
+      ],
+      "solution": "Apply reversible filters that match the business definition, then sort if useful.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-08",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 8,
+      "title": "Pivot tables",
+      "companyKey": "saas",
+      "concept": "Pivot tables",
+      "explanation": "A pivot table summarizes data by dimensions and measures. First confirm row grain, then choose rows/columns and the aggregation.",
+      "scenario": "Finance wants MRR by segment and plan without writing many formulas.",
+      "workedExample": "Rows=segment, Columns=plan, Values=SUM of MRR.",
+      "question": "What belongs in Values for total MRR?",
+      "options": [
+        "SUM of MRR",
+        "segment text",
+        "plan text only"
+      ],
+      "correctAnswer": "SUM of MRR",
+      "hints": [
+        "Focus on the core idea: pivot tables.",
+        "Use the company scenario and worked example before guessing.",
+        "Use SUM of MRR in the Values area."
+      ],
+      "solution": "Use SUM of MRR in the Values area.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-01",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 1,
+      "title": "Start with data grain",
+      "companyKey": "ecommerce",
+      "concept": "Start with data grain",
+      "explanation": "Before deleting duplicates, define what one row should represent. Duplicate-looking rows may be valid at a different grain.",
+      "scenario": "A vendor file contains repeated order IDs, but some orders legitimately have multiple line items.",
+      "workedExample": "If one row is an order line, order_id alone is not a unique key; order_id + line_id may be.",
+      "question": "What should you confirm before deduplication?",
+      "options": [
+        "The intended row grain and business key.",
+        "Which row has the largest revenue.",
+        "The file color scheme."
+      ],
+      "correctAnswer": "The intended row grain and business key.",
+      "hints": [
+        "Focus on the core idea: start with data grain.",
+        "Use the company scenario and worked example before guessing.",
+        "Confirm the intended row grain and business key before deleting anything."
+      ],
+      "solution": "Confirm the intended row grain and business key before deleting anything.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-cleaning-02",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 2,
+      "title": "Handle missing values by meaning",
+      "companyKey": "saas",
+      "concept": "Handle missing values by meaning",
+      "explanation": "Missing values are not all the same. Fill with 0 only when the business meaning truly means none; otherwise preserve Unknown or investigate.",
+      "scenario": "Some support_ticket_count values are blank because no tickets were logged; plan_name blanks mean unknown plan.",
+      "workedExample": "support_ticket_count null → 0 when source semantics confirm no ticket; plan_name null → Unknown.",
+      "question": "Should every missing numeric field automatically become 0?",
+      "options": [
+        "No. Imputation must follow the field's business meaning.",
+        "Yes, zero is always safest.",
+        "Delete the whole dataset."
+      ],
+      "correctAnswer": "No. Imputation must follow the field's business meaning.",
+      "hints": [
+        "Focus on the core idea: handle missing values by meaning.",
+        "Use the company scenario and worked example before guessing.",
+        "Do not default every blank to zero; use the documented business meaning."
+      ],
+      "solution": "Do not default every blank to zero; use the documented business meaning.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-cleaning-03",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 3,
+      "title": "Remove true duplicates",
+      "companyKey": "bank",
+      "concept": "Remove true duplicates",
+      "explanation": "Deduplicate only when a uniqueness rule is known. Keep an audit count of removed rows.",
+      "scenario": "A transaction export accidentally contains the exact same transaction_id twice.",
+      "workedExample": "If transaction_id is guaranteed unique, repeated transaction_id rows should be investigated and one canonical record retained.",
+      "question": "What makes a duplicate safe to remove?",
+      "options": [
+        "A validated uniqueness rule plus matching duplicate evidence.",
+        "Rows look similar visually.",
+        "They occur next to each other."
+      ],
+      "correctAnswer": "A validated uniqueness rule plus matching duplicate evidence.",
+      "hints": [
+        "Focus on the core idea: remove true duplicates.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a validated uniqueness rule and keep an audit trail."
+      ],
+      "solution": "Use a validated uniqueness rule and keep an audit trail.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-cleaning-04",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 4,
+      "title": "Fix types and dates",
+      "companyKey": "hospital",
+      "concept": "Fix types and dates",
+      "explanation": "Standardize dates to one parseable format and validate ambiguous values before conversion.",
+      "scenario": "A date column mixes 2026-10-07 and 07/10/2026.",
+      "workedExample": "ISO 8601 date: 2026-10-07.",
+      "question": "Why is 01/02/2026 risky without locale context?",
+      "options": [
+        "It can mean different dates under different day/month conventions.",
+        "It is always February 1.",
+        "It cannot be stored as text."
+      ],
+      "correctAnswer": "It can mean different dates under different day/month conventions.",
+      "hints": [
+        "Focus on the core idea: fix types and dates.",
+        "Use the company scenario and worked example before guessing.",
+        "Validate the source date convention before normalizing to a single format."
+      ],
+      "solution": "Validate the source date convention before normalizing to a single format.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-05",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 5,
+      "title": "Normalize categories",
+      "companyKey": "logistics",
+      "concept": "Normalize categories",
+      "explanation": "Normalize whitespace and case, then map only known aliases to canonical labels.",
+      "scenario": "The same route status appears as Late, late, LATE and ' late '.",
+      "workedExample": "trim → lowercase → map to canonical status.",
+      "question": "What is the purpose of category normalization?",
+      "options": [
+        "To make equivalent labels group together consistently.",
+        "To invent missing categories.",
+        "To increase row count."
+      ],
+      "correctAnswer": "To make equivalent labels group together consistently.",
+      "hints": [
+        "Focus on the core idea: normalize categories.",
+        "Use the company scenario and worked example before guessing.",
+        "Normalize known variants so equivalent labels group together."
+      ],
+      "solution": "Normalize known variants so equivalent labels group together.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-06",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 6,
+      "title": "Validate impossible values",
+      "companyKey": "ecommerce",
+      "concept": "Validate impossible values",
+      "explanation": "Domain rules catch values that are syntactically valid but business-impossible.",
+      "scenario": "A refund_amount field contains -500 even though refunds are stored as positive amounts.",
+      "workedExample": "If refunds must be non-negative, -500 should be quarantined or corrected from source evidence.",
+      "question": "What should happen to an impossible value?",
+      "options": [
+        "Flag it for validation rather than silently guessing a replacement.",
+        "Replace it with the average automatically.",
+        "Ignore it because it is numeric."
+      ],
+      "correctAnswer": "Flag it for validation rather than silently guessing a replacement.",
+      "hints": [
+        "Focus on the core idea: validate impossible values.",
+        "Use the company scenario and worked example before guessing.",
+        "Flag business-impossible values and validate them against source evidence."
+      ],
+      "solution": "Flag business-impossible values and validate them against source evidence.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-07",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 7,
+      "title": "Treat outliers carefully",
+      "companyKey": "saas",
+      "concept": "Treat outliers carefully",
+      "explanation": "An outlier is unusual, not automatically wrong. Investigate whether it is valid before excluding it.",
+      "scenario": "Most contracts are ₹20k–₹80k MRR, but one enterprise account is ₹900k.",
+      "workedExample": "Use boxplots/IQR or robust percentiles to detect unusual values, then verify business context.",
+      "question": "Should the ₹900k account be deleted immediately?",
+      "options": [
+        "No. Verify whether it is a valid enterprise account before deciding how to analyze it.",
+        "Yes, every outlier is an error.",
+        "Replace it with zero."
+      ],
+      "correctAnswer": "No. Verify whether it is a valid enterprise account before deciding how to analyze it.",
+      "hints": [
+        "Focus on the core idea: treat outliers carefully.",
+        "Use the company scenario and worked example before guessing.",
+        "Validate the outlier first; use robust summaries if it is legitimate."
+      ],
+      "solution": "Validate the outlier first; use robust summaries if it is legitimate.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-08",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 8,
+      "title": "Document quality controls",
+      "companyKey": "bank",
+      "concept": "Document quality controls",
+      "explanation": "A reproducible cleaning process records rules, row counts, exceptions and assumptions so another analyst can repeat it.",
+      "scenario": "Two analysts clean the same monthly file differently and produce conflicting totals.",
+      "workedExample": "Log: source rows, duplicate rows removed, missing treatment, invalid values, final rows.",
+      "question": "What makes cleaning auditable?",
+      "options": [
+        "Documented rules and before/after quality counts.",
+        "Only the final spreadsheet.",
+        "Remembering what you did."
+      ],
+      "correctAnswer": "Documented rules and before/after quality counts.",
+      "hints": [
+        "Focus on the core idea: document quality controls.",
+        "Use the company scenario and worked example before guessing.",
+        "Keep documented rules and before/after quality counts."
+      ],
+      "solution": "Keep documented rules and before/after quality counts.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-statistics-01",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 1,
+      "title": "Population, sample and variable types",
+      "companyKey": "ecommerce",
+      "concept": "Population, sample and variable types",
+      "explanation": "The population is the full group you care about; a sample is the subset observed. Variable type affects which summaries and tests make sense.",
+      "scenario": "An e-commerce company has 2 million customers but surveys 2,000 about delivery satisfaction.",
+      "workedExample": "Population = all 2M customers; sample = surveyed 2,000.",
+      "question": "What is the sample?",
+      "options": [
+        "The 2,000 surveyed customers.",
+        "All 2 million customers.",
+        "Only customers who gave the highest score."
+      ],
+      "correctAnswer": "The 2,000 surveyed customers.",
+      "hints": [
+        "Focus on the core idea: population, sample and variable types.",
+        "Use the company scenario and worked example before guessing.",
+        "The 2,000 surveyed customers are the sample."
+      ],
+      "solution": "The 2,000 surveyed customers are the sample.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-statistics-02",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 2,
+      "title": "Mean, median and mode",
+      "companyKey": "ecommerce",
+      "concept": "Mean, median and mode",
+      "explanation": "Mean uses every magnitude, median is the middle ordered value, and mode is the most frequent value. Extreme values can pull the mean.",
+      "scenario": "Order values are ₹600, ₹650, ₹700, ₹720 and ₹7,500.",
+      "workedExample": "Median = ₹700; the mean is much larger because of ₹7,500.",
+      "question": "Which measure best represents the typical order here?",
+      "options": [
+        "Median",
+        "Mean always",
+        "Mode always"
+      ],
+      "correctAnswer": "Median",
+      "hints": [
+        "Focus on the core idea: mean, median and mode.",
+        "Use the company scenario and worked example before guessing.",
+        "Use the median because it is robust to the extreme ₹7,500 order."
+      ],
+      "solution": "Use the median because it is robust to the extreme ₹7,500 order.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-statistics-03",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 3,
+      "title": "Range, variance and standard deviation",
+      "companyKey": "hospital",
+      "concept": "Range, variance and standard deviation",
+      "explanation": "Spread measures variability. Range uses max-min; variance averages squared deviations; standard deviation returns to the original unit.",
+      "scenario": "Two hospital days have the same average wait but one has very inconsistent waits.",
+      "workedExample": "Average 40 min with SD 4 is more consistent than average 40 min with SD 20.",
+      "question": "Which statistic directly communicates typical spread in minutes?",
+      "options": [
+        "Standard deviation",
+        "Mean only",
+        "Row count only"
+      ],
+      "correctAnswer": "Standard deviation",
+      "hints": [
+        "Focus on the core idea: range, variance and standard deviation.",
+        "Use the company scenario and worked example before guessing.",
+        "Standard deviation communicates spread in the original unit, minutes."
+      ],
+      "solution": "Standard deviation communicates spread in the original unit, minutes.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-statistics-04",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 4,
+      "title": "Quartiles, percentiles and outliers",
+      "companyKey": "logistics",
+      "concept": "Quartiles, percentiles and outliers",
+      "explanation": "Percentiles describe the value below which a percentage of observations fall. P90 exposes long-tail service experience that the median can hide.",
+      "scenario": "Median transit time is 24 hours but P90 is 62 hours.",
+      "workedExample": "P90=62 means about 90% of shipments are at or below 62 hours.",
+      "question": "What does P90 help reveal?",
+      "options": [
+        "Long-tail performance experienced by the slowest portion of shipments.",
+        "The exact cause of every delay.",
+        "Only the fastest shipment."
+      ],
+      "correctAnswer": "Long-tail performance experienced by the slowest portion of shipments.",
+      "hints": [
+        "Focus on the core idea: quartiles, percentiles and outliers.",
+        "Use the company scenario and worked example before guessing.",
+        "Use high percentiles to monitor tail service performance."
+      ],
+      "solution": "Use high percentiles to monitor tail service performance.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-statistics-05",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 5,
+      "title": "Distributions and skew",
+      "companyKey": "saas",
+      "concept": "Distributions and skew",
+      "explanation": "A distribution shows how values are spread. A long high-value tail creates right skew; median and percentiles may be more useful than mean alone.",
+      "scenario": "Most support tickets resolve within 1–2 days but a few take 15 days.",
+      "workedExample": "Resolution time is likely right-skewed.",
+      "question": "Which shape is most plausible?",
+      "options": [
+        "Right-skewed distribution",
+        "Perfectly symmetric normal distribution",
+        "Uniform distribution"
+      ],
+      "correctAnswer": "Right-skewed distribution",
+      "hints": [
+        "Focus on the core idea: distributions and skew.",
+        "Use the company scenario and worked example before guessing.",
+        "Rare much-larger values create a right-skewed distribution."
+      ],
+      "solution": "Rare much-larger values create a right-skewed distribution.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-statistics-06",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 6,
+      "title": "Probability, sampling and the CLT",
+      "companyKey": "bank",
+      "concept": "Probability, sampling and the CLT",
+      "explanation": "Probability quantifies uncertainty. Random sampling reduces selection bias. Larger samples often stabilize estimates, but large biased samples are still biased.",
+      "scenario": "A bank samples transactions to estimate the review-flag rate rather than checking every historical transaction.",
+      "workedExample": "A larger representative sample usually gives a more stable estimate than a tiny convenience sample.",
+      "question": "What matters more than simply having a large sample?",
+      "options": [
+        "The sample should also represent the population and avoid systematic bias.",
+        "Size alone fixes every bias.",
+        "Only the first records should be sampled."
+      ],
+      "correctAnswer": "The sample should also represent the population and avoid systematic bias.",
+      "hints": [
+        "Focus on the core idea: probability, sampling and the clt.",
+        "Use the company scenario and worked example before guessing.",
+        "Use representative sampling; sample size alone cannot fix systematic bias."
+      ],
+      "solution": "Use representative sampling; sample size alone cannot fix systematic bias.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-statistics-07",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 7,
+      "title": "Confidence intervals and hypothesis tests",
+      "companyKey": "hospital",
+      "concept": "Confidence intervals and hypothesis tests",
+      "explanation": "A confidence interval gives a plausible range for an effect. A hypothesis test evaluates compatibility with a null model. A p-value is not the probability the null is true.",
+      "scenario": "Average wait fell by 5 minutes after a scheduling change, but daily variation is high.",
+      "workedExample": "Report effect size and interval; check assumptions before declaring a change.",
+      "question": "If p=0.18, what is the safest conclusion at a 0.05 threshold?",
+      "options": [
+        "The evidence is insufficient to reject the null; the observed difference may still be practically interesting and needs more evidence.",
+        "The null is proven true.",
+        "The new schedule is definitely better."
+      ],
+      "correctAnswer": "The evidence is insufficient to reject the null; the observed difference may still be practically interesting and needs more evidence.",
+      "hints": [
+        "Focus on the core idea: confidence intervals and hypothesis tests.",
+        "Use the company scenario and worked example before guessing.",
+        "Call the result inconclusive rather than treating p>0.05 as proof of no effect."
+      ],
+      "solution": "Call the result inconclusive rather than treating p>0.05 as proof of no effect.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-statistics-08",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 8,
+      "title": "Correlation, regression and A/B tests",
+      "companyKey": "saas",
+      "concept": "Correlation, regression and A/B tests",
+      "explanation": "Correlation measures association, not causation. Regression can adjust for measured factors; randomized A/B tests are stronger for causal questions. Power controls what effect sizes can be detected reliably.",
+      "scenario": "Customers attending training retain more often, but larger customers also attend more training.",
+      "workedExample": "Segment/control for account size or run a randomized experiment before claiming training caused retention.",
+      "question": "What is the strongest statement from the observed correlation alone?",
+      "options": [
+        "Training attendance is associated with retention, but other factors may explain part of the relationship.",
+        "Training definitely causes retention.",
+        "Correlation is useless."
+      ],
+      "correctAnswer": "Training attendance is associated with retention, but other factors may explain part of the relationship.",
+      "hints": [
+        "Focus on the core idea: correlation, regression and a/b tests.",
+        "Use the company scenario and worked example before guessing.",
+        "State association, identify confounders, and use stronger experimental design for causal claims."
+      ],
+      "solution": "State association, identify confounders, and use stronger experimental design for causal claims.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-python-01",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 1,
+      "title": "DataFrames and Series",
+      "companyKey": "ecommerce",
+      "concept": "DataFrames and Series",
+      "explanation": "A DataFrame is a two-dimensional table; a Series is usually one column. Inspect shape, columns, data types and sample rows before transforming data.",
+      "scenario": "An analyst loads an orders CSV into Pandas.",
+      "workedExample": "df.shape, df.dtypes, df.head()",
+      "question": "What does df.head() help you do?",
+      "options": [
+        "Preview the first rows and understand the dataset structure.",
+        "Delete the first rows.",
+        "Train a machine-learning model automatically."
+      ],
+      "correctAnswer": "Preview the first rows and understand the dataset structure.",
+      "hints": [
+        "Focus on the core idea: dataframes and series.",
+        "Use the company scenario and worked example before guessing.",
+        "Use df.head() to inspect sample rows."
+      ],
+      "solution": "Use df.head() to inspect sample rows.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-python-02",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 2,
+      "title": "Select columns and filter rows",
+      "companyKey": "ecommerce",
+      "concept": "Select columns and filter rows",
+      "explanation": "Boolean filtering keeps rows that satisfy a condition; double brackets select multiple columns.",
+      "scenario": "Growth needs only completed orders and the order_id/revenue columns.",
+      "workedExample": "df[df['status']=='completed'][['order_id','revenue']]",
+      "question": "Which part filters completed rows?",
+      "options": [
+        "df['status']=='completed'",
+        "df.head()",
+        "df.columns = []"
+      ],
+      "correctAnswer": "df['status']=='completed'",
+      "hints": [
+        "Focus on the core idea: select columns and filter rows.",
+        "Use the company scenario and worked example before guessing.",
+        "Use the boolean condition df['status']=='completed' inside df[...]."
+      ],
+      "solution": "Use the boolean condition df['status']=='completed' inside df[...].",
+      "xp": 30
+    },
+    {
+      "id": "foundation-python-03",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 3,
+      "title": "Missing values",
+      "companyKey": "saas",
+      "concept": "Missing values",
+      "explanation": "Use isna() to inspect missingness. fillna() is appropriate only when the replacement has a defensible business meaning; dropna() can bias results.",
+      "scenario": "A CRM export contains missing plan names and missing support counts.",
+      "workedExample": "df['plan']=df['plan'].fillna('Unknown') when Unknown is the documented meaning.",
+      "question": "Which command explicitly fills missing plan names?",
+      "options": [
+        "df['plan'].fillna('Unknown')",
+        "df.sort_values('plan')",
+        "df.groupby('plan')"
+      ],
+      "correctAnswer": "df['plan'].fillna('Unknown')",
+      "hints": [
+        "Focus on the core idea: missing values.",
+        "Use the company scenario and worked example before guessing.",
+        "Use fillna with the intended replacement value."
+      ],
+      "solution": "Use fillna with the intended replacement value.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-python-04",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 4,
+      "title": "Create derived columns",
+      "companyKey": "ecommerce",
+      "concept": "Create derived columns",
+      "explanation": "Vectorized column arithmetic creates a new metric for all rows without a Python loop.",
+      "scenario": "Marketing needs conversion rate from conversions and clicks.",
+      "workedExample": "df['conversion_rate']=df['conversions']/df['clicks']*100",
+      "question": "What is the denominator of conversion rate here?",
+      "options": [
+        "clicks",
+        "conversions",
+        "channel name"
+      ],
+      "correctAnswer": "clicks",
+      "hints": [
+        "Focus on the core idea: create derived columns.",
+        "Use the company scenario and worked example before guessing.",
+        "Rate = outcomes divided by opportunities, so clicks are the denominator."
+      ],
+      "solution": "Rate = outcomes divided by opportunities, so clicks are the denominator.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-python-05",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 5,
+      "title": "GroupBy and aggregation",
+      "companyKey": "saas",
+      "concept": "GroupBy and aggregation",
+      "explanation": "groupby() splits rows into groups and sum(), mean() or count() summarizes each group.",
+      "scenario": "Finance wants total MRR by segment.",
+      "workedExample": "df.groupby('segment')['mrr'].sum()",
+      "question": "Which method creates one total per segment?",
+      "options": [
+        "groupby('segment') followed by sum()",
+        "head() only",
+        "fillna() only"
+      ],
+      "correctAnswer": "groupby('segment') followed by sum()",
+      "hints": [
+        "Focus on the core idea: groupby and aggregation.",
+        "Use the company scenario and worked example before guessing.",
+        "Group by segment, then sum MRR."
+      ],
+      "solution": "Group by segment, then sum MRR.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-python-06",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 6,
+      "title": "Sort and top-N",
+      "companyKey": "logistics",
+      "concept": "Sort and top-N",
+      "explanation": "sort_values() orders rows; head(n) selects the first n after sorting.",
+      "scenario": "Operations wants the ten most expensive shipments.",
+      "workedExample": "df.sort_values('shipping_cost',ascending=False).head(10)",
+      "question": "Why must ascending=False be used?",
+      "options": [
+        "To place the highest shipping costs first.",
+        "To remove missing values.",
+        "To group routes."
+      ],
+      "correctAnswer": "To place the highest shipping costs first.",
+      "hints": [
+        "Focus on the core idea: sort and top-n.",
+        "Use the company scenario and worked example before guessing.",
+        "Sort descending, then take head(10)."
+      ],
+      "solution": "Sort descending, then take head(10).",
+      "xp": 40
+    },
+    {
+      "id": "foundation-python-07",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 7,
+      "title": "Merge DataFrames",
+      "companyKey": "bank",
+      "concept": "Merge DataFrames",
+      "explanation": "merge() joins DataFrames using one or more keys. Validate join cardinality so a supposed many-to-one join does not multiply rows unexpectedly.",
+      "scenario": "Transactions contain account_id while a separate accounts table contains segment.",
+      "workedExample": "transactions.merge(accounts,on='account_id',how='left',validate='many_to_one')",
+      "question": "What should be checked after a merge?",
+      "options": [
+        "Row counts/cardinality and unmatched keys.",
+        "Only column colors.",
+        "Nothing; merges cannot duplicate rows."
+      ],
+      "correctAnswer": "Row counts/cardinality and unmatched keys.",
+      "hints": [
+        "Focus on the core idea: merge dataframes.",
+        "Use the company scenario and worked example before guessing.",
+        "Validate join cardinality, row counts and unmatched keys."
+      ],
+      "solution": "Validate join cardinality, row counts and unmatched keys.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-python-08",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 8,
+      "title": "Dates, pivots and method chaining",
+      "companyKey": "hospital",
+      "concept": "Dates, pivots and method chaining",
+      "explanation": "Convert date text with to_datetime(), derive time fields, aggregate or pivot, and chain transformations when it stays readable.",
+      "scenario": "Operations needs monthly arrivals by department from daily records.",
+      "workedExample": "df.assign(date=pd.to_datetime(df['date'])).pivot_table(index='month',columns='department',values='arrivals',aggfunc='sum')",
+      "question": "What should happen before extracting month from a date string?",
+      "options": [
+        "Parse it to a datetime with validated format/semantics.",
+        "Sort alphabetically only.",
+        "Replace dates with row numbers."
+      ],
+      "correctAnswer": "Parse it to a datetime with validated format/semantics.",
+      "hints": [
+        "Focus on the core idea: dates, pivots and method chaining.",
+        "Use the company scenario and worked example before guessing.",
+        "Parse and validate the date column before datetime operations."
+      ],
+      "solution": "Parse and validate the date column before datetime operations.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-01",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 1,
+      "title": "Start with the decision",
+      "companyKey": "ecommerce",
+      "concept": "Start with the decision",
+      "explanation": "A dashboard should answer a decision question, not display every available metric. Clarify audience, decision, time horizon and data grain first.",
+      "scenario": "A CEO asks for a dashboard about revenue growth.",
+      "workedExample": "Decision: Is revenue growth coming from more orders or higher order value?",
+      "question": "What should you define before choosing charts?",
+      "options": [
+        "The business decision the dashboard must support.",
+        "The dashboard background color.",
+        "The largest available dataset."
+      ],
+      "correctAnswer": "The business decision the dashboard must support.",
+      "hints": [
+        "Focus on the core idea: start with the decision.",
+        "Use the company scenario and worked example before guessing.",
+        "Define the audience and business decision before choosing charts."
+      ],
+      "solution": "Define the audience and business decision before choosing charts.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-dashboards-02",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 2,
+      "title": "Define KPIs precisely",
+      "companyKey": "saas",
+      "concept": "Define KPIs precisely",
+      "explanation": "A KPI needs a formula, grain, time window, inclusion/exclusion rules and owner. Without a shared definition, dashboards can disagree while both calculations are internally correct.",
+      "scenario": "Product and Finance disagree on what 'active customer' means.",
+      "workedExample": "Monthly active account = account with qualifying product activity during calendar month, excluding test accounts.",
+      "question": "What prevents KPI-definition conflicts?",
+      "options": [
+        "A documented metric definition including grain, window and filters.",
+        "Using more colors.",
+        "Rounding every number."
+      ],
+      "correctAnswer": "A documented metric definition including grain, window and filters.",
+      "hints": [
+        "Focus on the core idea: define kpis precisely.",
+        "Use the company scenario and worked example before guessing.",
+        "Document the KPI formula, grain, time window and filters."
+      ],
+      "solution": "Document the KPI formula, grain, time window and filters.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-dashboards-03",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 3,
+      "title": "Line charts vs bar charts",
+      "companyKey": "logistics",
+      "concept": "Line charts vs bar charts",
+      "explanation": "Line charts are strong for ordered time trends. Bar charts are strong for comparing discrete categories.",
+      "scenario": "Network leaders need monthly on-time delivery trend and route comparisons.",
+      "workedExample": "Use line for monthly SLA trend; bars for route-level SLA comparison.",
+      "question": "Which chart best shows a 12-month trend?",
+      "options": [
+        "Line chart",
+        "Pie chart",
+        "Random icon grid"
+      ],
+      "correctAnswer": "Line chart",
+      "hints": [
+        "Focus on the core idea: line charts vs bar charts.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a line chart for an ordered time trend."
+      ],
+      "solution": "Use a line chart for an ordered time trend.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-dashboards-04",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 4,
+      "title": "Scatter plots and distributions",
+      "companyKey": "saas",
+      "concept": "Scatter plots and distributions",
+      "explanation": "Scatter plots show relationships between two numeric variables. Histograms/boxplots show distributions and outliers.",
+      "scenario": "Marketing asks whether spend and conversions move together, while operations asks about the shape of resolution times.",
+      "workedExample": "Scatter: spend vs conversions; histogram/boxplot: resolution time.",
+      "question": "Which chart helps inspect a relationship between spend and conversions?",
+      "options": [
+        "Scatter plot",
+        "Single KPI card",
+        "Donut chart"
+      ],
+      "correctAnswer": "Scatter plot",
+      "hints": [
+        "Focus on the core idea: scatter plots and distributions.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a scatter plot for two paired numeric variables."
+      ],
+      "solution": "Use a scatter plot for two paired numeric variables.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-05",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 5,
+      "title": "Funnels and cohorts",
+      "companyKey": "ecommerce",
+      "concept": "Funnels and cohorts",
+      "explanation": "Funnel views show ordered stage conversion. Cohort heatmaps compare groups that started at different times across age/period.",
+      "scenario": "Growth wants checkout drop-off; Product wants retention by signup month.",
+      "workedExample": "Funnel: visit→cart→checkout→purchase. Cohort: signup month × months since signup.",
+      "question": "Which visual best compares retention decay across signup cohorts?",
+      "options": [
+        "Cohort heatmap",
+        "Single pie chart",
+        "Gauge per user"
+      ],
+      "correctAnswer": "Cohort heatmap",
+      "hints": [
+        "Focus on the core idea: funnels and cohorts.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a cohort heatmap because you need cohort start time and age."
+      ],
+      "solution": "Use a cohort heatmap because you need cohort start time and age.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-06",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 6,
+      "title": "Executive hierarchy",
+      "companyKey": "bank",
+      "concept": "Executive hierarchy",
+      "explanation": "Place a small set of decision KPIs first, then trend/context, then diagnostic breakdowns. Use progressive disclosure for detail.",
+      "scenario": "An executive landing page must show risk, volume and operational workload without overwhelming the user.",
+      "workedExample": "Top: exposure, delinquency rate, review workload; below: trend and segment breakdown.",
+      "question": "What belongs at the top of an executive dashboard?",
+      "options": [
+        "The few KPIs directly tied to the decision and current state.",
+        "Every raw column.",
+        "Twenty decorative charts."
+      ],
+      "correctAnswer": "The few KPIs directly tied to the decision and current state.",
+      "hints": [
+        "Focus on the core idea: executive hierarchy.",
+        "Use the company scenario and worked example before guessing.",
+        "Lead with a small number of outcome/health KPIs."
+      ],
+      "solution": "Lead with a small number of outcome/health KPIs.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-07",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 7,
+      "title": "Avoid misleading visuals",
+      "companyKey": "hospital",
+      "concept": "Avoid misleading visuals",
+      "explanation": "Visual scales, denominators and labels can exaggerate differences. Bar charts generally need a meaningful zero baseline.",
+      "scenario": "A bar chart of wait time starts the y-axis at 48 minutes, making a 2-minute change look enormous.",
+      "workedExample": "Show axis range clearly and avoid visually overstating a small operational change.",
+      "question": "What is the main risk of a truncated bar-chart axis?",
+      "options": [
+        "It can visually exaggerate the size of differences.",
+        "It always improves accuracy.",
+        "It removes the need for labels."
+      ],
+      "correctAnswer": "It can visually exaggerate the size of differences.",
+      "hints": [
+        "Focus on the core idea: avoid misleading visuals.",
+        "Use the company scenario and worked example before guessing.",
+        "A truncated bar baseline can exaggerate perceived differences."
+      ],
+      "solution": "A truncated bar baseline can exaggerate perceived differences.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-08",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 8,
+      "title": "Tell the action story",
+      "companyKey": "logistics",
+      "concept": "Tell the action story",
+      "explanation": "A useful dashboard links finding → evidence → driver/segment → recommended action → monitoring metric.",
+      "scenario": "A dashboard shows that late deliveries rose, but managers still do not know what to do.",
+      "workedExample": "Late SLA rose 4 pp, concentrated on two routes; investigate capacity and carrier handoffs, then monitor P90 transit time weekly.",
+      "question": "What turns a dashboard into a decision tool?",
+      "options": [
+        "A clear interpretation and bounded next action tied to the metrics.",
+        "More charts without explanation.",
+        "Hiding uncertainty."
+      ],
+      "correctAnswer": "A clear interpretation and bounded next action tied to the metrics.",
+      "hints": [
+        "Focus on the core idea: tell the action story.",
+        "Use the company scenario and worked example before guessing.",
+        "Connect the evidence to a bounded action and monitoring metric."
+      ],
+      "solution": "Connect the evidence to a bounded action and monitoring metric.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-business-01",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 1,
+      "title": "Build a metric tree",
+      "companyKey": "ecommerce",
+      "concept": "Build a metric tree",
+      "explanation": "Break outcome metrics into drivers. Revenue can be decomposed into orders × average order value, while orders may be driven by traffic × conversion.",
+      "scenario": "Revenue fell and the CEO asks why.",
+      "workedExample": "Revenue = orders × average order value.",
+      "question": "Why use a metric tree?",
+      "options": [
+        "To connect a top-level outcome to measurable drivers.",
+        "To avoid looking at data.",
+        "To replace all dashboards with one number."
+      ],
+      "correctAnswer": "To connect a top-level outcome to measurable drivers.",
+      "hints": [
+        "Focus on the core idea: build a metric tree.",
+        "Use the company scenario and worked example before guessing.",
+        "Use a metric tree to connect an outcome to its measurable drivers."
+      ],
+      "solution": "Use a metric tree to connect an outcome to its measurable drivers.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-business-02",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 2,
+      "title": "Revenue, cost and margin",
+      "companyKey": "ecommerce",
+      "concept": "Revenue, cost and margin",
+      "explanation": "Growth is not automatically profitable. Track revenue, gross profit, contribution margin and cost drivers together.",
+      "scenario": "Sales grew 20% but discounts and fulfilment cost grew faster.",
+      "workedExample": "Gross margin % = gross profit / revenue × 100.",
+      "question": "Which metric helps compare profitability across different revenue levels?",
+      "options": [
+        "Gross margin percentage",
+        "Revenue alone",
+        "Order count alone"
+      ],
+      "correctAnswer": "Gross margin percentage",
+      "hints": [
+        "Focus on the core idea: revenue, cost and margin.",
+        "Use the company scenario and worked example before guessing.",
+        "Use gross margin % to normalize gross profit by revenue."
+      ],
+      "solution": "Use gross margin % to normalize gross profit by revenue.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-business-03",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 3,
+      "title": "Funnels and conversion",
+      "companyKey": "saas",
+      "concept": "Funnels and conversion",
+      "explanation": "Stage conversion identifies where users drop out. Always define the denominator for each rate.",
+      "scenario": "1,000 visitors become 200 trials, 80 activated accounts and 40 paid customers.",
+      "workedExample": "Trial→activation = 80/200 = 40%; activation→paid = 40/80 = 50%.",
+      "question": "Which stage has the lower conversion in this example?",
+      "options": [
+        "Trial to activation",
+        "Activation to paid",
+        "They are equal"
+      ],
+      "correctAnswer": "Trial to activation",
+      "hints": [
+        "Focus on the core idea: funnels and conversion.",
+        "Use the company scenario and worked example before guessing.",
+        "Trial→activation is 40%, lower than activation→paid at 50%."
+      ],
+      "solution": "Trial→activation is 40%, lower than activation→paid at 50%.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-business-04",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 4,
+      "title": "Retention, churn and NRR",
+      "companyKey": "saas",
+      "concept": "Retention, churn and NRR",
+      "explanation": "NRR includes churn, contraction and expansion: (start - churn - contraction + expansion)/start.",
+      "scenario": "A SaaS company starts with ₹1M MRR, loses ₹80k, contracts ₹20k and expands ₹150k.",
+      "workedExample": "NRR=(1000-80-20+150)/1000=105%.",
+      "question": "What does NRR above 100% mean?",
+      "options": [
+        "Expansion more than offset churn and contraction for the measured revenue base.",
+        "No customers churned.",
+        "Revenue is guaranteed to grow forever."
+      ],
+      "correctAnswer": "Expansion more than offset churn and contraction for the measured revenue base.",
+      "hints": [
+        "Focus on the core idea: retention, churn and nrr.",
+        "Use the company scenario and worked example before guessing.",
+        "NRR above 100% means expansion exceeded revenue losses, not that churn was zero."
+      ],
+      "solution": "NRR above 100% means expansion exceeded revenue losses, not that churn was zero.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-business-05",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 5,
+      "title": "CAC, LTV and payback",
+      "companyKey": "saas",
+      "concept": "CAC, LTV and payback",
+      "explanation": "CAC = acquisition spend / customers acquired. LTV estimates customer value; payback asks how long gross profit takes to recover CAC.",
+      "scenario": "Marketing spends ₹500k to acquire 100 customers; monthly gross profit per customer is ₹1,000.",
+      "workedExample": "CAC=₹5,000; simple payback≈5 months.",
+      "question": "What is the simple CAC here?",
+      "options": [
+        "₹5,000",
+        "₹500",
+        "₹50,000"
+      ],
+      "correctAnswer": "₹5,000",
+      "hints": [
+        "Focus on the core idea: cac, ltv and payback.",
+        "Use the company scenario and worked example before guessing.",
+        "₹500,000 / 100 = ₹5,000 CAC."
+      ],
+      "solution": "₹500,000 / 100 = ₹5,000 CAC.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-business-06",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 6,
+      "title": "Forecasts and scenarios",
+      "companyKey": "logistics",
+      "concept": "Forecasts and scenarios",
+      "explanation": "Forecasts are estimates with error, not promises. Validate against history, model seasonality, and present scenarios/ranges when uncertainty matters.",
+      "scenario": "Next month volume is uncertain and depends on a festival week.",
+      "workedExample": "Base 100k shipments; downside 92k; upside 112k with stated assumptions.",
+      "question": "What should accompany a forecast?",
+      "options": [
+        "Assumptions, uncertainty/error and a way to compare forecast with actuals.",
+        "A claim of certainty.",
+        "No historical validation."
+      ],
+      "correctAnswer": "Assumptions, uncertainty/error and a way to compare forecast with actuals.",
+      "hints": [
+        "Focus on the core idea: forecasts and scenarios.",
+        "Use the company scenario and worked example before guessing.",
+        "State assumptions and uncertainty, then track forecast error against actuals."
+      ],
+      "solution": "State assumptions and uncertainty, then track forecast error against actuals.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-business-07",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 7,
+      "title": "Write a decision-ready insight",
+      "companyKey": "hospital",
+      "concept": "Write a decision-ready insight",
+      "explanation": "Strong analyst writing uses finding → evidence → bounded interpretation → recommendation → business impact. Do not claim causes the data cannot establish.",
+      "scenario": "Median wait fell 7 minutes but P90 did not improve.",
+      "workedExample": "Median wait improved from 46 to 39 minutes, but P90 remains 88; typical experience improved while the long tail persists.",
+      "question": "What should come immediately after the finding?",
+      "options": [
+        "Specific evidence that supports it.",
+        "A confident causal claim.",
+        "An unrelated metric."
+      ],
+      "correctAnswer": "Specific evidence that supports it.",
+      "hints": [
+        "Focus on the core idea: write a decision-ready insight.",
+        "Use the company scenario and worked example before guessing.",
+        "Support the finding with specific evidence before recommending action."
+      ],
+      "solution": "Support the finding with specific evidence before recommending action.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-business-08",
+      "skillKey": "business",
+      "trackKey": "business",
+      "trackTitle": "Business Analytics & Insight",
+      "order": 8,
+      "title": "Stakeholders, ethics and prioritization",
+      "companyKey": "bank",
+      "concept": "Stakeholders, ethics and prioritization",
+      "explanation": "Good analytics balances usefulness with privacy, fairness, governance and uncertainty. Minimize sensitive data, challenge unsupported proxies and communicate limitations.",
+      "scenario": "A leader asks for a customer-risk list using a weak proxy and wants it emailed broadly.",
+      "workedExample": "Use approved fields, restrict access, validate the signal, and avoid treating a review flag as proof of wrongdoing.",
+      "question": "What should an analyst do with an unsupported high-stakes proxy?",
+      "options": [
+        "Escalate/validate it and avoid using it as a definitive decision rule.",
+        "Use it silently because leadership asked.",
+        "Publish it to everyone."
+      ],
+      "correctAnswer": "Escalate/validate it and avoid using it as a definitive decision rule.",
+      "hints": [
+        "Focus on the core idea: stakeholders, ethics and prioritization.",
+        "Use the company scenario and worked example before guessing.",
+        "Validate high-stakes proxies, minimize access, and avoid unsupported definitive decisions."
+      ],
+      "solution": "Validate high-stakes proxies, minimize access, and avoid unsupported definitive decisions.",
+      "xp": 40
+    }
+  ]
+}

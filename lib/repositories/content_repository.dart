@@ -8,6 +8,7 @@ import '../models/boss_case.dart';
 import '../models/capstone.dart';
 import '../models/dashboard_challenge.dart';
 import '../models/daily_challenge.dart';
+import '../models/foundation_lesson.dart';
 import '../models/interview.dart';
 import '../models/narrative_content.dart';
 import '../models/pandas_challenge.dart';
@@ -16,6 +17,25 @@ import '../models/spreadsheet_challenge.dart';
 
 class ContentRepository {
   const ContentRepository();
+
+  Future<List<FoundationLesson>> loadFoundationLessons() async {
+    final raw = await rootBundle.loadString(
+      'assets/content/foundation_academy_v1.json',
+    );
+    final decoded = jsonDecode(raw) as Map<String, dynamic>;
+    final lessons = decoded['lessons'] as List<dynamic>;
+    return lessons
+        .map(
+          (item) => FoundationLesson.fromJson(
+            Map<String, dynamic>.from(item as Map),
+          ),
+        )
+        .toList()
+      ..sort((a, b) {
+        final track = a.trackTitle.compareTo(b.trackTitle);
+        return track != 0 ? track : a.order.compareTo(b.order);
+      });
+  }
 
   Future<List<AnalystTask>> loadCareerTasks() async {
     final allTasks = <AnalystTask>[];

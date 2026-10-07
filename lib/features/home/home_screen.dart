@@ -12,6 +12,7 @@ import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
 import '../events/random_events_screen.dart';
+import '../academy/foundation_academy_screen.dart';
 import '../game/game_progress.dart';
 import '../game/game_providers.dart';
 import '../graduation/job_readiness_screen.dart';
@@ -163,6 +164,26 @@ class HomeScreen extends ConsumerWidget {
                     'Open a lab when you want to practise a specific skill.',
               ),
               const SizedBox(height: 8),
+              Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  minVerticalPadding: 14,
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.school_outlined),
+                  ),
+                  title: const Text(
+                    'New to data analytics? Start from zero',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: const Text(
+                    '56 guided lessons: SQL, Excel, cleaning, statistics, Pandas, dashboards and business analytics.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () =>
+                      _open(context, const FoundationAcademyScreen()),
+                ),
+              ),
+              const SizedBox(height: 10),
               _MenuSection(
                 icon: Icons.school_outlined,
                 title: 'Core analyst labs',

@@ -10,6 +10,7 @@ import '../../models/capstone.dart';
 import '../../models/capstone_result.dart';
 import '../../models/dashboard_challenge.dart';
 import '../../models/daily_challenge.dart';
+import '../../models/foundation_lesson.dart';
 import '../../models/interview.dart';
 import '../../models/interview_result.dart';
 import '../../models/job_readiness.dart';
@@ -196,6 +197,11 @@ final reminderSchedulerProvider = Provider<ReminderScheduler>((ref) {
 
 final reminderSettingsProvider = FutureProvider<ReminderSettings>((ref) {
   return ref.read(reminderSettingsRepositoryProvider).load();
+});
+
+final foundationLessonsProvider =
+    FutureProvider<List<FoundationLesson>>((ref) {
+  return ref.read(contentRepositoryProvider).loadFoundationLessons();
 });
 
 final tasksProvider = FutureProvider<List<AnalystTask>>((ref) {
