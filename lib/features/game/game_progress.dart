@@ -23,6 +23,10 @@ class GameProgress {
     this.companyJourneyCompleted = false,
     this.completedEventIds = const <String>{},
     this.rewardedLearningIds = const <String>{},
+    this.managerTrust = 50,
+    this.dataQuality = 60,
+    this.riskIndex = 50,
+    this.manualNotes = const <String>[],
   });
 
   static const roleNames = [
@@ -90,6 +94,12 @@ class GameProgress {
   final bool companyJourneyCompleted;
   final Set<String> completedEventIds;
   final Set<String> rewardedLearningIds;
+  final double managerTrust;
+  final double dataQuality;
+
+  /// Lower is better. This represents simulated decision/operational risk.
+  final double riskIndex;
+  final List<String> manualNotes;
 
   int get resolvedCompanyChapter {
     if (companyChapter >= 0) {
@@ -160,6 +170,10 @@ class GameProgress {
     bool? companyJourneyCompleted,
     Set<String>? completedEventIds,
     Set<String>? rewardedLearningIds,
+    double? managerTrust,
+    double? dataQuality,
+    double? riskIndex,
+    List<String>? manualNotes,
   }) {
     return GameProgress(
       xp: xp ?? this.xp,
@@ -179,6 +193,10 @@ class GameProgress {
           companyJourneyCompleted ?? this.companyJourneyCompleted,
       completedEventIds: completedEventIds ?? this.completedEventIds,
       rewardedLearningIds: rewardedLearningIds ?? this.rewardedLearningIds,
+      managerTrust: managerTrust ?? this.managerTrust,
+      dataQuality: dataQuality ?? this.dataQuality,
+      riskIndex: riskIndex ?? this.riskIndex,
+      manualNotes: manualNotes ?? this.manualNotes,
     );
   }
 
@@ -199,6 +217,10 @@ class GameProgress {
       'companyJourneyCompleted': companyJourneyCompleted,
       'completedEventIds': completedEventIds.toList(),
       'rewardedLearningIds': rewardedLearningIds.toList(),
+      'managerTrust': managerTrust,
+      'dataQuality': dataQuality,
+      'riskIndex': riskIndex,
+      'manualNotes': manualNotes,
     };
   }
 
@@ -239,6 +261,12 @@ class GameProgress {
       rewardedLearningIds: Set<String>.from(
         (json['rewardedLearningIds'] as List<dynamic>?) ??
             const <dynamic>[],
+      ),
+      managerTrust: (json['managerTrust'] as num?)?.toDouble() ?? 50,
+      dataQuality: (json['dataQuality'] as num?)?.toDouble() ?? 60,
+      riskIndex: (json['riskIndex'] as num?)?.toDouble() ?? 50,
+      manualNotes: List<String>.from(
+        (json['manualNotes'] as List<dynamic>?) ?? const <dynamic>[],
       ),
     );
   }
@@ -313,6 +341,17 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
         break;
     }
 
+    final trustDelta = score >= 80
+        ? 0.8 * impact
+        : score >= 70
+            ? 0.3 * impact
+            : -0.7;
+    final qualityDelta = task.skillKey == 'cleaning'
+        ? 1.5 * impact
+        : task.skillKey == 'sql' || task.skillKey == 'powerbi'
+            ? 0.5 * impact
+            : 0.2 * impact;
+
     state = state.copyWith(
       xp: state.xp + earnedXp,
       streak: state.streak + 1,
@@ -321,6 +360,10 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
       churnRate: churn.clamp(0, 100).toDouble(),
       costIndex: costs,
       satisfaction: satisfaction.clamp(0, 100).toDouble(),
+      managerTrust:
+          (state.managerTrust + trustDelta).clamp(0, 100).toDouble(),
+      dataQuality:
+          (state.dataQuality + qualityDelta).clamp(0, 100).toDouble(),
     );
 
     await _save();
@@ -375,6 +418,9 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
     );
     state = state.copyWith(
       xp: state.xp + earnedXp,
+      managerTrust: rewardId.startsWith('mission:')
+          ? (state.managerTrust + 2).clamp(0, 100).toDouble()
+          : state.managerTrust,
       rewardedLearningIds: <String>{
         ...state.rewardedLearningIds,
         rewardId,
@@ -382,6 +428,66 @@ class GameProgressNotifier extends StateNotifier<GameProgress> {
     );
     await _save();
     return earnedXp;
+  }
+
+  Future<int> applyWorkDecision({
+    required String decisionId,
+    required int baseXp,
+    required int score,
+    double revenueDelta = 0,
+    double churnDelta = 0,
+    double costDelta = 0,
+    double satisfactionDelta = 0,
+    double trustDelta = 0,
+    double dataQualityDelta = 0,
+    double riskDelta = 0,
+  }) async {
+    final rewardId = 'decision:$decisionId';
+    if (state.rewardedLearningIds.contains(rewardId)) return 0;
+
+    final earnedXp = LearningRewardService.earnedXp(
+      baseXp: baseXp,
+      score: score,
+      solutionViewed: false,
+    );
+    state = state.copyWith(
+      xp: state.xp + earnedXp,
+      revenueIndex: state.revenueIndex + revenueDelta,
+      churnRate: (state.churnRate + churnDelta).clamp(0, 100).toDouble(),
+      costIndex: state.costIndex + costDelta,
+      satisfaction:
+          (state.satisfaction + satisfactionDelta).clamp(0, 100).toDouble(),
+      managerTrust:
+          (state.managerTrust + trustDelta).clamp(0, 100).toDouble(),
+      dataQuality:
+          (state.dataQuality + dataQualityDelta).clamp(0, 100).toDouble(),
+      riskIndex: (state.riskIndex + riskDelta).clamp(0, 100).toDouble(),
+      rewardedLearningIds: <String>{
+        ...state.rewardedLearningIds,
+        rewardId,
+      },
+    );
+    await _save();
+    return earnedXp;
+  }
+
+  Future<void> addManualNote(String note) async {
+    final cleaned = note.trim();
+    if (cleaned.isEmpty) return;
+    state = state.copyWith(
+      manualNotes: <String>[
+        ...state.manualNotes,
+        cleaned,
+      ],
+    );
+    await _save();
+  }
+
+  Future<void> deleteManualNoteAt(int index) async {
+    if (index < 0 || index >= state.manualNotes.length) return;
+    final next = <String>[...state.manualNotes]..removeAt(index);
+    state = state.copyWith(manualNotes: next);
+    await _save();
   }
 
   Future<void> applyRandomEvent({
