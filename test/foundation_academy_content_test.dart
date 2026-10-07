@@ -6,13 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('zero-to-analyst academy has 56 complete foundation lessons', () async {
+  test('zero-to-analyst academy has 80 complete job-ready foundation lessons', () async {
     final raw =
         await rootBundle.loadString('assets/content/foundation_academy_v1.json');
     final pack = jsonDecode(raw) as Map<String, dynamic>;
     final lessons = pack['lessons'] as List<dynamic>;
 
-    expect(lessons, hasLength(56));
+    expect(lessons, hasLength(80));
     final trackCounts = <String, int>{};
 
     for (final rawLesson in lessons) {
@@ -31,12 +31,13 @@ void main() {
     }
 
     expect(trackCounts, {
-      'sql': 8,
-      'spreadsheets': 8,
-      'cleaning': 8,
-      'statistics': 8,
-      'python': 8,
-      'dashboards': 8,
+      'sql': 10,
+      'spreadsheets': 10,
+      'cleaning': 10,
+      'statistics': 12,
+      'python': 12,
+      'dashboards': 10,
+      'powerbi': 8,
       'business': 8,
     });
   });
