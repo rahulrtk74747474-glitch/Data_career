@@ -16,6 +16,7 @@ class PortfolioScreen extends ConsumerWidget {
     final snapshot = ref.watch(portfolioSnapshotProvider);
     final skills = ref.watch(skillProfileProvider);
     final progress = ref.watch(gameProgressProvider);
+    final missions = ref.watch(careerMissionsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Portfolio Evidence')),
@@ -25,7 +26,18 @@ class PortfolioScreen extends ConsumerWidget {
           error: (error, stackTrace) => Center(
             child: Text('Could not load portfolio evidence.\n$error'),
           ),
-          data: (portfolio) => ListView(
+          data: (portfolio) {
+            final completedMissions = (missions.valueOrNull ?? const [])
+                .where(
+                  (mission) =>
+                      progress.rewardedLearningIds.contains(mission.rewardId),
+                )
+                .toList();
+            final projectHighlights = [
+              for (final mission in completedMissions)
+                mission.resumeBullet,
+            ];
+            return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               Text(
@@ -81,6 +93,7 @@ class PortfolioScreen extends ConsumerWidget {
                               companyName: progress.companyName,
                               xp: progress.xp,
                               skills: skillData,
+                              projectHighlights: projectHighlights,
                             );
                         final openResult = await ref
                             .read(portfolioDeliveryServiceProvider)
@@ -130,6 +143,7 @@ class PortfolioScreen extends ConsumerWidget {
                                 companyName: progress.companyName,
                                 xp: progress.xp,
                                 skills: skillData,
+                                projectHighlights: projectHighlights,
                               );
                           final shareResult = await ref
                               .read(portfolioDeliveryServiceProvider)
@@ -168,6 +182,26 @@ class PortfolioScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              if (completedMissions.isNotEmpty) ...[
+                Text(
+                  'Career project highlights',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Resume-ready statements from completed multi-skill company projects.',
+                ),
+                const SizedBox(height: 8),
+                for (final mission in completedMissions)
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.work_history_outlined),
+                      title: Text(mission.title),
+                      subtitle: SelectableText(mission.resumeBullet),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+              ],
               _ProjectCards(
                 cards: CareerArtifactService.buildProjectCards(portfolio),
               ),
@@ -237,7 +271,8 @@ class PortfolioScreen extends ConsumerWidget {
                     ),
                   ),
             ],
-          ),
+          );
+          },
         ),
       ),
     );

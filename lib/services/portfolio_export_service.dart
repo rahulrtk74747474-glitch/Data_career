@@ -28,6 +28,7 @@ class PortfolioExportService {
     required String companyName,
     required int xp,
     required List<SkillMastery> skills,
+    List<String> projectHighlights = const [],
   }) async {
     final base = await _database.storageDirectoryPath;
     final directory = Directory(p.join(base, 'exports'));
@@ -48,6 +49,7 @@ class PortfolioExportService {
       companyName: companyName,
       xp: xp,
       skills: skills,
+      projectHighlights: projectHighlights,
       generatedAt: now,
     );
     await file.writeAsString(html, flush: true);
@@ -63,6 +65,7 @@ class PortfolioExportService {
     required String companyName,
     required int xp,
     required List<SkillMastery> skills,
+    List<String> projectHighlights = const [],
     required DateTime generatedAt,
   }) {
     final sortedSkills = [...skills]
@@ -79,6 +82,10 @@ class PortfolioExportService {
           (skill) =>
               '<tr><td>${e(skill.displayName)}</td><td>${skill.mastery.toStringAsFixed(0)}%</td><td>${skill.attempts}</td></tr>',
         )
+        .join();
+
+    final highlightItems = projectHighlights
+        .map((item) => '<li>${e(item)}</li>')
         .join();
 
     final projectRows = CareerArtifactService.buildProjectCards(snapshot)
@@ -140,6 +147,9 @@ th{background:#f3f4f6}
 
 <h2>Skill profile</h2>
 <table><tr><th>Skill</th><th>Mastery</th><th>Attempts</th></tr>$skillRows</table>
+
+<h2>Career project highlights</h2>
+${projectHighlights.isEmpty ? '<p>No completed career-project highlights yet.</p>' : '<ul>$highlightItems</ul>'}
 
 <h2>Portfolio projects</h2>
 <table><tr><th>Project</th><th>Company</th><th>Score</th><th>Skills</th><th>Attempts</th></tr>$projectRows</table>

@@ -22,6 +22,7 @@ class PortfolioPdfExportService {
     required String companyName,
     required int xp,
     required List<SkillMastery> skills,
+    List<String> projectHighlights = const [],
   }) async {
     final bytes = await buildPdf(
       snapshot: snapshot,
@@ -29,6 +30,7 @@ class PortfolioPdfExportService {
       companyName: companyName,
       xp: xp,
       skills: skills,
+      projectHighlights: projectHighlights,
       generatedAt: DateTime.now().toUtc(),
     );
 
@@ -57,6 +59,7 @@ class PortfolioPdfExportService {
     required String companyName,
     required int xp,
     required List<SkillMastery> skills,
+    List<String> projectHighlights = const [],
     required DateTime generatedAt,
   }) async {
     final document = pw.Document(
@@ -102,6 +105,16 @@ class PortfolioPdfExportService {
               '${skill.mastery.toStringAsFixed(0)}% | '
               '${skill.attempts} attempts',
             ),
+          pw.SizedBox(height: 14),
+          _section('Career project highlights'),
+          if (projectHighlights.isEmpty)
+            pw.Text('No completed career-project highlights yet.')
+          else
+            for (final highlight in projectHighlights.take(12))
+              pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 5),
+                child: pw.Text(_safe('• $highlight')),
+              ),
           pw.SizedBox(height: 14),
           _section('Portfolio projects'),
           if (projects.isEmpty)
