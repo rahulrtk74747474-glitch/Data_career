@@ -31,11 +31,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     try {
-      await ref.read(appDatabaseProvider).database;
       if (mounted) {
         setState(() => _status = 'Installing content packs...');
       }
-      await ref.read(contentPackLoaderProvider).installBundledPacks();
+      await ref.read(startupInitializationProvider.future);
       if (!mounted) return;
 
       final payload = ref.read(pendingLaunchNotificationPayloadProvider);
