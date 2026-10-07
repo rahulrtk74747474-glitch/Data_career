@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/career_mission.dart';
+import '../../models/workday_content.dart';
 import '../campaign/career_campaign_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../portfolio/portfolio_screen.dart';
+import '../game/game_progress.dart';
 import '../game/game_providers.dart';
 import 'analyst_handbook_screen.dart';
 import 'analyst_stories_screen.dart';
@@ -90,9 +93,9 @@ class AnalystDesktopScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(gameProgressProvider);
     final messages = ref.watch(workInboxMessagesProvider).valueOrNull ??
-        const [];
+        const <WorkInboxMessage>[];
     final missions = ref.watch(careerMissionsProvider).valueOrNull ??
-        const [];
+        const <CareerMission>[];
 
     final visibleMessages = messages.where((item) {
       final company =
@@ -107,21 +110,20 @@ class AnalystDesktopScreen extends ConsumerWidget {
     final completedProjects = missions.where(
       (mission) => progress.rewardedLearningIds.contains(mission.rewardId),
     ).length;
-    final nextMission = missions.cast<dynamic?>().firstWhere(
-          (mission) {
-            if (mission == null) return false;
-            final index = missions.indexOf(mission);
-            if (progress.rewardedLearningIds.contains(mission.rewardId)) {
-              return false;
-            }
-            final previousComplete = index == 0 ||
-                progress.rewardedLearningIds
-                    .contains(missions[index - 1].rewardId);
-            return previousComplete &&
-                progress.resolvedCompanyChapter >= mission.companyChapter;
-          },
-          orElse: () => null,
-        );
+    CareerMission? nextMission;
+    for (var index = 0; index < missions.length; index++) {
+      final mission = missions[index];
+      if (progress.rewardedLearningIds.contains(mission.rewardId)) {
+        continue;
+      }
+      final previousComplete = index == 0 ||
+          progress.rewardedLearningIds.contains(missions[index - 1].rewardId);
+      if (previousComplete &&
+          progress.resolvedCompanyChapter >= mission.companyChapter) {
+        nextMission = mission;
+        break;
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -147,7 +149,7 @@ class AnalystDesktopScreen extends ConsumerWidget {
               unread: unread,
               completedProjects: completedProjects,
               totalProjects: missions.length,
-              nextMissionTitle: nextMission?.title as String?,
+              nextMissionTitle: nextMission?.title,
             ),
             const SizedBox(height: 14),
             _CompanyImpactCard(progress: progress),
@@ -337,7 +339,7 @@ class _WorkdayHeader extends StatelessWidget {
 
 class _CompanyImpactCard extends StatelessWidget {
   const _CompanyImpactCard({required this.progress});
-  final dynamic progress;
+  final GameProgress progress;
 
   @override
   Widget build(BuildContext context) {

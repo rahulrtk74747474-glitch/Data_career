@@ -110,13 +110,17 @@ class _ReviewCaseScreenState extends ConsumerState<_ReviewCaseScreen> {
             const SizedBox(height: 8),
             for (final option in widget.item.choices)
               Card(
-                child: RadioListTile<ScoredWorkChoice>(
-                  value: option,
-                  groupValue: _choice,
-                  onChanged: done
-                      ? null
-                      : (value) => setState(() => _choice = value),
+                child: ListTile(
+                  leading: Icon(
+                    identical(_choice, option)
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_off,
+                  ),
                   title: Text(option.text),
+                  selected: identical(_choice, option),
+                  onTap: done
+                      ? null
+                      : () => setState(() => _choice = option),
                 ),
               ),
             const SizedBox(height: 10),

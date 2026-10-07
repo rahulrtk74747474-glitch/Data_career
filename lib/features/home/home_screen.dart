@@ -9,7 +9,6 @@ import '../analytics/analytics_studio_screen.dart';
 import '../boss_case/boss_case_screen.dart';
 import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
-import '../campaign/career_campaign_screen.dart';
 import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
 import '../daily/daily_challenge_screen.dart';
