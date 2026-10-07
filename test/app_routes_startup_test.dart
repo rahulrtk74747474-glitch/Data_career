@@ -1,6 +1,7 @@
 import 'package:dataquest_analyst_career/core/navigation/app_routes.dart';
 import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
+import 'package:dataquest_analyst_career/features/home/home_screen.dart';
 import 'package:dataquest_analyst_career/features/splash/splash_screen.dart';
 import 'package:dataquest_analyst_career/services/content_pack_loader.dart';
 import 'package:flutter/material.dart';
