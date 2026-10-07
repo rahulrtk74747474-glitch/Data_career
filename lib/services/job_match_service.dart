@@ -99,7 +99,9 @@ class JobDescriptionMatchResult {
   final List<String> gaps;
 }
 
-extension JobDescriptionMatcher on JobMatchService {
+class JobDescriptionMatcher {
+  const JobDescriptionMatcher._();
+
   static JobDescriptionMatchResult calculateDescription({
     required String description,
     required List<SkillMastery> skills,
