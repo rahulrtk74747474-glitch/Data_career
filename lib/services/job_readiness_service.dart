@@ -63,6 +63,13 @@ class JobReadinessService {
             'Repeat Pandas filtering, missing-value, groupby, derived-column and top-N workflows.',
       ),
       ReadinessDomain(
+        key: 'powerbi',
+        label: 'Power BI',
+        score: mastery('powerbi'),
+        recommendation:
+            'Practice Power Query, star schemas, relationships, DAX measures, filter context, date tables, RLS and publish QA.',
+      ),
+      ReadinessDomain(
         key: 'business',
         label: 'Business Communication',
         score: mastery('business'),
@@ -78,10 +85,15 @@ class JobReadinessService {
       ),
     ];
 
-    final skillFoundation = domains
-            .where((item) => item.key != 'interviews')
-            .fold<double>(0, (sum, item) => sum + item.score) /
-        5;
+    final coreSkillDomains =
+        domains.where((item) => item.key != 'interviews').toList();
+    final skillFoundation = coreSkillDomains.isEmpty
+        ? 0.0
+        : coreSkillDomains.fold<double>(
+              0,
+              (sum, item) => sum + item.score,
+            ) /
+            coreSkillDomains.length;
 
     final bossAverage = bossCases.isEmpty
         ? 0.0

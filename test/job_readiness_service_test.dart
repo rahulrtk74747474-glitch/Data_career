@@ -92,6 +92,7 @@ List<SkillMastery> _skills(double score) {
       'statistics',
       'business',
       'python',
+      'powerbi',
     ])
       SkillMastery(
         skillKey: key,
