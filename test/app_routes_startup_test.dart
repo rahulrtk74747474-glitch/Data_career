@@ -22,10 +22,6 @@ void main() {
     );
   });
 
-  tearDown(() async {
-    await database.close();
-  });
-
   testWidgets('Splash is the startup route and safely reaches Home', (
     tester,
   ) async {
@@ -54,6 +50,10 @@ void main() {
       find.text('E-commerce Co. • Commercial Analytics'),
       findsOneWidget,
     );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await database.close();
   });
 
   testWidgets('unknown named route falls back to Home', (tester) async {
@@ -76,6 +76,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('E-commerce Co. • Commercial Analytics'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await database.close();
   });
 }
 
