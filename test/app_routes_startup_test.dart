@@ -13,13 +13,14 @@ void main() {
 
   late AppDatabase database;
 
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
     sqfliteFfiInit();
     database = AppDatabase(
       factory: databaseFactoryFfi,
       overridePath: inMemoryDatabasePath,
     );
+    await database.database;
   });
 
   tearDown(() async {
