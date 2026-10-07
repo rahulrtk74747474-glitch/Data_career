@@ -17,7 +17,7 @@ class TaskPackGenerator {
       throw const FormatException('Level cannot be empty.');
     }
     if (count < 1 || count > 100) {
-      throw const RangeError.range(count, 1, 100, 'count');
+      throw RangeError.range(count, 1, 100, 'count');
     }
 
     final skillSlug = _slug(cleanSkill);
