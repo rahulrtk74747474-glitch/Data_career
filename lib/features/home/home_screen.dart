@@ -1144,6 +1144,21 @@ class _MetricGrid extends StatelessWidget {
         value: '${progress.satisfaction.toStringAsFixed(0)}%',
         icon: Icons.sentiment_satisfied_alt,
       ),
+      (
+        label: 'Manager trust',
+        value: '${progress.managerTrust.toStringAsFixed(0)}%',
+        icon: Icons.handshake_outlined,
+      ),
+      (
+        label: 'Data quality',
+        value: '${progress.dataQuality.toStringAsFixed(0)}%',
+        icon: Icons.verified_outlined,
+      ),
+      (
+        label: 'Risk',
+        value: progress.riskIndex.toStringAsFixed(0),
+        icon: Icons.shield_outlined,
+      ),
     ];
 
     return GridView.builder(

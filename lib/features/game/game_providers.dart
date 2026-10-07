@@ -324,6 +324,9 @@ final learningNotesProvider =
   final analytics = await ref.watch(analyticsChallengesProvider.future);
   final dashboards = await ref.watch(dashboardChallengesProvider.future);
   final insights = await ref.watch(insightScenariosProvider.future);
+  final inboxMessages = await ref.watch(workInboxMessagesProvider.future);
+  final metricCases = await ref.watch(metricRelationshipCasesProvider.future);
+  final reviewCases = await ref.watch(reviewDeskCasesProvider.future);
 
   return LearningNoteService.build(
     progress: progress,
@@ -334,6 +337,9 @@ final learningNotesProvider =
     analytics: analytics,
     dashboards: dashboards,
     insights: insights,
+    inboxMessages: inboxMessages,
+    metricCases: metricCases,
+    reviewCases: reviewCases,
   );
 });
 

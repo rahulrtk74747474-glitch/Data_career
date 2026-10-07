@@ -7,6 +7,7 @@ import '../models/learning_note.dart';
 import '../models/narrative_content.dart';
 import '../models/pandas_challenge.dart';
 import '../models/spreadsheet_challenge.dart';
+import '../models/workday_content.dart';
 
 class LearningNoteService {
   const LearningNoteService._();
@@ -20,6 +21,9 @@ class LearningNoteService {
     required List<AnalyticsChallenge> analytics,
     required List<DashboardChallenge> dashboards,
     required List<InsightScenario> insights,
+    required List<WorkInboxMessage> inboxMessages,
+    required List<MetricRelationshipCase> metricCases,
+    required List<ReviewDeskCase> reviewCases,
   }) {
     final notes = <LearningNote>[];
 
@@ -139,6 +143,61 @@ class LearningNoteService {
       );
     }
 
+    for (final item in inboxMessages) {
+      if (!progress.rewardedLearningIds
+          .contains('decision:inbox:${item.id}')) {
+        continue;
+      }
+      final best = _bestChoice(item.choices);
+      notes.add(
+        LearningNote(
+          id: 'inbox:${item.id}',
+          title: item.subject,
+          skillKey: 'business',
+          shortcut: _short(best.feedback),
+          detail:
+              'Best response:\n${best.text}\n\nWhy:\n${best.feedback}\n\n${best.followUp}',
+          source: 'Work Inbox',
+        ),
+      );
+    }
+
+    for (final item in metricCases) {
+      if (!progress.rewardedLearningIds
+          .contains('decision:metric:${item.id}')) {
+        continue;
+      }
+      final best = _bestChoice(item.choices);
+      notes.add(
+        LearningNote(
+          id: 'metric:${item.id}',
+          title: item.title,
+          skillKey: 'business',
+          shortcut: _short(best.text),
+          detail: best.feedback,
+          source: 'Metric Lab',
+        ),
+      );
+    }
+
+    for (final item in reviewCases) {
+      if (!progress.rewardedLearningIds
+          .contains('decision:review:${item.id}')) {
+        continue;
+      }
+      final best = _bestChoice(item.choices);
+      notes.add(
+        LearningNote(
+          id: 'review:${item.id}',
+          title: item.title,
+          skillKey: 'business',
+          shortcut: _short(best.text),
+          detail: best.feedback,
+          source: 'Review Desk',
+        ),
+      );
+    }
+
     for (var index = 0; index < progress.manualNotes.length; index++) {
       final text = progress.manualNotes[index];
       notes.add(
@@ -155,6 +214,10 @@ class LearningNoteService {
     }
 
     return notes.reversed.toList();
+  }
+
+  static ScoredWorkChoice _bestChoice(List<ScoredWorkChoice> choices) {
+    return choices.reduce((a, b) => a.score >= b.score ? a : b);
   }
 
   static String _firstSentence(String value) {
