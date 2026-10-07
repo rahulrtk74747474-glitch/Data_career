@@ -1,5 +1,10 @@
 # DataQuest: Analyst Career
 
+## v1.1 expansion documentation
+
+- `docs/GAME_DESIGN_DOCUMENT_v1_1.md` — story, company timeline, career map, scoring, formulas, content targets and 12-week roadmap.
+- `docs/FLUTTER_SETUP_AND_ARCHITECTURE_v1_1.md` — Android Studio/Codespaces setup, exact commands, package purposes, folder architecture, theme, splash and navigation.
+
 DataQuest is an offline-first Flutter game that trains a learner for real data-analyst work through realistic company tickets, datasets, interviews, performance reviews, company chapters, evidence, graduation and job-readiness practice.
 
 ## Current build: v1.0 — Phase 10 complete
