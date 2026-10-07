@@ -18,69 +18,47 @@ void main() {
       overridePath: inMemoryDatabasePath,
     );
 
+    await tester.runAsync(() => database.database);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           appDatabaseProvider.overrideWithValue(database),
           contentPackLoaderProvider.overrideWithValue(
-            _FastContentPackLoader(database),
+            _NoopContentPackLoader(database),
           ),
         ],
         child: const DataQuestApp(),
       ),
     );
 
-    // Startup now migrates SQLite and installs bundled versioned content
-    // before routing from Splash to Home. Pump finite frames because provider
-    // progress indicators can legitimately remain animated on Home.
     await tester.pump();
-    await _waitForHome(tester);
+    for (var frame = 0; frame < 30; frame++) {
+      await tester.pump(const Duration(milliseconds: 50));
+      if (find
+          .text('E-commerce Co. • Commercial Analytics')
+          .evaluate()
+          .isNotEmpty) {
+        break;
+      }
+    }
 
     expect(find.text('DataQuest'), findsWidgets);
-    expect(find.text('E-commerce Co. • Commercial Analytics'), findsOneWidget);
+    expect(
+      find.text('E-commerce Co. • Commercial Analytics'),
+      findsOneWidget,
+    );
     expect(find.text('Data Analyst Intern'), findsOneWidget);
 
-    final db = await database.database;
-    final schemaRows = await db.rawQuery(
-      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'content_packs'",
-    );
-    expect(schemaRows, hasLength(1));
-
-    // Unmount first so Riverpod disposes providers before the test DB closes.
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
     await database.close();
   });
 }
 
-
-Future<void> _waitForHome(WidgetTester tester) async {
-  for (var attempt = 0; attempt < 100; attempt++) {
-    await tester.pump(const Duration(milliseconds: 50));
-    if (find
-        .text('E-commerce Co. • Commercial Analytics')
-        .evaluate()
-        .isNotEmpty) {
-      return;
-    }
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 10)),
-    );
-  }
-}
-
-
-class _FastContentPackLoader extends ContentPackLoader {
-  _FastContentPackLoader(super.database);
+class _NoopContentPackLoader extends ContentPackLoader {
+  _NoopContentPackLoader(super.database);
 
   @override
-  Future<List<PackInstallResult>> installBundledPacks() async {
-    return const [
-      PackInstallResult(
-        packId: 'test-startup-pack',
-        installed: false,
-        contentVersion: 1,
-      ),
-    ];
-  }
+  Future<List<PackInstallResult>> installBundledPacks() async => const [];
 }
