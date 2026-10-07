@@ -71,6 +71,11 @@ final contentPackLoaderProvider = Provider<ContentPackLoader>((ref) {
   return ContentPackLoader(ref.watch(appDatabaseProvider));
 });
 
+final startupInitializationProvider = FutureProvider<void>((ref) async {
+  await ref.read(appDatabaseProvider).database;
+  await ref.read(contentPackLoaderProvider).installBundledPacks();
+});
+
 final achievementRepositoryProvider = Provider<AchievementRepository>((ref) {
   return AchievementRepository(ref.watch(appDatabaseProvider));
 });
