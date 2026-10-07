@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "packId": "foundation-academy-v1",
-  "trackCount": 7,
+  "trackCount": 8,
   "lessons": [
     {
       "id": "foundation-sql-01",
@@ -217,6 +217,60 @@
         "Use a window function such as ROW_NUMBER() OVER (...) to rank without collapsing rows."
       ],
       "solution": "Use a window function such as ROW_NUMBER() OVER (...) to rank without collapsing rows.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-09",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 9,
+      "title": "NULLs and COALESCE",
+      "companyKey": "saas",
+      "concept": "Missing values in SQL",
+      "explanation": "NULL means unknown or missing, not zero and not an empty string. Use IS NULL/IS NOT NULL for checks. COALESCE can provide a fallback only when the business meaning supports it.",
+      "scenario": "A SaaS account table has missing plan labels. Finance wants them shown as Unknown without pretending they are a real plan.",
+      "workedExample": "SELECT account_id, COALESCE(plan, 'Unknown') AS plan_label FROM accounts;",
+      "question": "How should SQL test whether plan is missing?",
+      "options": [
+        "plan IS NULL",
+        "plan = NULL",
+        "plan = 0"
+      ],
+      "correctAnswer": "plan IS NULL",
+      "hints": [
+        "NULL is not compared with =.",
+        "SQL has a dedicated NULL predicate.",
+        "Use IS NULL."
+      ],
+      "solution": "Use plan IS NULL. Equality comparisons with NULL do not behave like normal values.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-sql-10",
+      "skillKey": "sql",
+      "trackKey": "sql",
+      "trackTitle": "SQL",
+      "order": 10,
+      "title": "Date logic and query QA",
+      "companyKey": "logistics",
+      "concept": "Time filters and validation",
+      "explanation": "Real reporting depends on correct date windows. Always verify inclusivity, timezone assumptions, row counts and totals before trusting a query.",
+      "scenario": "Logistics needs shipments for September only and the month-end dashboard must reconcile to finance.",
+      "workedExample": "WHERE ship_date >= '2026-09-01' AND ship_date < '2026-10-01'",
+      "question": "Why is a half-open date window often safer for timestamps?",
+      "options": [
+        "It avoids ambiguity at the final day's time boundary",
+        "It automatically fixes bad data",
+        "It removes the need for QA"
+      ],
+      "correctAnswer": "It avoids ambiguity at the final day's time boundary",
+      "hints": [
+        "Timestamps contain times as well as dates.",
+        "A <= month-end condition can be easy to get wrong.",
+        "Use start inclusive and next-period start exclusive."
+      ],
+      "solution": "Use an inclusive start and exclusive next-period start when practical, then reconcile row counts and totals.",
       "xp": 40
     },
     {
@@ -436,6 +490,60 @@
       "xp": 40
     },
     {
+      "id": "foundation-spreadsheets-09",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 9,
+      "title": "Error handling and validation",
+      "companyKey": "bank",
+      "concept": "Spreadsheet reliability",
+      "explanation": "Production spreadsheets need input validation, error checks and clear handling of missing lookups. IFERROR can improve presentation, but it should not hide real data-quality problems.",
+      "scenario": "A bank workbook looks up customer segments; some account IDs do not exist in the reference table.",
+      "workedExample": "=IFERROR(XLOOKUP(A2,Accounts!A:A,Accounts!B:B),\"Missing account\")",
+      "question": "What is the safest use of IFERROR here?",
+      "options": [
+        "Show an explicit Missing account label and investigate unmatched IDs",
+        "Replace every error with zero silently",
+        "Delete the lookup formula"
+      ],
+      "correctAnswer": "Show an explicit Missing account label and investigate unmatched IDs",
+      "hints": [
+        "Errors can carry useful information.",
+        "A fallback should not hide a broken key.",
+        "Label and investigate unmatched records."
+      ],
+      "solution": "Use an explicit label such as Missing account and investigate why the key did not match.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-spreadsheets-10",
+      "skillKey": "spreadsheets",
+      "trackKey": "spreadsheets",
+      "trackTitle": "Excel & Spreadsheets",
+      "order": 10,
+      "title": "Audit a management workbook",
+      "companyKey": "hospital",
+      "concept": "Spreadsheet QA",
+      "explanation": "Before sharing a workbook, verify formulas, totals, filters, hidden rows, units, date windows and assumptions. A correct-looking dashboard can still be wrong if one range is misaligned.",
+      "scenario": "Hospital leadership will use a workbook to plan next week's staffing.",
+      "workedExample": "QA checklist: row counts → totals → formula ranges → filters → date window → spot-check source rows.",
+      "question": "What should happen before a management workbook is distributed?",
+      "options": [
+        "Reconcile key totals and spot-check formulas against source data",
+        "Only change the font",
+        "Lock the workbook without testing it"
+      ],
+      "correctAnswer": "Reconcile key totals and spot-check formulas against source data",
+      "hints": [
+        "Visual polish is not validation.",
+        "Check the numbers against source evidence.",
+        "Reconcile and spot-check before sharing."
+      ],
+      "solution": "Reconcile key totals and spot-check formulas, filters and date windows before distribution.",
+      "xp": 40
+    },
+    {
       "id": "foundation-cleaning-01",
       "skillKey": "cleaning",
       "trackKey": "cleaning",
@@ -649,6 +757,60 @@
         "Keep documented rules and before/after quality counts."
       ],
       "solution": "Keep documented rules and before/after quality counts.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-09",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 9,
+      "title": "Join reconciliation and orphan keys",
+      "companyKey": "ecommerce",
+      "concept": "Post-join quality checks",
+      "explanation": "A join can silently drop records or multiply rows. Compare row counts before/after, inspect unmatched keys and validate the expected relationship cardinality.",
+      "scenario": "Orders are joined to customers. Some orders have no matching customer and a duplicated customer key doubles revenue.",
+      "workedExample": "Check: source order rows, joined rows, unmatched customer_id count, duplicated customer keys.",
+      "question": "What is the biggest danger of a many-to-many join you expected to be many-to-one?",
+      "options": [
+        "It can multiply rows and inflate metrics",
+        "It always sorts data incorrectly",
+        "It changes text to dates"
+      ],
+      "correctAnswer": "It can multiply rows and inflate metrics",
+      "hints": [
+        "Think about repeated keys on both sides.",
+        "One source row can match several rows.",
+        "That multiplication can inflate totals."
+      ],
+      "solution": "Validate join cardinality because unexpected many-to-many joins can multiply rows and overstate metrics.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-cleaning-10",
+      "skillKey": "cleaning",
+      "trackKey": "cleaning",
+      "trackTitle": "Data Cleaning",
+      "order": 10,
+      "title": "Build repeatable data-quality tests",
+      "companyKey": "logistics",
+      "concept": "Automated quality controls",
+      "explanation": "Job-ready analysts convert repeated manual checks into explicit tests: uniqueness, allowed values, null thresholds, ranges, referential integrity and reconciliation totals.",
+      "scenario": "A logistics file arrives every morning. The same missing-route and duplicate-shipment problems recur.",
+      "workedExample": "Tests: shipment_id unique; route_code not null; weight_kg > 0; status in allowed set; row total within expected range.",
+      "question": "Which approach is most reliable for recurring files?",
+      "options": [
+        "Run documented repeatable quality tests every load",
+        "Rely on visual inspection only",
+        "Ignore old failure patterns"
+      ],
+      "correctAnswer": "Run documented repeatable quality tests every load",
+      "hints": [
+        "Recurring data deserves recurring controls.",
+        "Manual memory is inconsistent.",
+        "Turn known failure modes into tests."
+      ],
+      "solution": "Create repeatable tests for known quality rules and run them on every refresh.",
       "xp": 40
     },
     {
@@ -868,11 +1030,227 @@
       "xp": 40
     },
     {
-      "id": "foundation-python-01",
+      "id": "foundation-statistics-09",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 9,
+      "title": "Choose the right mean/proportion test",
+      "companyKey": "ecommerce",
+      "concept": "Test selection",
+      "explanation": "The statistical test depends on the outcome and design. Comparing average order value is a means problem; comparing conversion rates is a proportions problem. Paired data needs paired methods.",
+      "scenario": "Growth compares average order value between two independent checkout variants, then separately compares conversion rates.",
+      "workedExample": "Means → two-sample t-style test when assumptions are reasonable. Proportions → two-proportion test.",
+      "question": "Which problem is a proportions test?",
+      "options": [
+        "Comparing conversion rate between variant A and B",
+        "Comparing mean order value",
+        "Comparing median salary descriptively only"
+      ],
+      "correctAnswer": "Comparing conversion rate between variant A and B",
+      "hints": [
+        "Conversion is success/failure.",
+        "The metric is a proportion of users.",
+        "Use a proportions framework."
+      ],
+      "solution": "Conversion-rate comparisons are proportions problems because each user converts or does not convert.",
+      "xp": 45
+    },
+    {
+      "id": "foundation-statistics-10",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 10,
+      "title": "Chi-square for categorical relationships",
+      "companyKey": "bank",
+      "concept": "Categorical association",
+      "explanation": "A chi-square test can assess whether two categorical variables are associated when expected cell counts and sampling assumptions are reasonable. It does not measure causal effect.",
+      "scenario": "Bank operations asks whether review_flag frequency differs across card, ATM, online and RTGS channels.",
+      "workedExample": "Contingency table: channel × review_flag, then assess categorical association.",
+      "question": "What can a chi-square result support here?",
+      "options": [
+        "Evidence of association between channel and review-flag frequency",
+        "Proof that channel causes suspicious behavior",
+        "A prediction of exact future fraud loss"
+      ],
+      "correctAnswer": "Evidence of association between channel and review-flag frequency",
+      "hints": [
+        "Both variables are categorical.",
+        "Association is weaker than causation.",
+        "A chi-square test evaluates categorical association."
+      ],
+      "solution": "Use chi-square to test categorical association; do not turn association into a causal claim.",
+      "xp": 45
+    },
+    {
+      "id": "foundation-statistics-11",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 11,
+      "title": "Regression, R² and residuals",
+      "companyKey": "logistics",
+      "concept": "Simple regression interpretation",
+      "explanation": "Regression estimates how an outcome changes with predictors under a model. R² describes variance explained, not causal truth. Residuals help diagnose where the model misses patterns.",
+      "scenario": "Logistics models shipping cost from weight and distance. The model has high R² but systematically underpredicts one route.",
+      "workedExample": "Inspect coefficients, R² and residuals by route before using the model for budgeting.",
+      "question": "What does a high R² NOT prove?",
+      "options": [
+        "That the predictors cause the outcome",
+        "That the fitted model explains substantial variation in the sample",
+        "That residual checks are still useful"
+      ],
+      "correctAnswer": "That the predictors cause the outcome",
+      "hints": [
+        "Prediction and causation are different questions.",
+        "R² is about explained variation.",
+        "A high R² does not establish causality."
+      ],
+      "solution": "High R² does not prove causation. Interpret coefficients in context and inspect residuals.",
+      "xp": 45
+    },
+    {
+      "id": "foundation-statistics-12",
+      "skillKey": "statistics",
+      "trackKey": "statistics",
+      "trackTitle": "Statistics",
+      "order": 12,
+      "title": "Power, MDE and practical significance",
+      "companyKey": "saas",
+      "concept": "Experiment design",
+      "explanation": "Power is the chance of detecting an effect of a chosen size when it is real. Minimum detectable effect (MDE) is the smallest effect the design is built to detect. Statistical significance should be paired with business significance.",
+      "scenario": "A SaaS team wants to detect a 1 percentage-point retention improvement but has only a tiny experiment sample.",
+      "workedExample": "Before launch, set baseline rate, MDE, significance level, desired power and required sample size.",
+      "question": "Why define MDE before an experiment?",
+      "options": [
+        "To align sample size with the smallest effect worth detecting",
+        "To guarantee a positive result",
+        "To remove all uncertainty"
+      ],
+      "correctAnswer": "To align sample size with the smallest effect worth detecting",
+      "hints": [
+        "Not every tiny effect matters.",
+        "Sample size depends on the effect you need to detect.",
+        "MDE connects business relevance to experimental design."
+      ],
+      "solution": "Define MDE so the experiment is powered for the smallest effect that would change a business decision.",
+      "xp": 45
+    },
+    {
+      "id": "foundation-python-basics-01",
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
       "order": 1,
+      "title": "Variables, values and data types",
+      "companyKey": "ecommerce",
+      "concept": "Python variables and types",
+      "explanation": "Python stores values in named variables. Common analyst types include integers, decimals, strings, booleans and missing values. Understanding types prevents broken calculations and comparisons.",
+      "scenario": "An e-commerce analyst receives revenue as numbers, region as text and refund_flag as true/false. The code must treat each field according to its type.",
+      "workedExample": "revenue = 1250.5  # float\\nregion = 'North'  # string\\nrefund_flag = False  # bool",
+      "question": "Which Python type is most appropriate for a True/False review flag?",
+      "options": [
+        "bool",
+        "str only",
+        "list"
+      ],
+      "correctAnswer": "bool",
+      "hints": [
+        "The field has only two logical states.",
+        "Python has a dedicated logical type.",
+        "Use bool for True/False values."
+      ],
+      "solution": "Use bool. Boolean values are True or False and are ideal for logical flags.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-python-basics-02",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 2,
+      "title": "Lists and dictionaries",
+      "companyKey": "logistics",
+      "concept": "Python collections",
+      "explanation": "Lists hold ordered values. Dictionaries store key-value pairs. Analysts use both for small configuration objects, mappings and intermediate logic before or alongside Pandas.",
+      "scenario": "A logistics analyst stores route codes in order and keeps a mapping from route code to service target.",
+      "workedExample": "routes = ['NW-1', 'NS-1']\\ntarget_hours = {'NW-1': 24, 'NS-1': 30}",
+      "question": "Which structure is best for looking up a target by route code?",
+      "options": [
+        "Dictionary keyed by route code",
+        "A single number",
+        "A boolean"
+      ],
+      "correctAnswer": "Dictionary keyed by route code",
+      "hints": [
+        "You need key → value lookup.",
+        "The route code is the key.",
+        "Use a dictionary."
+      ],
+      "solution": "Use a dictionary keyed by route code, for example {'NW-1': 24}.",
+      "xp": 25
+    },
+    {
+      "id": "foundation-python-basics-03",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 3,
+      "title": "Conditions and loops",
+      "companyKey": "bank",
+      "concept": "Control flow",
+      "explanation": "if/elif/else chooses actions based on conditions. Loops repeat logic across items. In Pandas you often prefer vectorized operations, but basic control flow helps you understand Python and write validation logic.",
+      "scenario": "A bank analyst wants to label a small list of balances as high or normal while learning Python basics.",
+      "workedExample": "for balance in balances:\\n    if balance > 100000:\\n        print('High')",
+      "question": "Which keyword begins a conditional decision in Python?",
+      "options": [
+        "if",
+        "groupby",
+        "SELECT"
+      ],
+      "correctAnswer": "if",
+      "hints": [
+        "The code chooses an action based on a condition.",
+        "Python uses a short keyword for conditional branching.",
+        "Use if."
+      ],
+      "solution": "Use if to begin a conditional block, followed by the condition and a colon.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-python-basics-04",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 4,
+      "title": "Functions, imports and errors",
+      "companyKey": "hospital",
+      "concept": "Reusable Python",
+      "explanation": "Functions package reusable logic. Imports bring libraries such as pandas into a script. Reading tracebacks and error messages is part of normal analyst work, not a sign of failure.",
+      "scenario": "A hospital analyst repeats the same wait-time conversion in several places and decides to turn it into a function.",
+      "workedExample": "import pandas as pd\\n\\ndef minutes_to_hours(minutes):\\n    return minutes / 60",
+      "question": "Why create a function for repeated logic?",
+      "options": [
+        "To make logic reusable and easier to test",
+        "To hide every error",
+        "To replace all data tables"
+      ],
+      "correctAnswer": "To make logic reusable and easier to test",
+      "hints": [
+        "Repeated code is hard to maintain.",
+        "A named function creates one source of truth.",
+        "Functions improve reuse and testing."
+      ],
+      "solution": "Create a function so repeated logic lives in one place and can be tested and reused.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-python-01",
+      "skillKey": "python",
+      "trackKey": "python",
+      "trackTitle": "Python / Pandas",
+      "order": 5,
       "title": "DataFrames and Series",
       "companyKey": "ecommerce",
       "concept": "DataFrames and Series",
@@ -899,7 +1277,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 2,
+      "order": 6,
       "title": "Select columns and filter rows",
       "companyKey": "ecommerce",
       "concept": "Select columns and filter rows",
@@ -926,7 +1304,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 3,
+      "order": 7,
       "title": "Missing values",
       "companyKey": "saas",
       "concept": "Missing values",
@@ -953,7 +1331,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 4,
+      "order": 8,
       "title": "Create derived columns",
       "companyKey": "ecommerce",
       "concept": "Create derived columns",
@@ -980,7 +1358,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 5,
+      "order": 9,
       "title": "GroupBy and aggregation",
       "companyKey": "saas",
       "concept": "GroupBy and aggregation",
@@ -1007,7 +1385,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 6,
+      "order": 10,
       "title": "Sort and top-N",
       "companyKey": "logistics",
       "concept": "Sort and top-N",
@@ -1034,7 +1412,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 7,
+      "order": 11,
       "title": "Merge DataFrames",
       "companyKey": "bank",
       "concept": "Merge DataFrames",
@@ -1061,7 +1439,7 @@
       "skillKey": "python",
       "trackKey": "python",
       "trackTitle": "Python / Pandas",
-      "order": 8,
+      "order": 12,
       "title": "Dates, pivots and method chaining",
       "companyKey": "hospital",
       "concept": "Dates, pivots and method chaining",
@@ -1298,6 +1676,276 @@
       ],
       "solution": "Connect the evidence to a bounded action and monitoring metric.",
       "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-09",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 9,
+      "title": "Accessibility and visual clarity",
+      "companyKey": "hospital",
+      "concept": "Accessible dashboard design",
+      "explanation": "Good dashboards do not rely on color alone. Use labels, contrast, readable text, sensible number formats and redundant cues so the message remains clear to more users.",
+      "scenario": "A hospital dashboard uses red and green dots without labels to distinguish capacity risk.",
+      "workedExample": "Replace color-only status with icon + label + value, and ensure readable contrast.",
+      "question": "Why should a dashboard avoid using color as the only signal?",
+      "options": [
+        "Some users cannot reliably distinguish the colors and the meaning becomes ambiguous",
+        "Colors are never allowed",
+        "It makes SQL slower"
+      ],
+      "correctAnswer": "Some users cannot reliably distinguish the colors and the meaning becomes ambiguous",
+      "hints": [
+        "Think about accessibility and printing.",
+        "Color perception differs across users.",
+        "Use labels or shapes as a second cue."
+      ],
+      "solution": "Use labels, icons or patterns in addition to color so the status remains understandable.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-dashboards-10",
+      "skillKey": "business",
+      "trackKey": "dashboards",
+      "trackTitle": "Dashboards & KPIs",
+      "order": 10,
+      "title": "Dashboard QA and source reconciliation",
+      "companyKey": "bank",
+      "concept": "BI release controls",
+      "explanation": "Before publishing a dashboard, reconcile headline metrics to trusted sources, test filters, validate refresh time, inspect edge cases and document metric definitions.",
+      "scenario": "A bank dashboard reports ₹14.8M while finance reports ₹13.4M for the same month.",
+      "workedExample": "Reconcile date logic, status filters, grain, exclusions and refresh timestamp before publishing.",
+      "question": "What should the analyst do first?",
+      "options": [
+        "Reconcile metric definitions and filters before choosing either number",
+        "Average the two numbers",
+        "Use the larger number"
+      ],
+      "correctAnswer": "Reconcile metric definitions and filters before choosing either number",
+      "hints": [
+        "Conflicting reports usually differ in logic or grain.",
+        "Do not pick based on preference.",
+        "Reconcile definitions and filters."
+      ],
+      "solution": "Reconcile the underlying definitions, grain, filters and refresh logic before selecting a source of truth.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-powerbi-01",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 1,
+      "title": "Power BI workflow",
+      "companyKey": "ecommerce",
+      "concept": "From source to decision",
+      "explanation": "A reliable Power BI workflow separates data acquisition, transformation, modeling, measures, visuals and publication. Fixing model problems with visual-level hacks creates fragile reports.",
+      "scenario": "An e-commerce analyst receives orders, customers and targets from separate sources and must build a weekly management report.",
+      "workedExample": "Get data → Power Query → model relationships → DAX measures → visuals → validate → publish.",
+      "question": "Where should repeatable cleaning and type fixes usually happen?",
+      "options": [
+        "Power Query or an upstream transformation layer",
+        "By manually editing each chart",
+        "Inside a text box"
+      ],
+      "correctAnswer": "Power Query or an upstream transformation layer",
+      "hints": [
+        "Cleaning should be repeatable.",
+        "Visuals should consume clean modeled data.",
+        "Use Power Query or upstream transformations."
+      ],
+      "solution": "Use Power Query or another repeatable transformation layer for cleaning before modeling and visualization.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-powerbi-02",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 2,
+      "title": "Power Query and data types",
+      "companyKey": "hospital",
+      "concept": "Transform before modeling",
+      "explanation": "Power Query records repeatable steps such as filtering, type conversion, splitting, merging and replacing values. Correct data types are essential for dates, relationships and calculations.",
+      "scenario": "Hospital arrival dates import as text and wait minutes contain a few non-numeric strings.",
+      "workedExample": "Set validated date type; isolate invalid numeric rows; document each transformation step.",
+      "question": "Why are correct data types important before modeling?",
+      "options": [
+        "They control valid calculations, date behavior and relationships",
+        "They only change font appearance",
+        "They remove the need for source QA"
+      ],
+      "correctAnswer": "They control valid calculations, date behavior and relationships",
+      "hints": [
+        "Dates and numbers behave differently from text.",
+        "DAX and relationships depend on types.",
+        "Set and validate types early."
+      ],
+      "solution": "Correct types enable valid calculations, date intelligence and relationship behavior.",
+      "xp": 30
+    },
+    {
+      "id": "foundation-powerbi-03",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 3,
+      "title": "Star schema: facts and dimensions",
+      "companyKey": "ecommerce",
+      "concept": "Dimensional modeling",
+      "explanation": "A star schema keeps measurable events in fact tables and descriptive attributes in dimension tables. This usually produces simpler relationships, clearer DAX and better performance.",
+      "scenario": "Orders contain revenue and customer_id; customer attributes such as segment and region belong in a customer dimension.",
+      "workedExample": "FactOrders(order_id, customer_id, date_id, revenue) linked to DimCustomer and DimDate.",
+      "question": "Where should revenue normally live?",
+      "options": [
+        "In the fact table at the order/event grain",
+        "In every dimension table",
+        "Only in chart titles"
+      ],
+      "correctAnswer": "In the fact table at the order/event grain",
+      "hints": [
+        "Facts contain measurable events.",
+        "Revenue is numeric and additive across orders.",
+        "Store revenue in the fact table."
+      ],
+      "solution": "Keep revenue in the fact table at the defined event grain, with descriptive fields in dimensions.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-powerbi-04",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 4,
+      "title": "Relationships and filter direction",
+      "companyKey": "bank",
+      "concept": "Model relationships",
+      "explanation": "Relationships connect tables through keys and cardinality. One-to-many is common in star schemas. Bidirectional filtering should be used deliberately because it can create ambiguity.",
+      "scenario": "Many transactions belong to one account. The model must let account segment filter transaction measures.",
+      "workedExample": "DimAccount[account_id] 1 → * FactTransactions[account_id].",
+      "question": "Which cardinality best describes one account with many transactions?",
+      "options": [
+        "One-to-many",
+        "One-to-one always",
+        "Many-to-many by default"
+      ],
+      "correctAnswer": "One-to-many",
+      "hints": [
+        "One account can appear in many fact rows.",
+        "The dimension key should be unique.",
+        "Use one-to-many from dimension to fact."
+      ],
+      "solution": "Use one-to-many: one unique account dimension row filters many transaction fact rows.",
+      "xp": 35
+    },
+    {
+      "id": "foundation-powerbi-05",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 5,
+      "title": "Measures vs calculated columns",
+      "companyKey": "saas",
+      "concept": "DAX calculation choice",
+      "explanation": "Calculated columns are computed row by row and stored. Measures are calculated at query time in the current filter context. Aggregated KPIs such as revenue, MRR and conversion rate usually belong in measures.",
+      "scenario": "A SaaS dashboard needs MRR that changes when the user filters segment and month.",
+      "workedExample": "Total MRR = SUM(FactAccountMonth[MRR]) as a measure.",
+      "question": "Why is Total MRR usually a measure?",
+      "options": [
+        "It must recalculate under report filters",
+        "It should be permanently stored on every row",
+        "Measures cannot aggregate numbers"
+      ],
+      "correctAnswer": "It must recalculate under report filters",
+      "hints": [
+        "The answer should change with slicers.",
+        "Measures respond to filter context.",
+        "Use a measure for dynamic aggregates."
+      ],
+      "solution": "Use a measure because MRR should recalculate in the current filter context.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-powerbi-06",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 6,
+      "title": "Filter context and CALCULATE",
+      "companyKey": "logistics",
+      "concept": "Core DAX thinking",
+      "explanation": "Filter context is the set of active filters affecting a measure. CALCULATE evaluates an expression under modified filter context and is central to DAX.",
+      "scenario": "Logistics wants on-time shipments divided by all delivered shipments, responsive to route and month filters.",
+      "workedExample": "On Time = CALCULATE(COUNTROWS(FactShipments), FactShipments[OnTime] = TRUE())",
+      "question": "What does CALCULATE primarily do?",
+      "options": [
+        "Evaluates an expression under modified filter context",
+        "Imports a CSV",
+        "Creates a Power Query step"
+      ],
+      "correctAnswer": "Evaluates an expression under modified filter context",
+      "hints": [
+        "This is a DAX concept.",
+        "Think filters around a measure.",
+        "CALCULATE modifies evaluation context."
+      ],
+      "solution": "CALCULATE evaluates an expression while adding, removing or changing filters in the current context.",
+      "xp": 40
+    },
+    {
+      "id": "foundation-powerbi-07",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 7,
+      "title": "Date tables and time intelligence",
+      "companyKey": "saas",
+      "concept": "Reliable time analysis",
+      "explanation": "A proper date dimension provides continuous dates and attributes such as month, quarter and year. Time-intelligence measures are more reliable when relationships and date tables are modeled correctly.",
+      "scenario": "Finance needs current MRR, prior-month MRR and year-over-year trends even when some dates have no transactions.",
+      "workedExample": "DimDate contains every calendar date and links to the fact table's reporting date.",
+      "question": "Why use a dedicated date table?",
+      "options": [
+        "To provide consistent continuous time filtering and time-intelligence logic",
+        "To make every value text",
+        "To replace business metrics"
+      ],
+      "correctAnswer": "To provide consistent continuous time filtering and time-intelligence logic",
+      "hints": [
+        "Fact tables may skip dates.",
+        "Time calculations need a consistent calendar.",
+        "Use a dedicated date dimension."
+      ],
+      "solution": "Use a continuous date table so filtering and time-intelligence calculations behave consistently.",
+      "xp": 45
+    },
+    {
+      "id": "foundation-powerbi-08",
+      "skillKey": "powerbi",
+      "trackKey": "powerbi",
+      "trackTitle": "Power BI & BI Modeling",
+      "order": 8,
+      "title": "RLS, performance and publish QA",
+      "companyKey": "bank",
+      "concept": "Production BI",
+      "explanation": "Production reports require security, performance and release checks. Row-level security (RLS) restricts which rows a user can see. Reduce unnecessary columns/visuals, use a clean model, and test roles before publishing.",
+      "scenario": "Regional bank managers should see only their own region while executives can see all regions.",
+      "workedExample": "Define an RLS role using region mapping, test as each role, then reconcile headline measures before publish.",
+      "question": "What is RLS designed to control?",
+      "options": [
+        "Which data rows a user is allowed to see",
+        "The phone screen brightness",
+        "SQL syntax highlighting"
+      ],
+      "correctAnswer": "Which data rows a user is allowed to see",
+      "hints": [
+        "RLS stands for row-level security.",
+        "It is a data-access control.",
+        "Use it to restrict visible rows by role."
+      ],
+      "solution": "RLS restricts visible rows according to the user's role or mapping; always test roles before publishing.",
+      "xp": 45
     },
     {
       "id": "foundation-business-01",

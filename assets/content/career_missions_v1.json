@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "packId": "career-missions-v1",
+  "missions": [
+    {
+      "id": "mission-ecom-01",
+      "order": 1,
+      "companyChapter": 0,
+      "companyKey": "ecommerce",
+      "companyName": "E-commerce Co.",
+      "managerName": "Anika • Commercial Analytics Manager",
+      "title": "Your First Revenue Review",
+      "briefing": "It is Monday morning. Sales says revenue is fine, Growth says the funnel is leaking, and the CEO wants one defensible readout before lunch. Finish the tickets and come back with evidence, not guesses.",
+      "deadlineLabel": "Before Monday 12:00 review",
+      "taskIds": [
+        "sales-net-revenue-001",
+        "stats-median-outlier-001",
+        "biz-funnel-001"
+      ],
+      "bonusXp": 80,
+      "managerFeedback": "Good first week. You separated the revenue calculation, typical-order behavior and funnel diagnosis instead of forcing one metric to explain everything.",
+      "resumeBullet": "Analyzed e-commerce revenue and funnel performance using spreadsheet, statistical and business-metric methods."
+    },
+    {
+      "id": "mission-ecom-02",
+      "order": 2,
+      "companyChapter": 0,
+      "companyKey": "ecommerce",
+      "companyName": "E-commerce Co.",
+      "managerName": "Anika • Commercial Analytics Manager",
+      "title": "Growth Channel War Room",
+      "briefing": "Marketing wants more budget. The CEO wants to know which channel converts and whether a correlation slide is being overinterpreted. Build the evidence before anyone reallocates spend.",
+      "deadlineLabel": "Before growth stand-up",
+      "taskIds": [
+        "marketing-channel-sql-001",
+        "business-denominator-001",
+        "ceo-correlation-001"
+      ],
+      "bonusXp": 90,
+      "managerFeedback": "You protected the decision from a bad denominator and a causal overclaim. That is what makes analysis useful, not just technically correct.",
+      "resumeBullet": "Evaluated marketing-channel conversion and challenged unsupported causal claims using SQL and statistical reasoning."
+    },
+    {
+      "id": "mission-ecom-03",
+      "order": 3,
+      "companyChapter": 0,
+      "companyKey": "ecommerce",
+      "companyName": "E-commerce Co.",
+      "managerName": "Anika • Commercial Analytics Manager",
+      "title": "Dirty Data Before the Board Pack",
+      "briefing": "The weekly export is dirty and the board pack is due. Clean the source, investigate an outlier, join customer segments and build a metric tree that management can use.",
+      "deadlineLabel": "Board pack deadline",
+      "taskIds": [
+        "operations-cleaning-001",
+        "cleaning-outlier-rule-001",
+        "sql-join-segment-revenue-001",
+        "business-metric-tree-001"
+      ],
+      "bonusXp": 110,
+      "managerFeedback": "You treated data quality as part of the analysis rather than a separate chore. The result is traceable enough to defend in a board review.",
+      "resumeBullet": "Built a defensible revenue analysis from dirty customer data, including cleaning, joins, outlier review and metric-tree diagnosis."
+    },
+    {
+      "id": "mission-saas-01",
+      "order": 4,
+      "companyChapter": 1,
+      "companyKey": "saas",
+      "companyName": "SaaS Growth Co.",
+      "managerName": "Vikram • Growth Analytics Lead",
+      "title": "Retention Is Slipping",
+      "briefing": "Customer Success says churn is rising. Product says the newest cohort looks better. Define retention correctly, evaluate the experiment and compare cohorts before leadership changes onboarding.",
+      "deadlineLabel": "Tuesday retention review",
+      "taskIds": [
+        "saas-retention-definition-001",
+        "saas-retention-experiment-001",
+        "biz-cohort-retention-001"
+      ],
+      "bonusXp": 110,
+      "managerFeedback": "You avoided mixing cohort size with retention quality and kept the experiment interpretation bounded. That is senior-quality thinking.",
+      "resumeBullet": "Defined and analyzed SaaS retention using cohort analysis and experiment interpretation."
+    },
+    {
+      "id": "mission-saas-02",
+      "order": 5,
+      "companyChapter": 1,
+      "companyKey": "saas",
+      "companyName": "SaaS Growth Co.",
+      "managerName": "Vikram • Growth Analytics Lead",
+      "title": "Can We Afford Growth?",
+      "briefing": "Finance wants active MRR by segment while Marketing wants to scale acquisition. Calculate the unit economics before the company buys more growth.",
+      "deadlineLabel": "Finance planning session",
+      "taskIds": [
+        "saas-mrr-sql-001",
+        "biz-cac-001",
+        "biz-ltv-001",
+        "biz-payback-001",
+        "saas-nrr-001"
+      ],
+      "bonusXp": 130,
+      "managerFeedback": "You connected MRR, acquisition cost, lifetime value, payback and NRR instead of treating growth as a single top-line number.",
+      "resumeBullet": "Analyzed SaaS MRR, CAC, LTV, payback and NRR to evaluate growth economics."
+    },
+    {
+      "id": "mission-bank-01",
+      "order": 6,
+      "companyChapter": 2,
+      "companyKey": "bank",
+      "companyName": "NorthStar Bank Analytics",
+      "managerName": "Meera • Risk Analytics Manager",
+      "title": "Credit Portfolio Review",
+      "briefing": "Risk leadership needs exposure by risk band, but someone proposes a shortcut policy using a weak proxy. Quantify the portfolio and challenge the policy before it reaches committee.",
+      "deadlineLabel": "Risk committee pre-read",
+      "taskIds": [
+        "bank-credit-risk-sql-001",
+        "bank-credit-governance-001"
+      ],
+      "bonusXp": 130,
+      "managerFeedback": "Strong work. You combined portfolio evidence with governance judgment instead of turning a correlation or proxy into policy.",
+      "resumeBullet": "Aggregated credit exposure and evaluated governance risk in a bank portfolio review."
+    },
+    {
+      "id": "mission-bank-02",
+      "order": 7,
+      "companyChapter": 2,
+      "companyKey": "bank",
+      "companyName": "NorthStar Bank Analytics",
+      "managerName": "Meera • Risk Analytics Manager",
+      "title": "Fraud Operations Surge",
+      "briefing": "Review workload suddenly increased. Operations wants to know which channels drive the queue and whether review flags should be treated as confirmed fraud. Do the analysis without overclaiming.",
+      "deadlineLabel": "Fraud operations huddle",
+      "taskIds": [
+        "bank-flagged-channel-sql-001",
+        "bank-fraud-review-001"
+      ],
+      "bonusXp": 130,
+      "managerFeedback": "You treated review flags as routing signals, not guilt labels, and quantified the workload by channel. That protects both operations and customers.",
+      "resumeBullet": "Analyzed bank transaction review workload by channel and communicated governance-safe fraud-operations insights."
+    },
+    {
+      "id": "mission-hospital-01",
+      "order": 8,
+      "companyChapter": 3,
+      "companyKey": "hospital",
+      "companyName": "Harborview Hospital Analytics",
+      "managerName": "Dr. Isha • Operations Analytics Lead",
+      "title": "Why Did Wait Time Jump?",
+      "briefing": "Emergency wait time rose and leadership wants an explanation today. Validate the extract, compare units and interpret the change without making a clinical claim.",
+      "deadlineLabel": "Operations command-center review",
+      "taskIds": [
+        "hospital-cleaning-001",
+        "hospital-wait-sql-001",
+        "hospital-wait-stats-001"
+      ],
+      "bonusXp": 145,
+      "managerFeedback": "You separated data quality, descriptive comparison and statistical interpretation while keeping the recommendation operational rather than clinical.",
+      "resumeBullet": "Investigated hospital wait-time changes using data validation, SQL aggregation and statistical interpretation."
+    },
+    {
+      "id": "mission-hospital-02",
+      "order": 9,
+      "companyChapter": 3,
+      "companyKey": "hospital",
+      "companyName": "Harborview Hospital Analytics",
+      "managerName": "Dr. Isha • Operations Analytics Lead",
+      "title": "Weekend Capacity Plan",
+      "briefing": "Saturday demand is forecast above capacity. Find the gap, choose a reasonable forecasting approach and write the executive message that operations can act on.",
+      "deadlineLabel": "Friday staffing decision",
+      "taskIds": [
+        "hospital-capacity-gap-sql-001",
+        "hospital-forecasting-001",
+        "hospital-exec-communication-001"
+      ],
+      "bonusXp": 155,
+      "managerFeedback": "You turned a forecast into an operational decision with a quantified gap, assumptions and a bounded executive recommendation.",
+      "resumeBullet": "Built a hospital capacity-planning recommendation from SQL gap analysis, forecasting logic and executive communication."
+    },
+    {
+      "id": "mission-logistics-01",
+      "order": 10,
+      "companyChapter": 4,
+      "companyKey": "logistics",
+      "companyName": "Logistics Network Co.",
+      "managerName": "Arjun • Network Analytics Lead",
+      "title": "SLA Incident Investigation",
+      "briefing": "Late deliveries are rising on several routes. Validate the shipment extract, measure SLA performance and decide whether the observed route difference is large enough to investigate.",
+      "deadlineLabel": "Network incident review",
+      "taskIds": [
+        "logistics-cleaning-001",
+        "logistics-sla-sql-001",
+        "logistics-sla-stats-001"
+      ],
+      "bonusXp": 160,
+      "managerFeedback": "You quantified the route signal without claiming route code caused the delay. The investigation can now focus on real operational drivers.",
+      "resumeBullet": "Investigated logistics SLA deterioration using shipment-data validation, SQL KPI analysis and statistical interpretation."
+    },
+    {
+      "id": "mission-logistics-02",
+      "order": 11,
+      "companyChapter": 4,
+      "companyKey": "logistics",
+      "companyName": "Logistics Network Co.",
+      "managerName": "Arjun • Network Analytics Lead",
+      "title": "Peak Week Capacity",
+      "briefing": "Festival volume is coming. Find throughput gaps, identify warehouse utilization risk and produce a forecast that operations can use for contingency planning.",
+      "deadlineLabel": "Peak-week readiness meeting",
+      "taskIds": [
+        "logistics-throughput-gap-sql-001",
+        "logistics-warehouse-utilization-sql-001",
+        "logistics-forecasting-001"
+      ],
+      "bonusXp": 170,
+      "managerFeedback": "You linked forecast demand to real throughput and warehouse constraints. That is the difference between a forecast and a capacity plan.",
+      "resumeBullet": "Developed logistics peak-capacity analysis combining throughput gaps, warehouse utilization and forecast scenarios."
+    },
+    {
+      "id": "mission-logistics-03",
+      "order": 12,
+      "companyChapter": 4,
+      "companyKey": "logistics",
+      "companyName": "Logistics Network Co.",
+      "managerName": "Arjun • Network Analytics Lead",
+      "title": "Executive Cost & Delay Review",
+      "briefing": "Shipping cost rose while service remains uneven. Normalize cost, design a fair route comparison, investigate delay drivers and prepare the executive message.",
+      "deadlineLabel": "Quarterly executive review",
+      "taskIds": [
+        "logistics-cost-sql-001",
+        "logistics-route-cohort-001",
+        "logistics-delay-driver-001",
+        "logistics-exec-communication-001"
+      ],
+      "bonusXp": 190,
+      "managerFeedback": "You finished the campaign by connecting cost, fairness of comparison, operational drivers and executive communication into one decision-ready story.",
+      "resumeBullet": "Delivered an executive logistics analysis covering normalized route cost, cohort design, delay drivers and decision-ready communication."
+    }
+  ]
+}

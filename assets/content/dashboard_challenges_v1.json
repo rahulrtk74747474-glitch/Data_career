@@ -112,6 +112,190 @@
       ],
       "explanation": "Stage counts plus transition rates identify where loss occurs and prevent a single top-line KPI from hiding the mechanism.",
       "xp": 120
+    },
+    {
+      "id": "powerbi-star-schema-001",
+      "title": "Model Orders with a Star Schema",
+      "difficulty": "Intermediate",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "ecommerce",
+      "context": "An e-commerce model mixes customer attributes, order measures and monthly targets in one giant table, creating duplicate values and confusing filters.",
+      "prompt": "Which redesign is strongest?",
+      "options": [
+        "Create fact tables at defined grains and dimensions for customer/date/product with one-to-many relationships",
+        "Keep duplicating customer attributes in every table and use many-to-many everywhere",
+        "Fix each visual separately with manual filters"
+      ],
+      "correctOption": "Create fact tables at defined grains and dimensions for customer/date/product with one-to-many relationships",
+      "hints": [
+        "Start from business grain.",
+        "Dimensions describe; facts measure events.",
+        "Prefer a clean star schema."
+      ],
+      "explanation": "A star schema makes grain and relationships explicit, reduces ambiguity and supports simpler measures.",
+      "xp": 100
+    },
+    {
+      "id": "powerbi-measure-vs-column-001",
+      "title": "Choose a DAX Measure",
+      "difficulty": "Intermediate",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "saas",
+      "context": "MRR must change dynamically when the user filters month, segment or plan.",
+      "prompt": "Which implementation is most appropriate?",
+      "options": [
+        "A DAX measure that sums MRR in current filter context",
+        "A hard-coded text box",
+        "A calculated column that stores the grand total on every row"
+      ],
+      "correctOption": "A DAX measure that sums MRR in current filter context",
+      "hints": [
+        "The value changes with slicers.",
+        "Measures respond to filter context.",
+        "Use a measure for a dynamic aggregate."
+      ],
+      "explanation": "Dynamic report KPIs such as MRR generally belong in measures because measures recalculate under the current filter context.",
+      "xp": 100
+    },
+    {
+      "id": "powerbi-calculate-001",
+      "title": "Apply Filter Context with CALCULATE",
+      "difficulty": "Advanced",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "logistics",
+      "context": "Network leaders need on-time delivered shipments as a percentage of all delivered shipments while route/month slicers remain active.",
+      "prompt": "Which DAX idea is central to the numerator?",
+      "options": [
+        "CALCULATE a shipment count under an OnTime filter",
+        "Use Power Query to hard-code the current percentage",
+        "Duplicate every shipment row"
+      ],
+      "correctOption": "CALCULATE a shipment count under an OnTime filter",
+      "hints": [
+        "The base measure is a count.",
+        "The numerator changes the filter condition.",
+        "CALCULATE modifies filter context."
+      ],
+      "explanation": "CALCULATE evaluates an expression under modified filter context while preserving other relevant report filters.",
+      "xp": 120
+    },
+    {
+      "id": "powerbi-date-table-001",
+      "title": "Fix Broken Time Intelligence",
+      "difficulty": "Intermediate",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "hospital",
+      "context": "The fact table skips dates with no visits and month-over-month measures behave inconsistently.",
+      "prompt": "What is the strongest modeling fix?",
+      "options": [
+        "Create a continuous date dimension and relate it to the fact table",
+        "Fill every missing date by duplicating a visit",
+        "Sort month names alphabetically"
+      ],
+      "correctOption": "Create a continuous date dimension and relate it to the fact table",
+      "hints": [
+        "Facts do not always contain every date.",
+        "Time intelligence needs a stable calendar.",
+        "Use a date dimension."
+      ],
+      "explanation": "A continuous date table provides consistent calendar context for filtering and time-intelligence measures.",
+      "xp": 100
+    },
+    {
+      "id": "powerbi-relationship-001",
+      "title": "Repair an Ambiguous Relationship",
+      "difficulty": "Advanced",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "bank",
+      "context": "A model uses multiple bidirectional relationships and changing one slicer unexpectedly changes unrelated visuals.",
+      "prompt": "What should the analyst do first?",
+      "options": [
+        "Return to a clear star schema and use single-direction relationships unless bidirectional behavior is specifically required",
+        "Add more bidirectional relationships",
+        "Hide the slicer"
+      ],
+      "correctOption": "Return to a clear star schema and use single-direction relationships unless bidirectional behavior is specifically required",
+      "hints": [
+        "Ambiguity often comes from the model.",
+        "More bidirectional paths can worsen it.",
+        "Simplify relationships and filter paths."
+      ],
+      "explanation": "Simple one-to-many, single-direction relationships are easier to reason about and reduce ambiguous filter paths.",
+      "xp": 125
+    },
+    {
+      "id": "powerbi-rls-001",
+      "title": "Design Regional Row-Level Security",
+      "difficulty": "Advanced",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "bank",
+      "context": "Regional managers may see only their region; executives may see the complete portfolio.",
+      "prompt": "Which control is designed for this?",
+      "options": [
+        "Row-level security roles with validated user-to-region mapping",
+        "A hidden visual",
+        "Changing chart colors by region"
+      ],
+      "correctOption": "Row-level security roles with validated user-to-region mapping",
+      "hints": [
+        "This is an access problem.",
+        "The restriction must apply to data rows.",
+        "Use RLS and test roles."
+      ],
+      "explanation": "RLS applies data-access rules by user/role; it must be tested with representative identities before publication.",
+      "xp": 125
+    },
+    {
+      "id": "powerbi-performance-001",
+      "title": "Speed Up a Slow Executive Report",
+      "difficulty": "Advanced",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "ecommerce",
+      "context": "An executive page contains 38 visuals, unused high-cardinality columns and complex measures. It takes many seconds to respond.",
+      "prompt": "Which response is strongest?",
+      "options": [
+        "Reduce unnecessary visuals/columns, simplify the model and measures, then profile performance",
+        "Add more visuals so the load is parallel",
+        "Convert every field to text"
+      ],
+      "correctOption": "Reduce unnecessary visuals/columns, simplify the model and measures, then profile performance",
+      "hints": [
+        "Performance begins with model and visual complexity.",
+        "Unused columns still cost memory.",
+        "Simplify first, then profile."
+      ],
+      "explanation": "Lean models and focused report pages usually improve both usability and performance; profiling then identifies remaining bottlenecks.",
+      "xp": 130
+    },
+    {
+      "id": "powerbi-publish-qa-001",
+      "title": "Publish a Trusted BI Report",
+      "difficulty": "Advanced",
+      "category": "Power BI",
+      "skillKey": "powerbi",
+      "companyKey": "hospital",
+      "context": "A dashboard is ready for leadership, but no one has reconciled it to source totals or tested the security roles.",
+      "prompt": "What must happen before production publish?",
+      "options": [
+        "Reconcile key metrics, test filters/refresh and RLS roles, and document definitions",
+        "Publish first and fix numbers if someone complains",
+        "Only rename the report"
+      ],
+      "correctOption": "Reconcile key metrics, test filters/refresh and RLS roles, and document definitions",
+      "hints": [
+        "Publishing is a release process.",
+        "Numbers and access rules both need testing.",
+        "Reconcile, test and document."
+      ],
+      "explanation": "A production BI report needs metric reconciliation, functional testing, security validation and documented definitions.",
+      "xp": 135
     }
   ]
 }
