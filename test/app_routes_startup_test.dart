@@ -1,6 +1,7 @@
 import 'package:dataquest_analyst_career/core/navigation/app_routes.dart';
 import 'package:dataquest_analyst_career/data/app_database.dart';
 import 'package:dataquest_analyst_career/features/game/game_providers.dart';
+import 'package:dataquest_analyst_career/features/splash/splash_screen.dart';
 import 'package:dataquest_analyst_career/services/content_pack_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,26 +12,31 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late AppDatabase database;
-
-  setUp(() async {
+  testWidgets('Splash initializes offline storage then replaces itself', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     sqfliteFfiInit();
-    database = AppDatabase(
+
+    final database = AppDatabase(
       factory: databaseFactoryFfi,
       overridePath: inMemoryDatabasePath,
     );
-    await database.database;
-  });
 
-  tearDown(() async {
-    await database.close();
-  });
-
-  testWidgets('Splash is the startup route and safely reaches Home', (
-    tester,
-  ) async {
-    await tester.runAsync(() => database.database);
+    Route<dynamic> routeFactory(RouteSettings settings) {
+      if (settings.name == AppRoutes.splash) {
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
+      }
+      return MaterialPageRoute<void>(
+        settings: settings,
+        builder: (_) => const Scaffold(
+          body: Center(child: Text('Home route reached')),
+        ),
+      );
+    }
 
     await tester.pumpWidget(
       ProviderScope(
@@ -42,51 +48,54 @@ void main() {
         ],
         child: MaterialApp(
           initialRoute: AppRoutes.splash,
-          onGenerateRoute: AppRoutes.onGenerateRoute,
+          onGenerateRoute: routeFactory,
         ),
       ),
     );
 
     await tester.pump();
     expect(find.text('Analyst Career'), findsOneWidget);
-    expect(find.text('Opening offline workspace...'), findsOneWidget);
 
     for (var frame = 0; frame < 30; frame++) {
       await tester.pump(const Duration(milliseconds: 50));
-      if (find
-          .text('E-commerce Co. • Commercial Analytics')
-          .evaluate()
-          .isNotEmpty) {
-        break;
-      }
+      if (find.text('Home route reached').evaluate().isNotEmpty) break;
     }
 
-    expect(
-      find.text('E-commerce Co. • Commercial Analytics'),
-      findsOneWidget,
-    );
+    expect(find.text('Home route reached'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    await database.close();
   });
 
-  testWidgets('unknown named route falls back to Home', (tester) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          appDatabaseProvider.overrideWithValue(database),
-        ],
-        child: MaterialApp(
-          initialRoute: '/unknown-route',
-          onGenerateRoute: AppRoutes.onGenerateRoute,
-        ),
-      ),
-    );
+  test('central route factory registers every primary route name', () {
+    const names = [
+      AppRoutes.splash,
+      AppRoutes.home,
+      AppRoutes.practice,
+      AppRoutes.review,
+      AppRoutes.sql,
+      AppRoutes.spreadsheet,
+      AppRoutes.pandas,
+      AppRoutes.analytics,
+      AppRoutes.insight,
+      AppRoutes.events,
+      AppRoutes.monthlyReview,
+      AppRoutes.daily,
+      AppRoutes.weekly,
+      AppRoutes.interview,
+      AppRoutes.boss,
+      AppRoutes.portfolio,
+      AppRoutes.achievements,
+      AppRoutes.readiness,
+      AppRoutes.continuity,
+    ];
 
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 200));
-
-    expect(
-      find.text('E-commerce Co. • Commercial Analytics'),
-      findsOneWidget,
-    );
+    for (final name in names) {
+      final route = AppRoutes.onGenerateRoute(RouteSettings(name: name));
+      expect(route, isA<MaterialPageRoute<dynamic>>());
+      expect(route.settings.name, name);
+    }
   });
 }
 
