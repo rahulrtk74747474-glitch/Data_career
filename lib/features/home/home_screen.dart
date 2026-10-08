@@ -11,6 +11,7 @@ import '../career/company_chapter_review_screen.dart';
 import '../career/performance_review_screen.dart';
 import '../continuity/data_continuity_screen.dart';
 import '../dashboard/dashboard_lab_screen.dart';
+import '../dashboard/filter_context_dax_screen.dart';
 import '../daily/daily_challenge_screen.dart';
 import '../desktop/analyst_desktop_screen.dart';
 import '../events/random_events_screen.dart';
@@ -245,6 +246,12 @@ class HomeScreen extends ConsumerWidget {
                     subtitle: 'Power BI, KPI design and visual decisions',
                     icon: Icons.dashboard_outlined,
                     onTap: () => _open(context, const DashboardLabScreen()),
+                  ),
+                  _MenuItem(
+                    title: 'BI Filter Context Workbench',
+                    subtitle: 'Calculate measures with relational slicers',
+                    icon: Icons.filter_alt_outlined,
+                    onTap: () => _open(context, const FilterContextDaxScreen()),
                   ),
                   _MenuItem(
                     title: 'Analytics Studio',
