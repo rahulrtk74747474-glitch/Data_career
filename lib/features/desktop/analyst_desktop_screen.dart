@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/career_mission.dart';
 import '../../models/workday_content.dart';
 import '../campaign/career_campaign_screen.dart';
+import '../job_ready/day_at_work_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../insight/insight_coach_screen.dart';
 import '../portfolio/portfolio_screen.dart';
@@ -182,7 +183,7 @@ class AnalystDesktopScreen extends ConsumerWidget {
                   icon: Icons.work_history_outlined,
                   label: 'Workday',
                   onTap: () =>
-                      _open(context, const CareerCampaignScreen()),
+                      _open(context, const DayAtWorkHubScreen()),
                 ),
                 _DesktopApp(
                   icon: Icons.menu_book_outlined,
