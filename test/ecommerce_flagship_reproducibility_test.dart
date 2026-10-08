@@ -131,6 +131,8 @@ void main() {
     final copied = FlagshipAttempt.fromJson(attempt.toJson());
     expect(copied.hintsUsed, 2);
     expect(verification['output_matches_expected'], isTrue);
+    expect(verification['changed_data_test_passed'], isTrue);
+    expect(verification['verified_independent_sql'], isTrue);
     expect(verification['net_revenue'], 16350);
     expect(
       await File(p.join(dir.path, 'schema.sql')).readAsString(),
@@ -161,4 +163,52 @@ void main() {
     expect(verification['real_sql_executed'], isFalse);
     expect(verification['output_matches_expected'], isFalse);
   });
+
+  test('reference query passes changed-data holdout and source rolls back',
+      () async {
+    await workspace.ensureReady();
+    final verified = await workspace.verifyChangedData(
+      EcommerceFlagshipCaseService.referenceQuery,
+    );
+    expect(verified.isCorrect, isTrue, reason: verified.feedback);
+    // Neither gross amounts nor refunds may remain changed after the test.
+    expect((await workspace.audit()).netRevenue, 16350);
+  });
+
+  test('hardcoded example totals are rejected when source data changes',
+      () async {
+    await workspace.ensureReady();
+    const fixedTotals = '''
+      SELECT c.segment,
+        CASE c.segment
+          WHEN 'Consumer' THEN 3400
+          WHEN 'SMB' THEN 3400
+          ELSE 9550
+        END AS revenue
+      FROM ec_case_customers c
+      JOIN ec_case_clean_orders o ON o.customer_id = c.customer_id
+      GROUP BY c.segment
+    ''';
+    expect(EcommerceFlagshipCaseService.queryIntegrityWarning(fixedTotals), isNull);
+    final baseline = await SqlRunner(database).runReadOnly(fixedTotals);
+    expect(baseline.isSuccess, isTrue);
+    expect(SqlResultGrader.grade(
+      actualRows: baseline.rows,
+      expectedRows: workday.sqlExpectedRows,
+    ).isCorrect, isTrue);
+    final holdout = await workspace.verifyChangedData(fixedTotals);
+    expect(holdout.isCorrect, isFalse);
+    expect((await workspace.audit()).netRevenue, 16350);
+  });
+
+  test('table names inside SQL comments or literal strings do not count',
+      () async {
+    expect(EcommerceFlagshipCaseService.queryIntegrityWarning(
+      "SELECT 'ec_case_clean_orders ec_case_customers' AS evidence",
+    ), isNotNull);
+    expect(EcommerceFlagshipCaseService.queryIntegrityWarning(
+      "SELECT 1 AS revenue -- FROM ec_case_clean_orders JOIN ec_case_customers",
+    ), isNotNull);
+  });
+
 }
