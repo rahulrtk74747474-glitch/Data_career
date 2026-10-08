@@ -69,7 +69,7 @@ class MistakeFeedbackService {
           .map((part) => part.trim())
           .firstWhere((part) => part.isNotEmpty, orElse: () => '');
       if (firstSentence.isNotEmpty) {
-        details.add('Key idea to revisit: \$firstSentence.');
+        details.add('Key idea to revisit: $firstSentence.');
       }
     }
 
