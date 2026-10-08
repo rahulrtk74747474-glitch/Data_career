@@ -789,3 +789,67 @@ The wider product vision is not yet fully complete. The main remaining gaps are:
 - stronger real-tool fidelity for Excel/Pandas/Power BI;
 - external subject-matter review of educational accuracy;
 - physical-device/retention testing, monetization design and Play Store conversion testing.
+
+
+## v1.5 — Full Job-Ready Work Simulation
+
+Status: **IMPLEMENTED — CI PENDING**
+
+Goal: close the remaining gap between a strong learning app and a credible analyst-job simulator.
+
+### Five flagship Day-at-Work projects
+1. Added five end-to-end workdays, one for each company:
+   - E-commerce Revenue & Refund Investigation
+   - SaaS Retention & MRR Investigation
+   - Bank Credit Risk Portfolio Review
+   - Hospital Wait-Time & Capacity Investigation
+   - Logistics SLA & Cost Efficiency Investigation
+2. Each workday runs as a continuous timeline from morning briefing to end-of-day manager review.
+3. Every workday includes raw-data triage, learner-selected tool, open-ended analysis, statistical judgment, dashboard choice, mandatory manager explanation, end-of-day scoring and portfolio evidence.
+4. SQL work executes against the real local SQLite company database.
+5. Pandas, Power BI and Excel workbenches validate realistic syntax/operation structure without pretending to bundle those external runtimes.
+6. Attempts save offline and can be resumed.
+7. Completion records mastery, task-performance evidence, portfolio evidence and one-time XP.
+
+### GitHub-ready portfolio projects
+Each completed flagship project can generate:
+- README.md
+- analysis.sql / analysis.py / analysis.dax / analysis.txt
+- data_quality.md
+- executive_summary.md
+- sample_data.csv
+
+All generated projects identify themselves as synthetic DataQuest training evidence.
+
+### Open-ended independence and communication
+1. Advanced career tasks now require a manager explanation after technical correctness.
+2. Advanced scores blend technical work with communication quality.
+3. Flagship workdays do not prescribe SQL/Pandas/Power BI/Excel.
+4. Manager explanations are graded on evidence, clarity, business impact, uncertainty and recommendation.
+
+### Mistake-specific coaching
+Legacy career tasks now add diagnosis for missing required concepts, SQL JOIN/GROUP BY/WHERE errors, unsafe SELECT *, mean-vs-median problems under skew/outliers, bad denominators and task-specific conceptual mistakes.
+
+### Analytical traps
+Flagship workdays cover duplicate IDs/grain, timezone normalization, refund definitions, survivorship bias, denominator effects, proxy/governance risk, Simpson's paradox/composition effects, tail metrics and workload normalization.
+
+### Business/domain depth
+Added five business playbooks covering operating models, business levers, formulas, uses and traps for e-commerce, SaaS, banking/risk, hospital operations and logistics.
+
+### Senior / Lead / Head gameplay
+Added nine gated leadership cases covering causal-review quality, materiality, roadmap prioritization, metric governance, team allocation, KPI sprawl, speed-vs-certainty, privacy incidents and recurring quality failures.
+
+### Adaptive Manager
+Added a deterministic offline adaptive manager coach. Its next question changes based on whether the learner's response lacks evidence, uncertainty, business impact, recommendation, methodological defense or a monitoring metric. It does not falsely claim to be a cloud generative LLM.
+
+### Portfolio integration
+Flagship workdays appear in portfolio evidence, resume highlights and project cards. Completing all five unlocks the Flagship Analyst achievement.
+
+### Product-validation instrumentation
+Added local-only measurement for app opens, active dates, D1/D7 retention, flagship workdays started/completed, first flagship completion and beta feedback. Beta feedback captures realism, usefulness, confusion/drop-off point, willingness to pay and desired weekly-return value.
+
+### Version
+- Bumped application to **v1.5.0+20**.
+- Updated backup/release diagnostics metadata.
+
+Final CI verification pending.

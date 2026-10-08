@@ -42,7 +42,7 @@ class ReleaseDiagnosticsService {
       backupSchema: BackupSnapshot.currentSchemaVersion,
       weeklyCaseSchema: WeeklyCasePack.supportedSchemaVersion,
       contentSchemaSummary:
-          'career tasks v4 • academy 80 • career missions 12 • analyst desktop v1 • notebook v1 • handbook v1 • Power BI v1 • content packs v2 • analytics v1 • pandas v1 • capstone v1 • interviews v1 • weekly v1',
+          'career tasks v4 • academy 80 • career missions 12 • flagship workdays 5 • domain playbooks 5 • leadership v1 • adaptive coach v1 • retention v1 • analyst desktop v1 • notebook v1 • handbook v1 • Power BI v1 • content packs v2 • analytics v1 • pandas v1 • capstone v1 • interviews v1 • weekly v1',
       cloudConfigured: _cloudConfig.cloudConfigured,
       weeklyCasesConfigured: _cloudConfig.weeklyCasesConfigured,
       lastBackupAt: await _backupService.lastBackupAt(),
