@@ -55,7 +55,9 @@ jobs:
       - name: Build debug APK
         run: |
           flutter build apk --debug || {
-            echo 'Retrying Android build after a transient Gradle dependency failure'
+            echo 'Retrying with a Maven Central mirror after dependency resolution failed'
+            mkdir -p "$HOME/.gradle"
+            cp tool/gradle_mirror.init.gradle "$HOME/.gradle/init.gradle"
             sleep 12
             flutter build apk --debug
           }
