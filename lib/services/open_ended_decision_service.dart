@@ -1,3 +1,5 @@
+import 'analyst_mistake_diagnostics.dart';
+
 /// Offline concept rubrics for independent flagship decisions.
 /// These grade reasoning signals, not executable Python or Power BI results.
 class OpenEndedDecisionGrade {
@@ -93,8 +95,12 @@ class OpenEndedDecisionService {
     // A row of buzzwords is not a defensible business decision.
     final isExplanation = words >= (stage == 'statistics' ? 12 : 9);
     final coverage = (matches * 100 / groups.length).round();
-    final score = isExplanation ? coverage : coverage.clamp(0, 55).toInt();
-    final feedback = score >= 70
+    var score = isExplanation ? coverage : coverage.clamp(0, 55).toInt();
+    final overclaim = AnalystMistakeDiagnostics.managerOverclaim(answer);
+    if (overclaim != null) score = score.clamp(0, 55).toInt();
+    final feedback = overclaim != null
+        ? overclaim
+        : score >= 70
         ? 'The offline concept rubric accepted this reasoning. Verify the data and defend your assumptions.'
         : 'Explain your reasoning in full sentences. Revisit: ${missing.join(', ')}. ${isExplanation ? '' : 'Your answer is too short to demonstrate reasoning.'}';
     return OpenEndedDecisionGrade(score, feedback, missing);
