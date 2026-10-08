@@ -77,4 +77,16 @@ void main() {
       'The data does not prove that segment causes growth.',
     ), isNull);
   });
+  test('long answer with unsupported absolute causal claim cannot pass', () {
+    final grade = OpenEndedDecisionService.grade(
+      workdayId: 'flagship-bank-risk',
+      stage: 'statistics',
+      answer: 'The denominator grew while the ratio and exposure changed. '
+          'This definitely proves the absolute portfolio is safe and all '
+          'risk has vanished because the percentage decreased.',
+    );
+    expect(grade.passed, isFalse);
+    expect(grade.feedback, contains('Causal overclaim'));
+  });
+
 }
