@@ -112,6 +112,9 @@ void main() {
     );
     final dir = Directory(exported.directoryPath);
     expect(await dir.exists(), isTrue);
+    final zip = File(exported.archivePath);
+    expect(await zip.exists(), isTrue);
+    expect(await zip.length(), greaterThan(200));
     expect(await File(p.join(dir.path, 'data/order_events.csv'))
         .readAsLines(), hasLength(17));
     expect(await File(p.join(dir.path, 'data/refund_events.csv'))
@@ -125,6 +128,8 @@ void main() {
     ) as Map<String, dynamic>;
     expect(verification['real_sql_executed'], isTrue);
     expect(verification['hints_used'], 2);
+    final copied = FlagshipAttempt.fromJson(attempt.toJson());
+    expect(copied.hintsUsed, 2);
     expect(verification['output_matches_expected'], isTrue);
     expect(verification['net_revenue'], 16350);
     expect(
