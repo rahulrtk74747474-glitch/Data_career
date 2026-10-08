@@ -12,48 +12,52 @@
       "startTime": "09:15",
       "endTime": "16:30",
       "briefing": "Revenue is up, refund complaints are up faster, and the CEO wants to know whether growth quality is deteriorating before the afternoon review.",
-      "datasetName": "orders + customers",
+      "datasetName": "ec_case_customers + ec_case_order_events + ec_case_refund_events (SQLite clean view: ec_case_clean_orders)",
       "previewRows": [
         {
-          "order_id": "O2001",
-          "customer_id": "C001",
+          "event_id": "EV002",
+          "order_id": "O1002",
+          "customer_id": "C101",
           "status": "completed",
-          "revenue": 1200,
-          "timestamp": "2026-09-20T09:15:00+05:30"
+          "gross_amount": 900,
+          "ingested_at": "2026-10-04T09:03:00Z"
         },
         {
-          "order_id": "O2002",
-          "customer_id": "C001",
+          "event_id": "EV013",
+          "order_id": "O1002",
+          "customer_id": "C101",
           "status": "completed",
-          "revenue": 800,
-          "timestamp": "2026-09-21T03:45:00Z"
+          "gross_amount": 900,
+          "ingested_at": "2026-10-05T10:01:00Z"
         },
         {
-          "order_id": "O2002",
-          "customer_id": "C001",
+          "event_id": "EV010",
+          "order_id": "O3003",
+          "customer_id": "C302",
           "status": "completed",
-          "revenue": 800,
-          "timestamp": "2026-09-21T03:45:00Z"
+          "gross_amount": 3000,
+          "ingested_at": "2026-10-04T09:11:00Z"
         },
         {
-          "order_id": "O2006",
-          "customer_id": "C004",
-          "status": "refunded",
-          "revenue": 1400,
-          "timestamp": "2026-09-23T17:20:00+05:30"
+          "event_id": "EV015",
+          "order_id": "O3003",
+          "customer_id": "C302",
+          "status": "completed",
+          "gross_amount": 3300,
+          "ingested_at": "2026-10-05T10:03:00Z"
         }
       ],
       "issueOptions": [
-        "A duplicate order_id can inflate revenue if the raw export is summed blindly.",
-        "Refunded/cancelled rows must be handled according to the metric definition.",
-        "Mixed timezone timestamps must be normalized before daily comparisons.",
-        "Every high-value order should be deleted as an outlier.",
-        "Revenue growth alone proves growth quality improved."
+        "Duplicate order events need a latest-event-per-order policy before summing revenue.",
+        "Refund events must be deduplicated by refund_id, and cancelled/fully refunded orders excluded from recognized revenue.",
+        "Mixed timezone timestamps must be normalized before day-level trend comparisons.",
+        "Every high-value order should be deleted automatically as an outlier.",
+        "Growth is proven because the largest segment has the most completed revenue."
       ],
       "correctIssues": [
-        "A duplicate order_id can inflate revenue if the raw export is summed blindly.",
-        "Refunded/cancelled rows must be handled according to the metric definition.",
-        "Mixed timezone timestamps must be normalized before daily comparisons."
+        "Duplicate order events need a latest-event-per-order policy before summing revenue.",
+        "Refund events must be deduplicated by refund_id, and cancelled/fully refunded orders excluded from recognized revenue.",
+        "Mixed timezone timestamps must be normalized before day-level trend comparisons."
       ],
       "toolScores": {
         "SQL": 100,
@@ -61,25 +65,26 @@
         "Power BI": 90,
         "Excel": 80
       },
-      "analysisPrompt": "Calculate completed revenue by customer segment from the trusted orders and customers tables. Do not count refunded/cancelled revenue. If you choose SQL, return exactly segment and SUM(revenue) AS revenue.",
+      "analysisPrompt": "Work with the case's real SQLite tables. Use ec_case_clean_orders (latest order update + unique refund records) JOIN ec_case_customers, filter status = 'completed', and return exactly segment and SUM(net_revenue) AS revenue. The result must reconcile to actual data, not hardcoded numbers.",
       "sqlExpectedRows": [
         {
           "segment": "Consumer",
-          "revenue": 3100
+          "revenue": 3400
         },
         {
           "segment": "Enterprise",
-          "revenue": 8000
+          "revenue": 9550
         },
         {
           "segment": "SMB",
-          "revenue": 2300
+          "revenue": 3400
         }
       ],
       "tokenRules": {
         "SQL": [
+          "ec_case_clean_orders",
+          "ec_case_customers",
           "join",
-          "customer_id",
           "status",
           "completed",
           "group by",
@@ -107,31 +112,31 @@
           "segment"
         ]
       },
-      "statisticsPrompt": "Enterprise contributes the largest completed revenue in this small snapshot. What can you conclude?",
+      "statisticsPrompt": "Enterprise contributes the most *net recognized revenue* in this one-period case. What can the evidence establish, and what would require additional periods or cost data?",
       "statisticsOptions": [
-        "Enterprise is the largest observed contributor here; investigate margin, refunds and mix before claiming the segment causes better growth quality.",
-        "Enterprise customers definitely cause profitable growth.",
-        "Delete other segments because they are smaller.",
-        "The segment mix can never matter for revenue analysis."
+        "Enterprise leads this snapshot at ₹9,550, but that does not prove higher growth or profitability; compare periods, returns and contribution margin before acting.",
+        "Enterprise customers definitely cause growth and profitable retention.",
+        "Delete all other segments because they are smaller.",
+        "One snapshot establishes a month-over-month improvement."
       ],
-      "statisticsExpected": "Enterprise is the largest observed contributor here; investigate margin, refunds and mix before claiming the segment causes better growth quality.",
-      "chartPrompt": "Which management view best connects growth quality to segment performance?",
+      "statisticsExpected": "Enterprise leads this snapshot at ₹9,550, but that does not prove higher growth or profitability; compare periods, returns and contribution margin before acting.",
+      "chartPrompt": "Which decision-ready dashboard view will reveal both segment mix and genuine changes in returns over time?",
       "chartOptions": [
-        "Segment bars for completed revenue paired with refund/margin context and a time trend.",
+        "Segment net-revenue bars with refund/return context, plus properly defined period trends once more periods are available.",
         "A 3D pie chart without labels.",
-        "A gauge showing only total revenue.",
-        "A scatter plot with segment names as numeric time."
+        "A total gross-revenue gauge that ignores refunds.",
+        "A trend line inferred from one aggregated snapshot."
       ],
-      "chartExpected": "Segment bars for completed revenue paired with refund/margin context and a time trend.",
-      "managerPrompt": "Write 2–4 sentences to the CEO: state the finding, cite evidence, mention uncertainty/limitations, and recommend the next action.",
+      "chartExpected": "Segment net-revenue bars with refund/return context, plus properly defined period trends once more periods are available.",
+      "managerPrompt": "Write 2–4 sentences to the CEO: cite the checked net revenue figures (Enterprise ₹9,550, Consumer ₹3,400, SMB ₹3,400), explain the snapshot limitation, and recommend how to validate refunds, margin and growth over time.",
       "evidenceTerms": [
-        "consumer",
         "enterprise",
+        "consumer",
         "smb",
-        "revenue",
-        "8000",
-        "3100",
-        "2300"
+        "net revenue",
+        "9550",
+        "3400",
+        "16350"
       ],
       "impactTerms": [
         "margin",
@@ -141,12 +146,14 @@
         "customer"
       ],
       "uncertaintyTerms": [
-        "small",
         "snapshot",
         "does not prove",
         "may",
-        "mix",
-        "need more"
+        "single",
+        "only one",
+        "need more",
+        "period",
+        "mix"
       ],
       "recommendationTerms": [
         "investigate",
@@ -156,9 +163,9 @@
         "compare",
         "next"
       ],
-      "managerReference": "Enterprise is the largest completed-revenue segment in this snapshot at about ₹8,000 versus ₹3,100 Consumer and ₹2,300 SMB. That does not prove Enterprise growth is more profitable because refund and margin mix are not yet reconciled. I recommend segmenting refunds and gross margin next, then monitoring contribution margin alongside revenue.",
-      "reviewFeedback": "You finished an end-to-end revenue investigation: quality checks, tool choice, real analysis, statistical restraint, dashboard design and an executive recommendation.",
-      "resumeBullet": "Investigated e-commerce revenue quality using data validation, segmented analysis, statistical restraint and an executive recommendation.",
+      "managerReference": "Enterprise has ₹9,550 in net recognized revenue versus ₹3,400 each for Consumer and SMB, from ₹16,350 total in this synthetic order snapshot after order/refund-event deduplication. This does not prove revenue growth or profitability because we lack comparable prior periods and complete costs. I recommend checking the return and contribution-margin trends by segment across matched periods before adjusting commercial spend.",
+      "reviewFeedback": "Your investigation used a versioned, full synthetic order/refund-event dataset and a real SQL validation step; explain uncertainty and export the reproducible data, query and audit evidence.",
+      "resumeBullet": "Analyzed a synthetic e-commerce order/refund dataset using SQL deduplication, net-revenue reconciliation, segment comparison and a qualified executive recommendation.",
       "bonusXp": 220
     },
     {
