@@ -76,7 +76,8 @@ void main() {
       ).readAsString()) as Map<String, dynamic>;
       expect(verification['reference_sql_reconciled'], isTrue);
       expect(verification['submitted_sql_matches_reference'], isTrue);
-      expect(verification['changed_data_robustness_tested'], isFalse);
+      expect(verification['changed_data_robustness_tested'], isTrue);
+      expect(verification['changed_data_test_passed'], isTrue);
       expect(verification['external_analyst_replay_completed'], isFalse);
     }
   });
