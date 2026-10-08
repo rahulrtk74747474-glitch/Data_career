@@ -173,14 +173,14 @@ class EcommerceFlagshipCaseService {
   /// SQL string literals. The holdout run below is the stronger data check.
   static String? queryIntegrityWarning(String sql) {
     final executable = sql
-        .replaceAll(RegExp(r'/\\*[\\s\\S]*?\\*/'), ' ')
-        .replaceAll(RegExp(r'--[^\\n\\r]*'), ' ')
+        .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), ' ')
+        .replaceAll(RegExp(r'--[^\n\r]*'), ' ')
         .replaceAll(RegExp(r"'(?:''|[^'])*'"), "''")
         .toLowerCase();
     bool uses(String table) => RegExp(
-      r'\\b(from|join)\\s+(?:main\\.)?["`\\[]?' +
+      r'\b(?:from|join)\s+(?:main\.)?["`\[]?' +
           table +
-          r'["`\\]]?\\b',
+          r'(?:["`\]])?(?=\s|$|,|\))',
       caseSensitive: false,
     ).hasMatch(executable);
     if (!uses('ec_case_clean_orders') || !uses('ec_case_customers')) {
