@@ -98,11 +98,9 @@ class OpenEndedDecisionService {
     var score = isExplanation ? coverage : coverage.clamp(0, 55).toInt();
     final overclaim = AnalystMistakeDiagnostics.managerOverclaim(answer);
     if (overclaim != null) score = score.clamp(0, 55).toInt();
-    final feedback = overclaim != null
-        ? overclaim
-        : score >= 70
+    final feedback = overclaim ?? (score >= 70
         ? 'The offline concept rubric accepted this reasoning. Verify the data and defend your assumptions.'
-        : 'Explain your reasoning in full sentences. Revisit: ${missing.join(', ')}. ${isExplanation ? '' : 'Your answer is too short to demonstrate reasoning.'}';
+        : 'Explain your reasoning in full sentences. Revisit: ${missing.join(', ')}. ${isExplanation ? '' : 'Your answer is too short to demonstrate reasoning.'}');
     return OpenEndedDecisionGrade(score, feedback, missing);
   }
 }
