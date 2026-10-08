@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 /// Privacy-minimized summary of on-device beta learning metrics.
 ///
 /// No identifiers, dates, raw responses, accounts, or free-text answers are
