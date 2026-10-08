@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
+import '../../services/company_followup_service.dart';
 import '../../models/career_mission.dart';
 import '../../models/skill_mastery.dart';
 import '../achievements/achievements_screen.dart';
@@ -512,6 +513,7 @@ class HomeScreen extends ConsumerWidget {
 
     if (shouldReset == true) {
       await ref.read(gameProgressProvider.notifier).reset();
+      await CompanyFollowupService(ref.read(appDatabaseProvider)).resetAll();
       await ref.read(masteryRepositoryProvider).resetAll();
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
       await ref.read(taskPerformanceRepositoryProvider).resetAll();
