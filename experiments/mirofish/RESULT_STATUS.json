@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-08",
+  "source_branch": "feature/ecommerce-reproducible-workday-20261008",
+  "experiment_branch": "experiment/mirofish-product-viability-20261008",
+  "mirofish_upstream_commit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+  "mirofish_execution": "NOT_RUN",
+  "simulation_report": null,
+  "causes": [
+    "No operator-provided LLM_API_KEY or ZEP_API_KEY in this conversation",
+    "No live MiroFish service endpoint has been configured",
+    "Do not send app source or learner records to third-party services without explicit consent"
+  ],
+  "observed_app_ci": {
+    "run_url": "https://github.com/rahulrtk74747474-glitch/Data_career/actions/runs/37783446037",
+    "conclusion": "success",
+    "scope": "Flutter analyzer, automated tests, Android builds; not human usability or retention validation"
+  },
+  "conclusion": {
+    "flutter_build_feasible": "supported_by_ci",
+    "real_user_app_works": "not_proven_without_device_trials",
+    "analytics_job_readiness": "not_proven_by_training_simulations",
+    "market_viability": "unknown_without_real_beta",
+    "mirofish_agent_opinion": "not_collected"
+  }
+}
