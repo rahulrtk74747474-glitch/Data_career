@@ -28,7 +28,7 @@ class AnalystMistakeDiagnostics {
     if (points.isEmpty) {
       points.add('Reconcile one group to raw records. Check nulls, units, filters and join cardinality.');
     }
-    return graderFeedback + '\nDiagnostic hypotheses to verify:\n• ' + points.join('\n• ');
+    return '$graderFeedback\nDiagnostic hypotheses to verify:\n• ${points.join('\n• ')}';
   }
 
   static String? managerOverclaim(String answer) {
