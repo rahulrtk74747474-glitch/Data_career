@@ -43,6 +43,11 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Learning labs'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Core analyst labs'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Core analyst labs'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
