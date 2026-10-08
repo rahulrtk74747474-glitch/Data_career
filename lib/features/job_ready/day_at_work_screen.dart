@@ -740,16 +740,26 @@ class _FlagshipWorkdayScreenState
       final grade = SqlResultGrader.grade(
         actualRows: run.rows,
         expectedRows: item.sqlExpectedRows,
+        truncated: run.truncated,
       );
-      score = grade.isCorrect ? 100 : 0;
-      feedback = grade.isCorrect
-          ? grade.feedback
-          : AnalystMistakeDiagnostics.sql(
-              query: _analysisController.text,
-              graderFeedback: grade.feedback,
-              actualRowCount: run.rows.length,
-              expectedRowCount: item.sqlExpectedRows.length,
-            );
+      final changedData = grade.isCorrect && item.companyKey == 'ecommerce'
+          ? await EcommerceFlagshipCaseService(
+              ref.read(appDatabaseProvider),
+            ).verifyChangedData(_analysisController.text)
+          : null;
+      final accepted = grade.isCorrect && (changedData?.isCorrect ?? true);
+      score = accepted ? 100 : 0;
+      feedback = accepted
+          ? 'Correct. The query also works after case data changes.'
+          : changedData != null && !changedData.isCorrect
+              ? 'The example numbers match, but the SQL fails on changed data. '
+                  'Compute totals from the rows instead of fixed values.'
+              : AnalystMistakeDiagnostics.sql(
+                  query: _analysisController.text,
+                  graderFeedback: grade.feedback,
+                  actualRowCount: run.rows.length,
+                  expectedRowCount: item.sqlExpectedRows.length,
+                );
     } else {
       score = FlagshipWorkdayScoringService.tokenAnalysisScore(
         item,
