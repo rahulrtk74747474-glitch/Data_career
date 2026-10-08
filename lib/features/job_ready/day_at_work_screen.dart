@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/flagship_attempt.dart';
 import '../../models/job_ready_v15.dart';
 import '../../services/analyst_mistake_diagnostics.dart';
+import '../../services/ecommerce_flagship_case_service.dart';
 import '../../services/flagship_workday_scoring_service.dart';
 import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
@@ -174,6 +177,9 @@ class _FlagshipWorkdayScreenState
   String _statistics = '';
   String _chart = '';
   FlagshipAttempt? _attempt;
+  EcommerceCaseAudit? _caseAudit;
+  Map<String, List<Map<String, Object?>>>? _rawCaseTables;
+  String? _caseError;
   bool _loading = true;
   bool _busy = false;
   String? _feedback;
@@ -210,11 +216,31 @@ class _FlagshipWorkdayScreenState
           'workday_start',
         );
     ref.invalidate(learningHealthProvider);
+    EcommerceCaseAudit? audit;
+    Map<String, List<Map<String, Object?>>>? tables;
+    if (item.companyKey == 'ecommerce') {
+      try {
+        final workspace = EcommerceFlagshipCaseService(
+          ref.read(appDatabaseProvider),
+        );
+        audit = await workspace.audit();
+        tables = await workspace.exportTables();
+      } catch (error) {
+        if (!mounted) return;
+        setState(() {
+          _caseError = 'Cannot load the versioned local case data: $error';
+          _loading = false;
+        });
+        return;
+      }
+    }
     final attempt = await ref
         .read(flagshipAttemptRepositoryProvider)
         .load(item.id);
     if (!mounted) return;
     setState(() {
+      _caseAudit = audit;
+      _rawCaseTables = tables;
       _attempt = attempt;
       _selectedIssues
         ..clear()
@@ -234,6 +260,17 @@ class _FlagshipWorkdayScreenState
 
   @override
   Widget build(BuildContext context) {
+    if (_caseError != null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(item.title)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SelectableText(_caseError!),
+          ),
+        ),
+      );
+    }
     if (_loading || _attempt == null) {
       return Scaffold(
         appBar: AppBar(title: Text(item.title)),
@@ -268,6 +305,26 @@ class _FlagshipWorkdayScreenState
                   ),
                   const SizedBox(height: 8),
                   _PreviewTable(rows: item.previewRows),
+                  if (_caseAudit != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      'Full SQLite source: ${_caseAudit!.rawOrderEvents} order events / '
+                      '${_caseAudit!.uniqueOrders} unique orders, '
+                      '${_caseAudit!.rawRefundEvents} refund events / '
+                      '${_caseAudit!.uniqueRefunds} unique refunds.',
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Raw duplicate events are intentional. Review all source tables; '
+                      'a real SQL view deduplicates order_id and refund_id by latest ingestion.',
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _showRawCaseData,
+                      icon: const Icon(Icons.table_view_outlined),
+                      label: const Text('Inspect all raw data and schema'),
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   const Text(
                     'Select every issue/control that matters before analysis.',
@@ -316,12 +373,22 @@ class _FlagshipWorkdayScreenState
                         ChoiceChip(
                           label: Text(tool),
                           selected: _tool == tool,
-                          onSelected: _done('tool')
+                          onSelected: _done('tool') ||
+                                  (item.companyKey == 'ecommerce' && tool != 'SQL')
                               ? null
                               : (_) => setState(() => _tool = tool),
                         ),
                     ],
                   ),
+                  if (item.companyKey == 'ecommerce')
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        'This first reproducible flagship uses executable SQL. '
+                        'Other tools remain available in their practice labs; '
+                        'the SQL path earns verified project evidence.',
+                      ),
+                    ),
                   const SizedBox(height: 10),
                   FilledButton(
                     onPressed:
@@ -582,6 +649,18 @@ class _FlagshipWorkdayScreenState
     int score;
     String feedback;
     if (_tool == 'SQL') {
+      if (item.companyKey == 'ecommerce') {
+        final warning = EcommerceFlagshipCaseService.queryIntegrityWarning(
+          _analysisController.text,
+        );
+        if (warning != null) {
+          setState(() {
+            _busy = false;
+            _feedback = warning;
+          });
+          return;
+        }
+      }
       final run =
           await ref.read(sqlRunnerProvider).runReadOnly(_analysisController.text);
       if (!run.isSuccess) {
@@ -831,6 +910,71 @@ class _FlagshipWorkdayScreenState
     );
   }
 
+  Future<void> _showRawCaseData() async {
+    final tables = _rawCaseTables;
+    if (tables == null || !mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Full e-commerce source data'),
+        content: SizedBox(
+          width: 640,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'These source rows are the complete synthetic dataset, '
+                  'not just the four preview examples. Order events and refund '
+                  'events deliberately contain late-arriving duplicate records.',
+                ),
+                const SizedBox(height: 10),
+                for (final key in const [
+                  'customers', 'order_events', 'refund_events',
+                ]) ...[
+                  Text(
+                    key,
+                    style: Theme.of(dialogContext).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 6),
+                  _PreviewTable(
+                    rows: [
+                      for (final row in tables[key] ?? const <Map<String, Object?>>[])
+                        Map<String, dynamic>.from(row),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                const Text(
+                  'SQLite views: ec_case_clean_orders. '
+                  'Revenue definition: completed orders minus unique partial refunds. '
+                  'A snapshot does not establish historical growth.',
+                ),
+                const SizedBox(height: 8),
+                SelectableText(
+                  const JsonEncoder.withIndent('  ').convert({
+                    'source_tables': [
+                      'ec_case_customers',
+                      'ec_case_order_events',
+                      'ec_case_refund_events',
+                    ],
+                    'clean_view': 'ec_case_clean_orders',
+                  }),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   static String _skillForTool(String tool) {
     switch (tool) {
       case 'SQL':
@@ -849,7 +993,9 @@ class _FlagshipWorkdayScreenState
   static String _toolHint(String tool) {
     switch (tool) {
       case 'SQL':
-        return 'Write a complete read-only SQL query. It will run against the local SQLite company database.';
+        return 'Write a complete read-only SQL query. It runs against real local SQLite tables. '
+            'For the e-commerce flagship join ec_case_clean_orders to ec_case_customers '
+            'and aggregate net_revenue by segment.';
       case 'Pandas':
         return 'Write a realistic Pandas expression/pipeline using dataframe operations.';
       case 'Power BI':
