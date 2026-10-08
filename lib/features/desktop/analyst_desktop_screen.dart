@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/career_mission.dart';
 import '../../models/workday_content.dart';
-import '../campaign/career_campaign_screen.dart';
 import '../job_ready/day_at_work_screen.dart';
 import '../job_ready/domain_playbooks_screen.dart';
 import '../job_ready/leadership_desk_screen.dart';
