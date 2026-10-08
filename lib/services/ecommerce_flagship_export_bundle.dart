@@ -42,6 +42,7 @@ class EcommerceFlagshipExportBundle {
       'dataset': 'Synthetic e-commerce case',
       'dataset_version': EcommerceFlagshipCaseService.datasetVersion,
       'executed_tool': attempt.tool,
+      'hints_used': attempt.hintsUsed,
       'real_sql_executed': execution?.isSuccess ?? false,
       'references_case_tables': credibleSql,
       'output_matches_expected': verified,
