@@ -14,6 +14,8 @@ void main() {
     await service.recordAppOpen();
     await service.recordEvent('workday_start');
     await service.recordEvent('workday_complete');
+    await service.recordEvent('stage_quality_complete');
+    await service.recordEvent('stage_analysis_complete');
     await service.saveFeedback(
       realism: 5,
       usefulness: 4,
@@ -27,6 +29,9 @@ void main() {
     expect(report.activeDays, 1);
     expect(report.workdayStarts, 1);
     expect(report.workdayCompletions, 1);
+    expect(report.stageCompletions['quality'], 1);
+    expect(report.stageCompletions['analysis'], 1);
+    expect(report.stageCompletions['chart'], 0);
     expect(report.firstFlagshipCompletedAt, isNotNull);
     expect(report.feedbackCount, 1);
 

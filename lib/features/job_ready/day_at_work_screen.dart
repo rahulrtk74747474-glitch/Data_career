@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/flagship_attempt.dart';
 import '../../models/job_ready_v15.dart';
+import '../../services/analyst_mistake_diagnostics.dart';
 import '../../services/flagship_workday_scoring_service.dart';
+import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
 import '../../services/sql_result_grader.dart';
 import '../campaign/career_campaign_screen.dart';
@@ -165,6 +167,8 @@ class _FlagshipWorkdayScreenState
     extends ConsumerState<FlagshipWorkdayScreen> {
   final _analysisController = TextEditingController();
   final _managerController = TextEditingController();
+  final _statisticsController = TextEditingController();
+  final _chartController = TextEditingController();
   final _selectedIssues = <String>{};
   String _tool = '';
   String _statistics = '';
@@ -196,6 +200,8 @@ class _FlagshipWorkdayScreenState
   void dispose() {
     _analysisController.dispose();
     _managerController.dispose();
+    _statisticsController.dispose();
+    _chartController.dispose();
     super.dispose();
   }
 
@@ -217,6 +223,8 @@ class _FlagshipWorkdayScreenState
       _analysisController.text = attempt.analysisText;
       _statistics = attempt.statisticsAnswer;
       _chart = attempt.chartAnswer;
+      _statisticsController.text = attempt.statisticsAnswer;
+      _chartController.text = attempt.chartAnswer;
       _managerController.text = attempt.managerText;
       _loading = false;
     });
@@ -290,6 +298,7 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['tool']!,
+              available: _done('quality'),
               title: 'Choose your tool',
               done: _done('tool'),
               child: Column(
@@ -326,6 +335,7 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['analysis']!,
+              available: _done('tool'),
               title: 'Do the analysis',
               done: _done('analysis'),
               child: Column(
@@ -346,6 +356,7 @@ class _FlagshipWorkdayScreenState
                     maxLines: 14,
                     autocorrect: false,
                     enableSuggestions: false,
+                    onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
                       labelText: _tool.isEmpty
                           ? 'Analysis work'
@@ -375,35 +386,63 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['statistics']!,
+              available: _done('analysis'),
               title: 'Challenge the interpretation',
               done: _done('statistics'),
-              child: _SingleChoiceStage(
-                prompt: item.statisticsPrompt,
-                options: item.statisticsOptions,
-                value: _statistics,
-                enabled: !_done('statistics'),
-                onChanged: (value) => setState(() => _statistics = value),
-                onSubmit: _done('statistics') || _statistics.isEmpty
-                    ? null
-                    : _submitStatistics,
-              ),
+              child: item.order >= 3
+                  ? _OpenEndedDecisionStage(
+                      prompt: item.statisticsPrompt,
+                      controller: _statisticsController,
+                      enabled: !_done('statistics'),
+                      stageName: 'Statistical reasoning',
+                      onChanged: () => setState(() {}),
+                      onSubmit: _statisticsController.text.trim().isEmpty ||
+                              _done('statistics') || _busy
+                          ? null
+                          : _submitStatistics,
+                    )
+                  : _SingleChoiceStage(
+                      prompt: item.statisticsPrompt,
+                      options: item.statisticsOptions,
+                      value: _statistics,
+                      enabled: !_done('statistics'),
+                      onChanged: (value) => setState(() => _statistics = value),
+                      onSubmit: _done('statistics') || _statistics.isEmpty || _busy
+                          ? null
+                          : _submitStatistics,
+                    ),
             ),
             _TimelineStep(
               time: _timeline['chart']!,
+              available: _done('statistics'),
               title: 'Design the decision view',
               done: _done('chart'),
-              child: _SingleChoiceStage(
-                prompt: item.chartPrompt,
-                options: item.chartOptions,
-                value: _chart,
-                enabled: !_done('chart'),
-                onChanged: (value) => setState(() => _chart = value),
-                onSubmit:
-                    _done('chart') || _chart.isEmpty ? null : _submitChart,
-              ),
+              child: item.order >= 3
+                  ? _OpenEndedDecisionStage(
+                      prompt: item.chartPrompt,
+                      controller: _chartController,
+                      enabled: !_done('chart'),
+                      stageName: 'Dashboard/metric justification',
+                      onChanged: () => setState(() {}),
+                      onSubmit: _chartController.text.trim().isEmpty ||
+                              _done('chart') || _busy
+                          ? null
+                          : _submitChart,
+                    )
+                  : _SingleChoiceStage(
+                      prompt: item.chartPrompt,
+                      options: item.chartOptions,
+                      value: _chart,
+                      enabled: !_done('chart'),
+                      onChanged: (value) => setState(() => _chart = value),
+                      onSubmit: _done('chart') || _chart.isEmpty || _busy
+                          ? null
+                          : _submitChart,
+                    ),
             ),
             _TimelineStep(
               time: _timeline['manager']!,
+              available: _done('chart'),
               title: 'Explain it to the manager',
               done: _done('manager'),
               child: Column(
@@ -416,6 +455,7 @@ class _FlagshipWorkdayScreenState
                     enabled: !_done('manager'),
                     minLines: 5,
                     maxLines: 9,
+                    onChanged: (_) => setState(() {}),
                     decoration: const InputDecoration(
                       labelText: 'Your 2–4 sentence manager update',
                       hintText:
@@ -483,7 +523,18 @@ class _FlagshipWorkdayScreenState
       ].every(_done);
 
   Future<void> _save(FlagshipAttempt next) async {
+    final newStages = next.completedStages.difference(
+      _attempt?.completedStages ?? const <String>{},
+    );
     await ref.read(flagshipAttemptRepositoryProvider).save(next);
+    for (final stage in newStages) {
+      await ref.read(learningTelemetryServiceProvider).recordEvent(
+            'stage_${stage}_complete',
+          );
+    }
+    if (newStages.isNotEmpty) {
+      ref.invalidate(learningHealthProvider);
+    }
     if (!mounted) return;
     setState(() => _attempt = next);
     ref.invalidate(flagshipAttemptsProvider);
@@ -546,7 +597,14 @@ class _FlagshipWorkdayScreenState
         expectedRows: item.sqlExpectedRows,
       );
       score = grade.isCorrect ? 100 : 0;
-      feedback = grade.feedback;
+      feedback = grade.isCorrect
+          ? grade.feedback
+          : AnalystMistakeDiagnostics.sql(
+              query: _analysisController.text,
+              graderFeedback: grade.feedback,
+              actualRowCount: run.rows.length,
+              expectedRowCount: item.sqlExpectedRows.length,
+            );
     } else {
       score = FlagshipWorkdayScoringService.tokenAnalysisScore(
         item,
@@ -589,39 +647,59 @@ class _FlagshipWorkdayScreenState
   }
 
   Future<void> _submitStatistics() async {
-    if (_statistics != item.statisticsExpected) {
+    final advanced = item.order >= 3;
+    final answer = advanced ? _statisticsController.text.trim() : _statistics;
+    final grade = advanced
+        ? OpenEndedDecisionService.grade(
+            workdayId: item.id,
+            stage: 'statistics',
+            answer: answer,
+          )
+        : null;
+    if (advanced ? !grade!.passed : answer != item.statisticsExpected) {
       setState(() {
-        _feedback =
-            'Not yet. Separate association from causation, check denominators/mix, and ask what the aggregate may be hiding.';
+        _feedback = advanced
+            ? 'Statistical review: ${grade!.score}/100. ${grade.feedback}'
+            : 'Not yet. Check denominators, subgroup mix and whether the data justifies a causal claim.';
       });
       return;
     }
-    await _save(
-      _attempt!.copyWith(
-        statisticsAnswer: _statistics,
-        statisticsScore: 100,
-        completedStages: {..._attempt!.completedStages, 'statistics'},
-      ),
-    );
-    setState(() => _feedback = 'Statistical interpretation: 100/100.');
+    await _save(_attempt!.copyWith(
+      statisticsAnswer: answer,
+      statisticsScore: grade?.score ?? 100,
+      completedStages: {..._attempt!.completedStages, 'statistics'},
+    ));
+    if (!mounted) return;
+    setState(() => _feedback =
+        'Statistical interpretation accepted: ${grade?.score ?? 100}/100.');
   }
 
   Future<void> _submitChart() async {
-    if (_chart != item.chartExpected) {
+    final advanced = item.order >= 3;
+    final answer = advanced ? _chartController.text.trim() : _chart;
+    final grade = advanced
+        ? OpenEndedDecisionService.grade(
+            workdayId: item.id,
+            stage: 'chart',
+            answer: answer,
+          )
+        : null;
+    if (advanced ? !grade!.passed : answer != item.chartExpected) {
       setState(() {
-        _feedback =
-            'That visual does not support the decision strongly enough. Match chart type to the comparison, time structure and diagnostic question.';
+        _feedback = advanced
+            ? 'Dashboard review: ${grade!.score}/100. ${grade.feedback}'
+            : 'Match the visual to the comparison, time grain, metric definition and business decision.';
       });
       return;
     }
-    await _save(
-      _attempt!.copyWith(
-        chartAnswer: _chart,
-        chartScore: 100,
-        completedStages: {..._attempt!.completedStages, 'chart'},
-      ),
-    );
-    setState(() => _feedback = 'Dashboard decision: 100/100.');
+    await _save(_attempt!.copyWith(
+      chartAnswer: answer,
+      chartScore: grade?.score ?? 100,
+      completedStages: {..._attempt!.completedStages, 'chart'},
+    ));
+    if (!mounted) return;
+    setState(() => _feedback =
+        'Dashboard decision accepted: ${grade?.score ?? 100}/100.');
   }
 
   Future<void> _submitManager() async {
@@ -633,6 +711,13 @@ class _FlagshipWorkdayScreenState
       recommendationTerms: item.recommendationTerms,
     );
     setState(() => _managerRubric = score);
+    final overclaim = AnalystMistakeDiagnostics.managerOverclaim(
+      _managerController.text,
+    );
+    if (overclaim != null) {
+      setState(() => _feedback = overclaim);
+      return;
+    }
     if (score.total < 60) {
       setState(() {
         _feedback =
@@ -734,7 +819,7 @@ class _FlagshipWorkdayScreenState
         title: const Text('GitHub-ready project created'),
         content: SelectableText(
           '${result.fileCount} files created:\n\n${result.directoryPath}\n\n'
-          'README.md, analysis file, data_quality.md, executive_summary.md and sample_data.csv.',
+          'README, analysis, data quality, statistics, dashboard plan, executive summary, sample CSV and limitations.',
         ),
         actions: [
           FilledButton(
@@ -839,12 +924,14 @@ class _TimelineStep extends StatelessWidget {
     required this.time,
     required this.title,
     required this.done,
+    this.available = true,
     required this.child,
   });
 
   final String time;
   final String title;
   final bool done;
+  final bool available;
   final Widget child;
 
   @override
@@ -876,12 +963,65 @@ class _TimelineStep extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            child,
+            if (available || done)
+              child
+            else
+              const Text(
+                'This stage is locked. Complete the previous work stage first so your decision uses the evidence already produced.',
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+class _OpenEndedDecisionStage extends StatelessWidget {
+  const _OpenEndedDecisionStage({
+    required this.prompt,
+    required this.controller,
+    required this.enabled,
+    required this.stageName,
+    required this.onChanged,
+    required this.onSubmit,
+  });
+
+  final String prompt;
+  final TextEditingController controller;
+  final bool enabled;
+  final String stageName;
+  final VoidCallback onChanged;
+  final VoidCallback? onSubmit;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(prompt),
+          const SizedBox(height: 8),
+          const Text(
+            'Independent assessment: explain your decision instead of guessing from options. The offline rubric checks essential concepts, but you must still defend your reasoning.',
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            enabled: enabled,
+            minLines: 4,
+            maxLines: 8,
+            onChanged: (_) => onChanged(),
+            decoration: InputDecoration(
+              labelText: stageName,
+              hintText: 'State the metric or comparison, your reasoning and any limitation.',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: onSubmit,
+            child: const Text('Submit independent decision'),
+          ),
+        ],
+      );
 }
 
 class _SingleChoiceStage extends StatelessWidget {
