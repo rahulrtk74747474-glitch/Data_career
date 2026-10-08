@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
 /// Offline evaluator for a deliberately documented spreadsheet subset.
 /// This is NOT Excel; macros, external links and unsupported functions fail.
 class WorkbookFormulaEvaluator {
