@@ -170,9 +170,8 @@ ${workday.correctIssues.map((item) => '- $item').join('\n')}
 
   static String _limitations(FlagshipWorkday workday) => '''
 # Dataset and assessment limitations
-${workday.companyKey == 'ecommerce' ? '- The e-commerce flagship additionally exports the complete synthetic source dataset under data/ and the executable SQLite schema. Refer to REPRODUCE.md for verified execution status.' : ''}
-
-- The sample_data.csv file supplied here contains only the ${workday.previewRows.length} preview rows embedded in the learning case. It is **not** a complete export of the underlying SQLite company tables.
+- Every flagged company workday now includes the complete versioned synthetic source event data under data/, executable SQLite schema, a reference query and a reproducibility manifest.
+- sample_data.csv remains an abbreviated preview; use data/ and REPRODUCE.md for the complete replay.
 - SQL work is executed against the local synthetic SQLite company database when SQL is chosen.
 - Pandas, Excel and Power BI answers are assessed with deterministic offline patterns/rubrics. They are **not** executed by CPython, Microsoft Excel or the Power BI engine.
 - Reproduce conclusions using the complete company dataset and real tools before publishing outside a training portfolio.
