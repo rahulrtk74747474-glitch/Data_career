@@ -378,6 +378,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
       final result = SqlResultGrader.grade(
         actualRows: run.rows,
         expectedRows: task.expectedRows,
+        truncated: run.truncated,
       );
       grade = GradeResult(
         isCorrect: result.isCorrect,

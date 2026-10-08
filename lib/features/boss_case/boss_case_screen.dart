@@ -241,6 +241,7 @@ class _BossCaseScreenState extends ConsumerState<BossCaseScreen> {
       definition: definition,
       cleaningSelections: _cleaningSelections,
       sqlRows: sqlResult.rows,
+      sqlTruncated: sqlResult.truncated,
       kpiAnswer: _kpiController.text,
       chartAnswer: _chartAnswer,
       recommendationAnswer: _recommendationAnswer,

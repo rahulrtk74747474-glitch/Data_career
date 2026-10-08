@@ -225,6 +225,7 @@ class _InterviewSessionScreenState
       final grade = SqlResultGrader.grade(
         actualRows: run.rows,
         expectedRows: _question.expectedRows,
+        truncated: run.truncated,
       );
       score = InterviewQuestionScore(
         score: grade.isCorrect ? 100 : 0,

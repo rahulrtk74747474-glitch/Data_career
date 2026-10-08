@@ -80,6 +80,25 @@ class _PilotFeedbackScreenState extends ConsumerState<PilotFeedbackScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              const Text(
+                'Workday stage completion funnel (local)',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final stage in const [
+                    'quality', 'tool', 'analysis',
+                    'statistics', 'chart', 'manager',
+                  ])
+                    _Metric(
+                      label: stage,
+                      value: '${item.stageCompletions[stage] ?? 0}',
+                    ),
+                ],
+              ),
               const SizedBox(height: 18),
               Text(
                 'Beta feedback',

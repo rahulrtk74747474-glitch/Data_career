@@ -1,19 +1,23 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:archive/archive_io.dart';
 
 import '../data/app_database.dart';
 import '../models/flagship_attempt.dart';
 import '../models/job_ready_v15.dart';
+import 'ecommerce_flagship_export_bundle.dart';
 
 class FlagshipProjectExportResult {
   const FlagshipProjectExportResult({
     required this.directoryPath,
     required this.fileCount,
+    required this.archivePath,
   });
 
   final String directoryPath;
   final int fileCount;
+  final String archivePath;
 }
 
 class FlagshipProjectExportService {
@@ -36,18 +40,42 @@ class FlagshipProjectExportService {
       'data_quality.md': _quality(workday, attempt),
       'executive_summary.md': attempt.managerText.trim(),
       'sample_data.csv': _csv(workday.previewRows),
+      'statistics_review.md': '# Statistical reasoning\n\n${attempt.statisticsAnswer}\n',
+      'dashboard_plan.md': '# Dashboard decision and justification\n\n${attempt.chartAnswer}\n',
+      'limitations.md': _limitations(workday),
     };
 
+    if (workday.companyKey == 'ecommerce') {
+      files.addAll(
+        await EcommerceFlagshipExportBundle(_database).build(
+          workday: workday,
+          attempt: attempt,
+        ),
+      );
+    }
+
     for (final entry in files.entries) {
+      await Directory(p.dirname(p.join(dir.path, entry.key)))
+          .create(recursive: true);
       await File(p.join(dir.path, entry.key)).writeAsString(
         entry.value.endsWith('\n') ? entry.value : '${entry.value}\n',
         flush: true,
       );
     }
 
+    final archivePath = p.join(base, 'exports', 'github_$safeId.zip');
+    final zip = ZipFileEncoder();
+    zip.create(archivePath);
+    try {
+      await zip.addDirectory(dir, includeDirName: true, followLinks: false);
+    } finally {
+      await zip.close();
+    }
+
     return FlagshipProjectExportResult(
       directoryPath: dir.path,
       fileCount: files.length,
+      archivePath: archivePath,
     );
   }
 
@@ -94,6 +122,15 @@ ${workday.datasetName}
 ## Final recommendation
 ${attempt.managerText}
 
+## Statistical reasoning
+See `statistics_review.md` for the submitted interpretation.
+
+## Dashboard specification
+See `dashboard_plan.md` for the proposed decision view.
+
+## Limitations
+See `limitations.md` for dataset completeness, execution and assessment limitations.
+
 ## Training disclosure
 This is a synthetic DataQuest learning project, not real employer work.
 ''';
@@ -109,6 +146,19 @@ ${attempt.selectedIssues.map((item) => '- $item').join('\n')}
 
 Reference issues:
 ${workday.correctIssues.map((item) => '- $item').join('\n')}
+''';
+
+  static String _limitations(FlagshipWorkday workday) => '''
+# Dataset and assessment limitations
+${workday.companyKey == 'ecommerce' ? '- The e-commerce flagship additionally exports the complete synthetic source dataset under data/ and the executable SQLite schema. Refer to REPRODUCE.md for verified execution status.' : ''}
+
+- The sample_data.csv file supplied here contains only the ${workday.previewRows.length} preview rows embedded in the learning case. It is **not** a complete export of the underlying SQLite company tables.
+- SQL work is executed against the local synthetic SQLite company database when SQL is chosen.
+- Pandas, Excel and Power BI answers are assessed with deterministic offline patterns/rubrics. They are **not** executed by CPython, Microsoft Excel or the Power BI engine.
+- Reproduce conclusions using the complete company dataset and real tools before publishing outside a training portfolio.
+- Document your cleaning decisions, test your denominator and record assumptions before claiming real-world impact.
+
+This is synthetic coursework, not employment history.
 ''';
 
   static String _csv(List<Map<String, dynamic>> rows) {

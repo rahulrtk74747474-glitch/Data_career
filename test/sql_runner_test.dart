@@ -69,4 +69,25 @@ void main() {
     expect(grade.feedback, contains('output columns'));
     expect(grade.feedback, contains('revenue'));
   });
+
+  test('SQL grading rejects a 100-row truncated result', () async {
+    final run = await SqlRunner(appDatabase).runReadOnly(
+      'WITH RECURSIVE seq(x) AS '
+      '(SELECT 1 UNION ALL SELECT x + 1 FROM seq WHERE x < 120) '
+      'SELECT x FROM seq',
+    );
+    expect(run.isSuccess, isTrue);
+    expect(run.rows.length, 100);
+    expect(run.truncated, isTrue);
+    final grade = SqlResultGrader.grade(
+      actualRows: run.rows,
+      expectedRows: [
+        for (var i = 1; i <= 100; i++) {'x': i},
+      ],
+      truncated: run.truncated,
+    );
+    expect(grade.isCorrect, isFalse);
+    expect(grade.feedback, contains('preview limit'));
+  });
+
 }
