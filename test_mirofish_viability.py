@@ -20,7 +20,7 @@ class FakeMiroFish:
     def upload(self, seed, requirement, name):
         assert seed.exists()
         assert "Synthetic actor map" in seed.read_text(encoding="utf-8")
-        self.posts.append(("upload", requirement, name))
+        self.posts.append(("upload", {"requirement": requirement, "name": name}))
         return {"project_id": "test_proj"}
 
     def get(self, endpoint):
@@ -77,7 +77,7 @@ class ResearchBridgeTests(unittest.TestCase):
         for base in ("https://localhost:5001",
                      "https://thirdparty.example/api",
                      "http://192.168.1.2:5001"):
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(ValueError):
                 bridge.MiroFishClient(base)
 
     def test_mock_protocol_report_is_marked_synthetic(self):
