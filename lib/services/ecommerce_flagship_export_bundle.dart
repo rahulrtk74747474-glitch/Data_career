@@ -34,9 +34,14 @@ class EcommerceFlagshipExportBundle {
         ? SqlResultGrader.grade(
             actualRows: execution.rows,
             expectedRows: workday.sqlExpectedRows,
+            truncated: execution!.truncated,
           )
         : null;
-    final verified = grade?.isCorrect ?? false;
+    final changedData = (grade?.isCorrect ?? false) && attempt.tool == 'SQL'
+        ? await workspace.verifyChangedData(candidate)
+        : null;
+    final verified = (grade?.isCorrect ?? false) &&
+        (changedData?.isCorrect ?? false);
 
     final report = <String, Object?>{
       'dataset': 'Synthetic e-commerce case',
@@ -45,7 +50,9 @@ class EcommerceFlagshipExportBundle {
       'hints_used': attempt.hintsUsed,
       'real_sql_executed': execution?.isSuccess ?? false,
       'references_case_tables': credibleSql,
-      'output_matches_expected': verified,
+      'output_matches_expected': grade?.isCorrect ?? false,
+      'changed_data_test_passed': changedData?.isCorrect ?? false,
+      'verified_independent_sql': verified,
       'row_count': execution?.rows.length ?? 0,
       'net_revenue': audit.netRevenue,
       'raw_order_events': audit.rawOrderEvents,
