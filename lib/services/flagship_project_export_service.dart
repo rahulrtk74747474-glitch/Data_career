@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:path/path.dart' as p;
 import 'package:archive/archive_io.dart';
@@ -9,6 +10,7 @@ import '../models/job_ready_v15.dart';
 import 'ecommerce_flagship_export_bundle.dart';
 import 'company_flagship_export_bundle.dart';
 import 'company_flagship_case_service.dart';
+import 'company_next_day_simulation.dart';
 
 class FlagshipProjectExportResult {
   const FlagshipProjectExportResult({
@@ -62,6 +64,14 @@ class FlagshipProjectExportService {
           attempt: attempt,
         ),
       );
+    }
+
+    final nextDay = await const CompanyNextDayRepository().load(
+      workday.companyKey,
+    );
+    if (nextDay != null) {
+      files['next_day_consequence.json'] =
+          const JsonEncoder.withIndent('  ').convert(nextDay.toJson());
     }
 
     for (final entry in files.entries) {
