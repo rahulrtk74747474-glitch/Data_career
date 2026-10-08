@@ -36,6 +36,9 @@ class FlagshipProjectExportService {
       'data_quality.md': _quality(workday, attempt),
       'executive_summary.md': attempt.managerText.trim(),
       'sample_data.csv': _csv(workday.previewRows),
+      'statistics_review.md': '# Statistical reasoning\n\n${attempt.statisticsAnswer}\n',
+      'dashboard_plan.md': '# Dashboard decision and justification\n\n${attempt.chartAnswer}\n',
+      'limitations.md': _limitations(workday),
     };
 
     for (final entry in files.entries) {
@@ -94,6 +97,15 @@ ${workday.datasetName}
 ## Final recommendation
 ${attempt.managerText}
 
+## Statistical reasoning
+See `statistics_review.md` for the submitted interpretation.
+
+## Dashboard specification
+See `dashboard_plan.md` for the proposed decision view.
+
+## Limitations
+See `limitations.md` for dataset completeness, execution and assessment limitations.
+
 ## Training disclosure
 This is a synthetic DataQuest learning project, not real employer work.
 ''';
@@ -109,6 +121,18 @@ ${attempt.selectedIssues.map((item) => '- $item').join('\n')}
 
 Reference issues:
 ${workday.correctIssues.map((item) => '- $item').join('\n')}
+''';
+
+  static String _limitations(FlagshipWorkday workday) => '''
+# Dataset and assessment limitations
+
+- The CSV supplied here contains only the ${workday.previewRows.length} preview rows embedded in the learning case. It is **not** a complete export of the underlying SQLite company tables.
+- SQL work is executed against the local synthetic SQLite company database when SQL is chosen.
+- Pandas, Excel and Power BI answers are assessed with deterministic offline patterns/rubrics. They are **not** executed by CPython, Microsoft Excel or the Power BI engine.
+- Reproduce conclusions using the complete company dataset and real tools before publishing outside a training portfolio.
+- Document your cleaning decisions, test your denominator and record assumptions before claiming real-world impact.
+
+This is synthetic coursework, not employment history.
 ''';
 
   static String _csv(List<Map<String, dynamic>> rows) {
