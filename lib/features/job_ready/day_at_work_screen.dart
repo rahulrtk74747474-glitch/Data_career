@@ -8,6 +8,7 @@ import '../../models/flagship_attempt.dart';
 import '../../models/job_ready_v15.dart';
 import '../../services/analyst_mistake_diagnostics.dart';
 import '../../services/ecommerce_flagship_case_service.dart';
+import '../../services/company_flagship_case_service.dart';
 import '../../services/flagship_workday_scoring_service.dart';
 import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
@@ -230,21 +231,29 @@ class _FlagshipWorkdayScreenState
     ref.invalidate(learningHealthProvider);
     EcommerceCaseAudit? audit;
     Map<String, List<Map<String, Object?>>>? tables;
-    if (item.companyKey == 'ecommerce') {
-      try {
+    try {
+      if (item.companyKey == 'ecommerce') {
         final workspace = EcommerceFlagshipCaseService(
           ref.read(appDatabaseProvider),
         );
         audit = await workspace.audit();
         tables = await workspace.exportTables();
-      } catch (error) {
-        if (!mounted) return;
-        setState(() {
-          _caseError = 'Cannot load the versioned local case data: $error';
-          _loading = false;
-        });
-        return;
+      } else if (CompanyFlagshipCaseService.validCases.contains(item.companyKey)) {
+        final workspace = CompanyFlagshipCaseService(
+          ref.read(appDatabaseProvider),
+        );
+        tables = {
+          'raw_events': await workspace.rows(item.companyKey),
+          'clean_latest_events': await workspace.cleanedRows(item.companyKey),
+        };
       }
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _caseError = 'Cannot load the versioned local case data: $error';
+        _loading = false;
+      });
+      return;
     }
     final attempt = await ref
         .read(flagshipAttemptRepositoryProvider)
@@ -383,6 +392,19 @@ class _FlagshipWorkdayScreenState
                       label: const Text('Inspect all raw data and schema'),
                     ),
                   ],
+                  if (_rawCaseTables != null && _caseAudit == null) ...[
+                    const SizedBox(height: 8),
+                    const Text(
+                      'A complete source dataset is available. Event updates '
+                      'and duplicates require the deduplicated latest-event view.',
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _showRawCaseData,
+                      icon: const Icon(Icons.table_view_outlined),
+                      label: const Text('Inspect full company case dataset'),
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   const Text(
                     'Select every issue/control that matters before analysis.',
@@ -435,7 +457,7 @@ class _FlagshipWorkdayScreenState
                           label: Text(tool),
                           selected: _tool == tool,
                           onSelected: _done('tool') ||
-                                  (item.companyKey == 'ecommerce' && tool != 'SQL')
+                                  (CompanyFlagshipCaseService.validCases.contains(item.companyKey) && tool != 'SQL') || (item.companyKey == 'ecommerce' && tool != 'SQL')
                               ? null
                               : (_) {
                                   setState(() => _tool = tool);
@@ -444,11 +466,12 @@ class _FlagshipWorkdayScreenState
                         ),
                     ],
                   ),
-                  if (item.companyKey == 'ecommerce')
+                  if (item.companyKey == 'ecommerce' ||
+                      CompanyFlagshipCaseService.validCases.contains(item.companyKey))
                     const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
-                        'This first reproducible flagship uses executable SQL. '
+                        'Verified flagship cases use executable SQL. '
                         'Other tools remain available in their practice labs; '
                         'the SQL path earns verified project evidence.',
                       ),
@@ -801,10 +824,15 @@ class _FlagshipWorkdayScreenState
     int score;
     String feedback;
     if (_tool == 'SQL') {
-      if (item.companyKey == 'ecommerce') {
-        final warning = EcommerceFlagshipCaseService.queryIntegrityWarning(
-          _analysisController.text,
-        );
+      if (item.companyKey == 'ecommerce' ||
+          CompanyFlagshipCaseService.validCases.contains(item.companyKey)) {
+        final warning = item.companyKey == 'ecommerce'
+            ? EcommerceFlagshipCaseService.queryIntegrityWarning(
+                _analysisController.text,
+              )
+            : CompanyFlagshipCaseService.integrityWarning(
+                _analysisController.text, item.companyKey,
+              );
         if (warning != null) {
           setState(() {
             _busy = false;
@@ -828,11 +856,19 @@ class _FlagshipWorkdayScreenState
         expectedRows: item.sqlExpectedRows,
         truncated: run.truncated,
       );
-      final changedData = grade.isCorrect && item.companyKey == 'ecommerce'
-          ? await EcommerceFlagshipCaseService(
-              ref.read(appDatabaseProvider),
-            ).verifyChangedData(_analysisController.text)
-          : null;
+      final changedData = !grade.isCorrect
+          ? null
+          : item.companyKey == 'ecommerce'
+              ? await EcommerceFlagshipCaseService(
+                  ref.read(appDatabaseProvider),
+                ).verifyChangedData(_analysisController.text)
+              : CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                  ? await CompanyFlagshipCaseService(
+                      ref.read(appDatabaseProvider),
+                    ).verifyChangedData(
+                      item.companyKey, _analysisController.text,
+                    )
+                  : null;
       final accepted = grade.isCorrect && (changedData?.isCorrect ?? true);
       score = accepted ? 100 : 0;
       feedback = accepted
