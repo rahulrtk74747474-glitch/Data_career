@@ -1169,25 +1169,41 @@ class _FlagshipWorkdayScreenState
   Future<void> _showRawCaseData() async {
     final tables = _rawCaseTables;
     if (tables == null || !mounted) return;
+    final ecommerce = item.companyKey == 'ecommerce';
+    final displayKeys = ecommerce
+        ? const ['customers', 'order_events', 'refund_events', 'clean_orders']
+        : const ['raw_events', 'clean_latest_events'];
+    final schema = ecommerce
+        ? {
+            'source_tables': [
+              'ec_case_customers', 'ec_case_order_events',
+              'ec_case_refund_events',
+            ],
+            'clean_view': 'ec_case_clean_orders',
+          }
+        : {
+            'source_tables': ['dq_case_events'],
+            'clean_view': 'dq_case_latest',
+            'required_case_id': item.companyKey,
+          };
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Full e-commerce source data'),
+        title: Text('Full ${item.companyName} source data'),
         content: SizedBox(
           width: 640,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'These source rows are the complete synthetic dataset, '
-                  'not just the four preview examples. Order events and refund '
-                  'events deliberately contain late-arriving duplicate records.',
-                ),
+                Text(ecommerce
+                    ? 'These are all the synthetic e-commerce source records. '
+                        'Order and refund events include duplicate and late updates.'
+                    : 'These are all synthetic ${item.companyKey} event records. '
+                        'The latest-event view deduplicates business records '
+                        'by company case and event ingestion time.'),
                 const SizedBox(height: 10),
-                for (final key in const [
-                  'customers', 'order_events', 'refund_events',
-                ]) ...[
+                for (final key in displayKeys) ...[
                   Text(
                     key,
                     style: Theme.of(dialogContext).textTheme.titleMedium,
@@ -1201,21 +1217,15 @@ class _FlagshipWorkdayScreenState
                   ),
                   const SizedBox(height: 14),
                 ],
-                const Text(
-                  'SQLite views: ec_case_clean_orders. '
-                  'Revenue definition: completed orders minus unique partial refunds. '
-                  'A snapshot does not establish historical growth.',
-                ),
+                Text(ecommerce
+                    ? 'Revenue definition: completed orders minus distinct '
+                        'partial refunds; a snapshot does not establish growth.'
+                    : 'Use dq_case_latest filtered to case_id = '
+                        '${item.companyKey}. Aggregate only eligible status '
+                        'records. Single-period metrics do not establish causality.'),
                 const SizedBox(height: 8),
                 SelectableText(
-                  const JsonEncoder.withIndent('  ').convert({
-                    'source_tables': [
-                      'ec_case_customers',
-                      'ec_case_order_events',
-                      'ec_case_refund_events',
-                    ],
-                    'clean_view': 'ec_case_clean_orders',
-                  }),
+                  const JsonEncoder.withIndent('  ').convert(schema),
                 ),
               ],
             ),
