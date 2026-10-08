@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -167,7 +168,7 @@ class FlagshipWorkdayScreen extends ConsumerStatefulWidget {
 }
 
 class _FlagshipWorkdayScreenState
-    extends ConsumerState<FlagshipWorkdayScreen> {
+    extends ConsumerState<FlagshipWorkdayScreen> with WidgetsBindingObserver {
   final _analysisController = TextEditingController();
   final _managerController = TextEditingController();
   final _statisticsController = TextEditingController();
@@ -183,6 +184,7 @@ class _FlagshipWorkdayScreenState
   String? _caseError;
   bool _loading = true;
   bool _busy = false;
+  Timer? _draftTimer;
   String? _feedback;
   ManagerExplanationScore? _managerRubric;
 
@@ -200,11 +202,20 @@ class _FlagshipWorkdayScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     Future<void>.microtask(_load);
   }
 
   @override
   void dispose() {
+    _draftTimer?.cancel();
+    // Save the latest text once more if the learner navigates back quickly.
+    // Already-completed answers remain unchanged.
+    if (_attempt != null && !_busy) {
+      unawaited(ref.read(flagshipAttemptRepositoryProvider)
+          .save(_withUnfinishedDrafts(_attempt!)));
+    }
+    WidgetsBinding.instance.removeObserver(this);
     _analysisController.dispose();
     _managerController.dispose();
     _statisticsController.dispose();
@@ -256,6 +267,51 @@ class _FlagshipWorkdayScreenState
       _managerController.text = attempt.managerText;
       _loading = false;
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _draftTimer?.cancel();
+      if (_attempt != null && !_busy) {
+        unawaited(_saveUnfinishedDrafts());
+      }
+    }
+  }
+
+  /// Every field persists without awarding any XP or completing any stage.
+  FlagshipAttempt _withUnfinishedDrafts(FlagshipAttempt value) =>
+      value.copyWith(
+        selectedIssues: value.stageDone('quality') ? null : {..._selectedIssues},
+        tool: value.stageDone('tool') ? null : _tool,
+        analysisText: value.stageDone('analysis') ? null : _analysisController.text,
+        statisticsAnswer: value.stageDone('statistics')
+            ? null
+            : item.order >= 3 ? _statisticsController.text : _statistics,
+        chartAnswer: value.stageDone('chart')
+            ? null
+            : item.order >= 3 ? _chartController.text : _chart,
+        managerText: value.stageDone('manager') ? null : _managerController.text,
+      );
+
+  void _scheduleDraftSave() {
+    _draftTimer?.cancel();
+    _draftTimer = Timer(const Duration(milliseconds: 850), () {
+      if (mounted && !_busy) unawaited(_saveUnfinishedDrafts());
+    });
+  }
+
+  Future<void> _saveUnfinishedDrafts() async {
+    final current = _attempt;
+    if (current == null) return;
+    try {
+      await _save(_withUnfinishedDrafts(current));
+    } catch (error) {
+      if (mounted) {
+        setState(() => _feedback = 'Draft could not be saved locally: $error');
+      }
+    }
   }
 
   bool _done(String stage) => _attempt?.stageDone(stage) ?? false;
@@ -338,13 +394,16 @@ class _FlagshipWorkdayScreenState
                       title: Text(option),
                       onChanged: _done('quality')
                           ? null
-                          : (value) => setState(() {
+                          : (value) {
+                              setState(() {
                                 if (value == true) {
                                   _selectedIssues.add(option);
                                 } else {
                                   _selectedIssues.remove(option);
                                 }
-                              }),
+                              });
+                              _scheduleDraftSave();
+                            },
                     ),
                   FilledButton(
                     onPressed: _done('quality') || _busy
@@ -378,7 +437,10 @@ class _FlagshipWorkdayScreenState
                           onSelected: _done('tool') ||
                                   (item.companyKey == 'ecommerce' && tool != 'SQL')
                               ? null
-                              : (_) => setState(() => _tool = tool),
+                              : (_) {
+                                  setState(() => _tool = tool);
+                                  _scheduleDraftSave();
+                                },
                         ),
                     ],
                   ),
@@ -425,7 +487,10 @@ class _FlagshipWorkdayScreenState
                     maxLines: 14,
                     autocorrect: false,
                     enableSuggestions: false,
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) {
+                      setState(() {});
+                      _scheduleDraftSave();
+                    },
                     decoration: InputDecoration(
                       labelText: _tool.isEmpty
                           ? 'Analysis work'
@@ -495,7 +560,10 @@ class _FlagshipWorkdayScreenState
                       controller: _statisticsController,
                       enabled: !_done('statistics'),
                       stageName: 'Statistical reasoning',
-                      onChanged: () => setState(() {}),
+                      onChanged: () {
+                        setState(() {});
+                        _scheduleDraftSave();
+                      },
                       onSubmit: _statisticsController.text.trim().isEmpty ||
                               _done('statistics') || _busy
                           ? null
@@ -506,7 +574,10 @@ class _FlagshipWorkdayScreenState
                       options: item.statisticsOptions,
                       value: _statistics,
                       enabled: !_done('statistics'),
-                      onChanged: (value) => setState(() => _statistics = value),
+                      onChanged: (value) {
+                        setState(() => _statistics = value);
+                        _scheduleDraftSave();
+                      },
                       onSubmit: _done('statistics') || _statistics.isEmpty || _busy
                           ? null
                           : _submitStatistics,
@@ -523,7 +594,10 @@ class _FlagshipWorkdayScreenState
                       controller: _chartController,
                       enabled: !_done('chart'),
                       stageName: 'Dashboard/metric justification',
-                      onChanged: () => setState(() {}),
+                      onChanged: () {
+                        setState(() {});
+                        _scheduleDraftSave();
+                      },
                       onSubmit: _chartController.text.trim().isEmpty ||
                               _done('chart') || _busy
                           ? null
@@ -534,7 +608,10 @@ class _FlagshipWorkdayScreenState
                       options: item.chartOptions,
                       value: _chart,
                       enabled: !_done('chart'),
-                      onChanged: (value) => setState(() => _chart = value),
+                      onChanged: (value) {
+                        setState(() => _chart = value);
+                        _scheduleDraftSave();
+                      },
                       onSubmit: _done('chart') || _chart.isEmpty || _busy
                           ? null
                           : _submitChart,
@@ -555,7 +632,10 @@ class _FlagshipWorkdayScreenState
                     enabled: !_done('manager'),
                     minLines: 5,
                     maxLines: 9,
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) {
+                      setState(() {});
+                      _scheduleDraftSave();
+                    },
                     decoration: const InputDecoration(
                       labelText: 'Your 2–4 sentence manager update',
                       hintText:
@@ -593,6 +673,10 @@ class _FlagshipWorkdayScreenState
                   ),
                 ],
               ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 6),
+              child: Text('Unfinished work saves automatically on this device.'),
             ),
             if (_feedback != null) ...[
               const SizedBox(height: 10),
@@ -635,7 +719,9 @@ class _FlagshipWorkdayScreenState
     final newStages = next.completedStages.difference(
       _attempt?.completedStages ?? const <String>{},
     );
-    await ref.read(flagshipAttemptRepositoryProvider).save(next);
+    _draftTimer?.cancel();
+    final stored = _withUnfinishedDrafts(next);
+    await ref.read(flagshipAttemptRepositoryProvider).save(stored);
     for (final stage in newStages) {
       await ref.read(learningTelemetryServiceProvider).recordEvent(
             'stage_${stage}_complete',
@@ -645,7 +731,7 @@ class _FlagshipWorkdayScreenState
       ref.invalidate(learningHealthProvider);
     }
     if (!mounted) return;
-    setState(() => _attempt = next);
+    setState(() => _attempt = stored);
     ref.invalidate(flagshipAttemptsProvider);
     ref.invalidate(flagshipAttemptProvider(item.id));
   }
