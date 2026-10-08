@@ -906,6 +906,7 @@ class _FlagshipWorkdayScreenState
       _attempt!.copyWith(
         analysisText: _analysisController.text.trim(),
         analysisScore: score,
+        changedDataPassed: _tool == 'SQL' && changedData?.isCorrect == true,
         completedStages: {..._attempt!.completedStages, 'analysis'},
       ),
     );
@@ -1506,6 +1507,11 @@ class _CompletedProject extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(workday.reviewFeedback),
+            if (attempt.changedDataPassed) ...[
+              const SizedBox(height: 8),
+              const Text('SQL verified on original and altered synthetic datasets. ' 
+                  'This is stronger evidence than a memorized answer, but not an employment credential.'),
+            ],
             const SizedBox(height: 10),
             Text(
               'Portfolio evidence',
