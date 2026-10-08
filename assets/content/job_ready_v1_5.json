@@ -61,7 +61,7 @@
         "Power BI": 90,
         "Excel": 80
       },
-      "analysisPrompt": "Calculate completed revenue by customer segment from the trusted orders and customers tables. Do not count refunded/cancelled revenue.",
+      "analysisPrompt": "Calculate completed revenue by customer segment from the trusted orders and customers tables. Do not count refunded/cancelled revenue. If you choose SQL, return exactly segment and SUM(revenue) AS revenue.",
       "sqlExpectedRows": [
         {
           "segment": "Consumer",
@@ -220,7 +220,7 @@
         "Power BI": 100,
         "Excel": 75
       },
-      "analysisPrompt": "Calculate September active MRR by segment. Keep the inactive/churned account visible in your reasoning even though active MRR excludes it.",
+      "analysisPrompt": "Calculate September active MRR by segment. Keep the inactive/churned account visible in your reasoning even though active MRR excludes it. If you choose SQL, return exactly segment and SUM(mrr) AS active_mrr.",
       "sqlExpectedRows": [
         {
           "segment": "Enterprise",
@@ -373,7 +373,7 @@
         "Power BI": 95,
         "Excel": 70
       },
-      "analysisPrompt": "Calculate total outstanding exposure by risk_band.",
+      "analysisPrompt": "Calculate total outstanding exposure by risk_band. If you choose SQL, return exactly risk_band and SUM(outstanding) AS exposure.",
       "sqlExpectedRows": [
         {
           "risk_band": "High",
@@ -523,7 +523,7 @@
         "Power BI": 90,
         "Excel": 90
       },
-      "analysisPrompt": "Calculate average wait minutes by unit across the observed hospital_daily_ops rows.",
+      "analysisPrompt": "Calculate average wait minutes by unit across the observed hospital_daily_ops rows. If you choose SQL, return exactly unit and ROUND(AVG(avg_wait_minutes), 1) AS avg_wait.",
       "sqlExpectedRows": [
         {
           "unit": "Emergency",
@@ -668,7 +668,7 @@
         "Power BI": 100,
         "Excel": 80
       },
-      "analysisPrompt": "Calculate shipping cost per kilogram by route using total cost / total weight.",
+      "analysisPrompt": "Calculate shipping cost per kilogram by route using total cost / total weight. If you choose SQL, return exactly route_code and ROUND(SUM(shipping_cost) / SUM(weight_kg), 2) AS cost_per_kg.",
       "sqlExpectedRows": [
         {
           "route_code": "NS-1",
