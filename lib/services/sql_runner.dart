@@ -5,11 +5,15 @@ class SqlRunResult {
     required this.columns,
     required this.rows,
     required this.error,
+    this.truncated = false,
   });
 
   final List<String> columns;
   final List<Map<String, Object?>> rows;
   final String? error;
+  /// True when the displayed first 100 rows omit more database rows.
+  /// Never award an exact-result grade to a truncated result.
+  final bool truncated;
 
   bool get isSuccess => error == null;
 }
@@ -62,6 +66,7 @@ class SqlRunner {
         columns: columns,
         rows: limitedRows,
         error: null,
+        truncated: rows.length > limitedRows.length,
       );
     } catch (error) {
       final raw = error.toString();

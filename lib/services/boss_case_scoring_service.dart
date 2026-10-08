@@ -28,6 +28,7 @@ class BossCaseScoringService {
     required BossCaseDefinition definition,
     required Set<String> cleaningSelections,
     required List<Map<String, Object?>> sqlRows,
+    bool sqlTruncated = false,
     required String kpiAnswer,
     required String chartAnswer,
     required String recommendationAnswer,
@@ -40,6 +41,7 @@ class BossCaseScoringService {
     final sqlCorrect = SqlResultGrader.grade(
       actualRows: sqlRows,
       expectedRows: definition.sqlExpectedRows,
+      truncated: sqlTruncated,
     ).isCorrect;
 
     final parsedKpi = double.tryParse(

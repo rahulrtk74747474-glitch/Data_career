@@ -7,11 +7,34 @@ void main() {
     final result = SpreadsheetSimulator.run(
       _challenge(
         expectedCommand: 'FORMULA =B2*(1-C2)',
+        rows: const [{'row': 2, 'gross': 1000, 'discount': 0.1}],
         expectedRows: const [],
       ),
       r'formula = $B2 * (1 - C2)',
     );
     expect(result.isCorrect, isTrue);
+  });
+
+  test('equivalent but differently written formula earns credit', () {
+    final challenge = _challenge(
+      rows: const [{'row': 2, 'gross': 1000, 'discount': 0.1}],
+      expectedCommand: 'FORMULA =B2*(1-C2)',
+      expectedRows: const [],
+    );
+    expect(SpreadsheetSimulator.run(challenge, '=B2-B2*C2').isCorrect, isTrue);
+    expect(SpreadsheetSimulator.run(challenge, '=900').isCorrect, isFalse);
+    expect(SpreadsheetSimulator.run(challenge, '=B2*(1+C2)').isCorrect, isFalse);
+    expect(SpreadsheetSimulator.run(challenge, '=B2/0').isCorrect, isFalse);
+  });
+
+  test('margin formula is calculated on live and altered cells', () {
+    final challenge = _challenge(
+      rows: const [{'row': 2, 'revenue': 2000, 'cost': 1400}],
+      expectedCommand: 'FORMULA =(B2-C2)/B2',
+      expectedRows: const [],
+    );
+    expect(SpreadsheetSimulator.run(challenge, '=1-C2/B2').isCorrect, isTrue);
+    expect(SpreadsheetSimulator.run(challenge, '=0.3').isCorrect, isFalse);
   });
 
   test('sort task requires requested row order and valid direction', () {

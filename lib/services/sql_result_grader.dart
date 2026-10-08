@@ -10,7 +10,15 @@ class SqlResultGrader {
   static SqlResultGrade grade({
     required List<Map<String, Object?>> actualRows,
     required List<Map<String, dynamic>> expectedRows,
+    bool truncated = false,
   }) {
+    if (truncated) {
+      return const SqlResultGrade(
+        isCorrect: false,
+        feedback: 'The SQL result exceeds the 100-row preview limit. '
+            'Add the requested filters or aggregation before grading.',
+      );
+    }
     if (actualRows.isEmpty && expectedRows.isEmpty) {
       return const SqlResultGrade(
         isCorrect: true,

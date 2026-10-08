@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/analyst_task.dart';
+import '../../services/company_followup_service.dart';
 import '../../models/career_mission.dart';
 import '../../models/skill_mastery.dart';
 import '../achievements/achievements_screen.dart';
@@ -20,6 +21,7 @@ import '../game/game_providers.dart';
 import '../graduation/job_readiness_screen.dart';
 import '../insight/insight_coach_screen.dart';
 import '../interview/interview_mode_screen.dart';
+import '../job_ready/day_at_work_screen.dart';
 import '../online/weekly_case_screen.dart';
 import '../pandas/pandas_lab_screen.dart';
 import '../placement/placement_screen.dart';
@@ -150,6 +152,24 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               nextStep,
+              const SizedBox(height: 12),
+              Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.work_outline),
+                  ),
+                  title: const Text(
+                    'Start your Day at Work',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: const Text(
+                    'Briefing → messy data → analysis → recommendation → manager review. Resume your saved workday.',
+                  ),
+                  trailing: const Icon(Icons.arrow_forward),
+                  onTap: () => _open(context, const DayAtWorkHubScreen()),
+                ),
+              ),
               const SizedBox(height: 20),
               const _SectionHeading(
                 title: 'Today',
@@ -493,6 +513,7 @@ class HomeScreen extends ConsumerWidget {
 
     if (shouldReset == true) {
       await ref.read(gameProgressProvider.notifier).reset();
+      await CompanyFollowupService(ref.read(appDatabaseProvider)).resetAll();
       await ref.read(masteryRepositoryProvider).resetAll();
       await ref.read(bossCaseResultRepositoryProvider).resetAll();
       await ref.read(taskPerformanceRepositoryProvider).resetAll();
