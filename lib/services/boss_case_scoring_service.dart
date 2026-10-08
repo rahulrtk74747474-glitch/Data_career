@@ -28,6 +28,7 @@ class BossCaseScoringService {
     required BossCaseDefinition definition,
     required Set<String> cleaningSelections,
     required List<Map<String, Object?>> sqlRows,
+    bool sqlTruncated = false,
     required String kpiAnswer,
     required String chartAnswer,
     required String recommendationAnswer,
