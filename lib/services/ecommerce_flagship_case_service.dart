@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../data/app_database.dart';
+import 'sql_result_grader.dart';
 
 /// The executed workday and portfolio export use these exact local SQLite rows.
 class EcommerceFlagshipCaseService {
@@ -168,16 +169,79 @@ class EcommerceFlagshipCaseService {
 
   static String get portableSchema => '${schemaStatements.join(';\n\n')};\n';
 
-  /// Prevent literal answers from passing a project that must use actual data.
+  /// Require actual FROM/JOIN references, not names pasted into comments or
+  /// SQL string literals. The holdout run below is the stronger data check.
   static String? queryIntegrityWarning(String sql) {
-    final query = sql.toLowerCase();
-    if (!query.contains('ec_case_clean_orders') ||
-        !query.contains('ec_case_customers')) {
-      return 'Use ec_case_clean_orders and ec_case_customers. The cleaned view '
-          'resolves late updates, duplicate orders and duplicate refunds.';
+    final executable = sql
+        .replaceAll(RegExp(r'/\\*[\\s\\S]*?\\*/'), ' ')
+        .replaceAll(RegExp(r'--[^\\n\\r]*'), ' ')
+        .replaceAll(RegExp(r"'(?:''|[^'])*'"), "''")
+        .toLowerCase();
+    bool uses(String table) => RegExp(
+      r'\\b(from|join)\\s+(?:main\\.)?["`\\[]?' +
+          table +
+          r'["`\\]]?\\b',
+      caseSensitive: false,
+    ).hasMatch(executable);
+    if (!uses('ec_case_clean_orders') || !uses('ec_case_customers')) {
+      return 'Use ec_case_clean_orders and ec_case_customers in real FROM/JOIN '
+          'clauses. Text in comments or string literals does not count.';
+    }
+    if (sql.contains('--') || sql.contains('/*')) {
+      return 'Remove SQL comments from this assessed project query.';
     }
     return null;
   }
+
+  /// Re-run submitted SQL on an altered, isolated snapshot *inside* a
+  /// transaction that is deliberately rolled back. Fixed answers matching
+  /// today's example numbers cannot pass when live case data changes.
+  ///
+  /// This is a hidden-data-style regression check, not a proof that the query
+  /// generalizes to all schemas or business scenarios.
+  Future<SqlResultGrade> verifyChangedData(String submittedQuery) async {
+    final warning = queryIntegrityWarning(submittedQuery);
+    if (warning != null) {
+      return SqlResultGrade(isCorrect: false, feedback: warning);
+    }
+    await ensureReady();
+    final db = await _database.database;
+    SqlResultGrade? result;
+    try {
+      await db.transaction((txn) async {
+        // Both interventions affect the Consumer segment; all changes roll
+        // back before the learner's database is released to other tasks.
+        final ordersChanged = await txn.rawUpdate(
+          'UPDATE ec_case_order_events SET gross_amount = gross_amount + 317 '
+          'WHERE event_id = ?',
+          ['EV001'],
+        );
+        final refundsChanged = await txn.rawUpdate(
+          'UPDATE ec_case_refund_events SET refund_amount = refund_amount + 41 '
+          'WHERE event_id = ?',
+          ['RE001'],
+        );
+        if (ordersChanged != 1 || refundsChanged != 1) {
+          throw StateError('Flagship holdout dataset does not match version 2.');
+        }
+        final actual = await txn.rawQuery(submittedQuery);
+        final expected = await txn.rawQuery(referenceQuery);
+        result = actual.length > 100
+            ? const SqlResultGrade(
+                isCorrect: false,
+                feedback: 'Assessment query returned too many rows.',
+              )
+            : SqlResultGrader.grade(
+                actualRows: actual,
+                expectedRows: expected.map((row) => Map<String, dynamic>.from(row)).toList(),
+              );
+        throw const _RollbackAssessment();
+      });
+    } on _RollbackAssessment {
+      return result!;
+    }
+  }
+
 }
 
 class EcommerceCaseAudit {
@@ -195,4 +259,9 @@ class EcommerceCaseAudit {
   final int netRevenue;
   int get duplicateOrderEvents => rawOrderEvents - uniqueOrders;
   int get duplicateRefundEvents => rawRefundEvents - uniqueRefunds;
+}
+
+/// A deliberately thrown sentinel ensures every holdout transaction rolls back.
+class _RollbackAssessment {
+  const _RollbackAssessment();
 }
