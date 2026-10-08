@@ -41,6 +41,7 @@ class BossCaseScoringService {
     final sqlCorrect = SqlResultGrader.grade(
       actualRows: sqlRows,
       expectedRows: definition.sqlExpectedRows,
+      truncated: sqlTruncated,
     ).isCorrect;
 
     final parsedKpi = double.tryParse(
