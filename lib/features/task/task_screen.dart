@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/analyst_task.dart';
 import '../../models/daily_challenge.dart';
 import '../../services/scoring_service.dart';
+import '../../services/manager_explanation_service.dart';
+import '../../services/mistake_feedback_service.dart';
 import '../../services/sql_editor_helper.dart';
 import '../../services/sql_result_grader.dart';
 import '../../widgets/solution_reveal_card.dart';
@@ -32,6 +34,7 @@ class TaskScreen extends ConsumerStatefulWidget {
 
 class _TaskScreenState extends ConsumerState<TaskScreen> {
   final _answerController = TextEditingController();
+  final _managerExplanationController = TextEditingController();
   final Set<String> _selectedOptions = {};
   int _revealedHints = 0;
   int _failedAttempts = 0;
@@ -41,6 +44,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   bool _solutionViewed = false;
   List<String> _sqlColumns = const [];
   List<Map<String, Object?>> _sqlRows = const [];
+  ManagerExplanationScore? _managerScore;
 
   AnalystTask get task => widget.task;
   bool get _isSql => task.answerType == 'sql_result';
@@ -48,6 +52,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
   @override
   void dispose() {
     _answerController.dispose();
+    _managerExplanationController.dispose();
     super.dispose();
   }
 
@@ -202,6 +207,60 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
                   ),
                 ],
               ),
+            if (task.difficulty.toLowerCase() == 'advanced') ...[
+              const SizedBox(height: 14),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Explain it to your manager',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Advanced work is not complete until you can explain the evidence, business impact, uncertainty and next action in 2–4 sentences.',
+                      ),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: _managerExplanationController,
+                        enabled: !alreadyCompleted && !_solved,
+                        minLines: 4,
+                        maxLines: 7,
+                        decoration: const InputDecoration(
+                          labelText: 'Manager explanation',
+                          hintText:
+                              'Finding → evidence → limitation → recommendation',
+                          alignLabelWithHint: true,
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      if (_managerScore != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          'Manager rubric: ${_managerScore!.total}/100',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        Text('Evidence: ${_managerScore!.evidence}/25'),
+                        Text('Clarity: ${_managerScore!.clarity}/20'),
+                        Text(
+                          'Business impact: ${_managerScore!.businessImpact}/20',
+                        ),
+                        Text('Uncertainty: ${_managerScore!.uncertainty}/15'),
+                        Text(
+                          'Recommendation: ${_managerScore!.recommendation}/20',
+                        ),
+                        const SizedBox(height: 6),
+                        for (final item in _managerScore!.feedback)
+                          Text('• $item'),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             FilledButton.icon(
               onPressed:
@@ -342,14 +401,50 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
       setState(() {
         _submitting = false;
         _failedAttempts++;
-        _feedback = grade.feedback;
+        _feedback = MistakeFeedbackService.explain(
+          task: task,
+          answer: _answerController.text,
+          baseFeedback: grade.feedback,
+        );
       });
       return;
     }
 
-    final score = (100 - (_revealedHints * 15) - (_failedAttempts * 10))
-        .clamp(40, 100)
-        .toInt();
+    ManagerExplanationScore? managerScore;
+    if (task.difficulty.toLowerCase() == 'advanced') {
+      final managerText = _managerExplanationController.text.trim();
+      if (managerText.isEmpty) {
+        if (!mounted) return;
+        setState(() {
+          _submitting = false;
+          _feedback =
+              'Technical answer is correct. Now explain the result to your manager in 2–4 sentences.';
+        });
+        return;
+      }
+      managerScore = ManagerExplanationService.score(text: managerText);
+      if (managerScore.total < 50) {
+        if (!mounted) return;
+        setState(() {
+          _submitting = false;
+          _managerScore = managerScore;
+          _feedback =
+              'Your technical answer is correct, but the manager explanation is not decision-ready yet. Strengthen the missing rubric areas and resubmit.';
+        });
+        return;
+      }
+    }
+
+    final technicalScore =
+        (100 - (_revealedHints * 15) - (_failedAttempts * 10))
+            .clamp(40, 100)
+            .toInt();
+    final score = managerScore == null
+        ? technicalScore
+        : (technicalScore * 0.75 + managerScore.total * 0.25)
+            .round()
+            .clamp(40, 100)
+            .toInt();
 
     if (widget.isDaily) {
       await ref.read(gameProgressProvider.notifier).completeDailyChallenge(
@@ -391,6 +486,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
     if (!mounted) return;
     final progress = ref.read(gameProgressProvider);
     setState(() {
+      _managerScore = managerScore;
       _submitting = false;
       _solved = true;
       _feedback = widget.isDaily
