@@ -464,11 +464,4 @@ class SpreadsheetSimulator {
     throw FormatException('Could not parse date $value.');
   }
 
-  static String _normalize(String value) {
-    return value
-        .trim()
-        .replaceAll(RegExp(r'\s+'), '')
-        .replaceAll(r'$', '')
-        .toUpperCase();
-  }
 }
