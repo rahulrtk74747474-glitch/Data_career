@@ -8,6 +8,7 @@ import '../job_ready/day_at_work_screen.dart';
 import '../job_ready/domain_playbooks_screen.dart';
 import '../job_ready/leadership_desk_screen.dart';
 import '../job_ready/adaptive_manager_screen.dart';
+import '../job_ready/pilot_feedback_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../insight/insight_coach_screen.dart';
 import '../portfolio/portfolio_screen.dart';
@@ -257,6 +258,12 @@ class AnalystDesktopScreen extends ConsumerWidget {
                   label: 'Adaptive Coach',
                   onTap: () =>
                       _open(context, const AdaptiveManagerScreen()),
+                ),
+                _DesktopApp(
+                  icon: Icons.monitor_heart_outlined,
+                  label: 'Beta Health',
+                  onTap: () =>
+                      _open(context, const PilotFeedbackScreen()),
                 ),
                 _DesktopApp(
                   icon: Icons.folder_special_outlined,

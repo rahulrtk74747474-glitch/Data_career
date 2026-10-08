@@ -50,6 +50,7 @@ import '../../services/daily_challenge_service.dart';
 import '../../services/graduation_service.dart';
 import '../../services/job_readiness_service.dart';
 import '../../services/learning_note_service.dart';
+import '../../services/learning_telemetry_service.dart';
 import '../../services/portfolio_delivery_service.dart';
 import '../../services/portfolio_export_service.dart';
 import '../../services/portfolio_pdf_export_service.dart';
@@ -84,8 +85,19 @@ final startupServiceProvider = Provider<StartupService>((ref) {
   );
 });
 
-final startupInitializationProvider = FutureProvider<void>((ref) {
-  return ref.read(startupServiceProvider).initialize();
+final learningTelemetryServiceProvider =
+    Provider<LearningTelemetryService>((ref) {
+  return const LearningTelemetryService();
+});
+
+final startupInitializationProvider = FutureProvider<void>((ref) async {
+  await ref.read(startupServiceProvider).initialize();
+  await ref.read(learningTelemetryServiceProvider).recordAppOpen();
+});
+
+final learningHealthProvider =
+    FutureProvider<LearningHealthReport>((ref) {
+  return ref.read(learningTelemetryServiceProvider).report();
 });
 
 final achievementRepositoryProvider = Provider<AchievementRepository>((ref) {

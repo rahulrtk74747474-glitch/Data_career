@@ -200,6 +200,10 @@ class _FlagshipWorkdayScreenState
   }
 
   Future<void> _load() async {
+    await ref.read(learningTelemetryServiceProvider).recordEvent(
+          'workday_start',
+        );
+    ref.invalidate(learningHealthProvider);
     final attempt = await ref
         .read(flagshipAttemptRepositoryProvider)
         .load(item.id);
@@ -665,6 +669,10 @@ class _FlagshipWorkdayScreenState
       completedAt: DateTime.now().toUtc(),
     );
     await ref.read(flagshipAttemptRepositoryProvider).save(completed);
+    await ref.read(learningTelemetryServiceProvider).recordEvent(
+          'workday_complete',
+        );
+    ref.invalidate(learningHealthProvider);
 
     final earned =
         await ref.read(gameProgressProvider.notifier).awardLearningXp(
