@@ -1,4 +1,4 @@
-import 'dart:convert';
+// ignore_for_file: prefer_interpolation_to_compose_strings
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
