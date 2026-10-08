@@ -84,4 +84,19 @@ void main() {
       expect(day.risk, inInclusiveRange(0, 100));
     }
   });
+
+  test('explicit career reset clears all persisted company outcomes', () async {
+    final service = CompanyFollowupService(database);
+    await service.record(
+      workdayId: 'case-to-reset',
+      company: 'saas',
+      score: 95,
+      hintsUsed: 0,
+      managerRecommendation: 'Pilot before expanding.',
+    );
+    expect(await service.load('case-to-reset'), hasLength(4));
+    await service.resetAll();
+    expect(await service.load('case-to-reset'), isEmpty);
+  });
+
 }
