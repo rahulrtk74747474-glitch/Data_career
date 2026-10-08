@@ -152,6 +152,13 @@ class CompanyFollowupService {
     return load(workdayId);
   }
 
+  /// Career reset must also clear downstream fictional business results.
+  Future<void> resetAll() async {
+    await _ensureTable();
+    final db = await database.database;
+    await db.delete(table);
+  }
+
   Future<List<CompanyFollowupDay>> load(String workdayId) async {
     await _ensureTable();
     final db = await database.database;
