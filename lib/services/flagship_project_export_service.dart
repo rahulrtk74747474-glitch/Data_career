@@ -1,0 +1,130 @@
+import 'dart:io';
+
+import 'package:path/path.dart' as p;
+
+import '../data/app_database.dart';
+import '../models/flagship_attempt.dart';
+import '../models/job_ready_v15.dart';
+
+class FlagshipProjectExportResult {
+  const FlagshipProjectExportResult({
+    required this.directoryPath,
+    required this.fileCount,
+  });
+
+  final String directoryPath;
+  final int fileCount;
+}
+
+class FlagshipProjectExportService {
+  const FlagshipProjectExportService(this._database);
+
+  final AppDatabase _database;
+
+  Future<FlagshipProjectExportResult> export({
+    required FlagshipWorkday workday,
+    required FlagshipAttempt attempt,
+  }) async {
+    final base = await _database.storageDirectoryPath;
+    final safeId = workday.id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    final dir = Directory(p.join(base, 'exports', 'github_$safeId'));
+    await dir.create(recursive: true);
+
+    final files = <String, String>{
+      'README.md': _readme(workday, attempt),
+      'analysis.${_extension(attempt.tool)}': attempt.analysisText.trim(),
+      'data_quality.md': _quality(workday, attempt),
+      'executive_summary.md': attempt.managerText.trim(),
+      'sample_data.csv': _csv(workday.previewRows),
+    };
+
+    for (final entry in files.entries) {
+      await File(p.join(dir.path, entry.key)).writeAsString(
+        entry.value.endsWith('\n') ? entry.value : '${entry.value}\n',
+        flush: true,
+      );
+    }
+
+    return FlagshipProjectExportResult(
+      directoryPath: dir.path,
+      fileCount: files.length,
+    );
+  }
+
+  static String _extension(String tool) {
+    switch (tool) {
+      case 'SQL':
+        return 'sql';
+      case 'Pandas':
+        return 'py';
+      case 'Power BI':
+        return 'dax';
+      case 'Excel':
+        return 'txt';
+      default:
+        return 'txt';
+    }
+  }
+
+  static String _readme(
+    FlagshipWorkday workday,
+    FlagshipAttempt attempt,
+  ) => '''
+# ${workday.title}
+
+**Company simulation:** ${workday.companyName}  
+**Role:** ${workday.role}  
+**DataQuest score:** ${attempt.totalScore}/100  
+**Primary tool chosen:** ${attempt.tool}
+
+## Business problem
+${workday.briefing}
+
+## Dataset
+${workday.datasetName}
+
+## Workflow
+1. Data-quality triage
+2. Tool selection
+3. Open-ended analysis
+4. Statistical interpretation
+5. Dashboard decision
+6. Executive/manager communication
+
+## Final recommendation
+${attempt.managerText}
+
+## Training disclosure
+This is a synthetic DataQuest learning project, not real employer work.
+''';
+
+  static String _quality(
+    FlagshipWorkday workday,
+    FlagshipAttempt attempt,
+  ) => '''
+# Data-quality review
+
+Selected controls/issues:
+${attempt.selectedIssues.map((item) => '- $item').join('\n')}
+
+Reference issues:
+${workday.correctIssues.map((item) => '- $item').join('\n')}
+''';
+
+  static String _csv(List<Map<String, dynamic>> rows) {
+    if (rows.isEmpty) return '';
+    final columns = rows.first.keys.toList();
+    final lines = <String>[columns.map(_escape).join(',')];
+    for (final row in rows) {
+      lines.add(
+        columns.map((column) => _escape(row[column]?.toString() ?? '')).join(','),
+      );
+    }
+    return lines.join('\n');
+  }
+
+  static String _escape(String value) {
+    final escaped = value.replaceAll('"', '""');
+    return '"$escaped"';
+  }
+}
