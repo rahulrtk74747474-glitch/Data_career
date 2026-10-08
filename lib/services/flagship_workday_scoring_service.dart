@@ -27,7 +27,23 @@ class FlagshipWorkdayScoringService {
     final hits = rules.where(
       (token) => normalized.contains(token.toLowerCase()),
     ).length;
-    return (hits / rules.length * 100).round().clamp(0, 100).toInt();
+    var score =
+        (hits / rules.length * 100).round().clamp(0, 100).toInt();
+
+    final syntaxCredible = switch (tool) {
+      'Pandas' => normalized.contains('df') &&
+          (normalized.contains('[') || normalized.contains('.')),
+      'Power BI' => normalized.contains('=') &&
+          normalized.contains('(') &&
+          normalized.contains(')'),
+      'Excel' => normalized.trimLeft().startsWith('=') ||
+          normalized.contains('pivot'),
+      _ => true,
+    };
+    if (!syntaxCredible && score > 55) {
+      score = 55;
+    }
+    return score;
   }
 
   static int managerScore(FlagshipWorkday item, String text) =>

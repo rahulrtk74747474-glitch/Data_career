@@ -7,6 +7,7 @@ import '../../models/skill_mastery.dart';
 import '../../services/career_artifact_service.dart';
 import '../../services/portfolio_service.dart';
 import '../game/game_providers.dart';
+import '../job_ready/job_ready_providers.dart';
 
 class PortfolioScreen extends ConsumerWidget {
   const PortfolioScreen({super.key});
@@ -17,6 +18,8 @@ class PortfolioScreen extends ConsumerWidget {
     final skills = ref.watch(skillProfileProvider);
     final progress = ref.watch(gameProgressProvider);
     final missions = ref.watch(careerMissionsProvider);
+    final flagshipWorkdays = ref.watch(flagshipWorkdaysProvider);
+    final flagshipAttempts = ref.watch(flagshipAttemptsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Portfolio Evidence')),
@@ -33,9 +36,16 @@ class PortfolioScreen extends ConsumerWidget {
                       progress.rewardedLearningIds.contains(mission.rewardId),
                 )
                 .toList();
+            final workdays = flagshipWorkdays.valueOrNull ?? const [];
+            final savedFlagships = flagshipAttempts.valueOrNull ?? const {};
+            final completedFlagships = workdays
+                .where((item) => savedFlagships[item.id]?.isComplete ?? false)
+                .toList();
             final projectHighlights = [
               for (final mission in completedMissions)
                 mission.resumeBullet,
+              for (final workday in completedFlagships)
+                workday.resumeBullet,
             ];
             return ListView(
             padding: const EdgeInsets.all(16),
@@ -198,6 +208,29 @@ class PortfolioScreen extends ConsumerWidget {
                       leading: const Icon(Icons.work_history_outlined),
                       title: Text(mission.title),
                       subtitle: SelectableText(mission.resumeBullet),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+              ],
+              if (completedFlagships.isNotEmpty) ...[
+                Text(
+                  'Flagship portfolio projects',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'End-to-end Day-at-Work projects with open-ended analysis and manager communication.',
+                ),
+                const SizedBox(height: 8),
+                for (final workday in completedFlagships)
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.workspace_premium_outlined),
+                      title: Text(workday.title),
+                      subtitle: SelectableText(workday.resumeBullet),
+                      trailing: Text(
+                        '${savedFlagships[workday.id]!.totalScore}/100',
+                      ),
                     ),
                   ),
                 const SizedBox(height: 20),

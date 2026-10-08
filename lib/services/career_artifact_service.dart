@@ -104,7 +104,7 @@ class CareerArtifactService {
         .toList()
       ..sort((a, b) => b.score.compareTo(a.score));
 
-    return [
+    final cards = [
       for (final item in items)
         PortfolioProjectCard(
           id: '${item.sourceType}:${item.sourceId}',
@@ -131,6 +131,31 @@ class CareerArtifactService {
               attemptsBySource['${item.sourceType}:${item.sourceId}'] ?? 1,
         ),
     ];
+
+    final flagshipTasks = snapshot.taskPerformances
+        .where((item) => item.difficulty == 'Open-ended Project')
+        .toList()
+      ..sort((a, b) => b.bestScore.compareTo(a.bestScore));
+    for (final item in flagshipTasks) {
+      cards.add(
+        PortfolioProjectCard(
+          id: 'flagship:${item.taskId}',
+          title: item.title,
+          company: _companyFromFlagshipId(item.taskId),
+          score: item.bestScore,
+          skills: const [
+            'Data Quality',
+            'Analysis Tool',
+            'Statistics',
+            'Dashboard',
+            'Communication',
+          ],
+          attempts: item.attempts,
+        ),
+      );
+    }
+
+    return cards;
   }
 
   static Map<String, EvidenceAttempt> _bestEvidenceBySource(
@@ -145,6 +170,15 @@ class CareerArtifactService {
       }
     }
     return best;
+  }
+
+  static String _companyFromFlagshipId(String id) {
+    if (id.contains('ecommerce')) return 'E-commerce Co.';
+    if (id.contains('saas')) return 'SaaS Growth Co.';
+    if (id.contains('bank')) return 'NorthStar Bank Analytics';
+    if (id.contains('hospital')) return 'Harborview Hospital Analytics';
+    if (id.contains('logistics')) return 'Logistics Network Co.';
+    return 'DataQuest company simulation';
   }
 
   static String _companyName(String key) {

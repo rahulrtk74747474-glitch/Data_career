@@ -32,6 +32,9 @@ class AchievementService {
     final careerProjects = progress.rewardedLearningIds
         .where((id) => id.startsWith('mission:'))
         .length;
+    final flagshipProjects = progress.rewardedLearningIds
+        .where((id) => id.startsWith('flagship:'))
+        .length;
     final independentPasses = portfolio.taskPerformances
         .where(
           (item) =>
@@ -86,6 +89,13 @@ class AchievementService {
         description:
             'Complete three connected Career Campaign projects.',
         unlocked: careerProjects >= 3,
+      ),
+      AchievementBadge(
+        id: 'flagship-analyst',
+        title: 'Flagship Analyst',
+        description:
+            'Complete all five end-to-end Day-at-Work portfolio projects.',
+        unlocked: flagshipProjects >= 5,
       ),
       AchievementBadge(
         id: 'evidence-driven',
