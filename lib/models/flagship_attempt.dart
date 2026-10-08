@@ -9,6 +9,7 @@ class FlagshipAttempt {
     this.chartAnswer = '',
     this.managerText = '',
     this.hintsUsed = 0,
+    this.changedDataPassed = false,
     this.issueScore = 0,
     this.toolScore = 0,
     this.analysisScore = 0,
@@ -28,6 +29,8 @@ class FlagshipAttempt {
   final String chartAnswer;
   final String managerText;
   final int hintsUsed;
+  /// Passed a query-output check on an altered, rollback-only fixture.
+  final bool changedDataPassed;
   final int issueScore;
   final int toolScore;
   final int analysisScore;
@@ -49,6 +52,7 @@ class FlagshipAttempt {
     String? chartAnswer,
     String? managerText,
     int? hintsUsed,
+    bool? changedDataPassed,
     int? issueScore,
     int? toolScore,
     int? analysisScore,
@@ -68,6 +72,7 @@ class FlagshipAttempt {
       chartAnswer: chartAnswer ?? this.chartAnswer,
       managerText: managerText ?? this.managerText,
       hintsUsed: hintsUsed ?? this.hintsUsed,
+      changedDataPassed: changedDataPassed ?? this.changedDataPassed,
       issueScore: issueScore ?? this.issueScore,
       toolScore: toolScore ?? this.toolScore,
       analysisScore: analysisScore ?? this.analysisScore,
@@ -89,6 +94,7 @@ class FlagshipAttempt {
         'chartAnswer': chartAnswer,
         'managerText': managerText,
         'hintsUsed': hintsUsed,
+        'changedDataPassed': changedDataPassed,
         'issueScore': issueScore,
         'toolScore': toolScore,
         'analysisScore': analysisScore,
@@ -114,6 +120,7 @@ class FlagshipAttempt {
         chartAnswer: (json['chartAnswer'] as String?) ?? '',
         managerText: (json['managerText'] as String?) ?? '',
         hintsUsed: (json['hintsUsed'] as num?)?.toInt() ?? 0,
+        changedDataPassed: json['changedDataPassed'] == true,
         issueScore: (json['issueScore'] as num?)?.toInt() ?? 0,
         toolScore: (json['toolScore'] as num?)?.toInt() ?? 0,
         analysisScore: (json['analysisScore'] as num?)?.toInt() ?? 0,
