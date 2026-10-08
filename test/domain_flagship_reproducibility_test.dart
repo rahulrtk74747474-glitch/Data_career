@@ -81,4 +81,31 @@ void main() {
       expect(verification['external_analyst_replay_completed'], isFalse);
     }
   });
+
+  test('domain holdout fails pasted banking exposure totals without side effects',
+      () async {
+    const hardcoded = "SELECT 'High' AS risk_band, 500000 AS exposure "
+        "UNION ALL SELECT 'Low', 2420000 "
+        "UNION ALL SELECT 'Medium', 45000";
+    final bundle = DomainFlagshipExportBundle(database);
+    final baseline = await SqlRunner(database).runReadOnly(hardcoded);
+    expect(baseline.isSuccess, isTrue);
+    final checked = await bundle.verifyChangedData(
+      company: 'bank', sql: hardcoded,
+    );
+    expect(checked.isCorrect, isFalse);
+    final replay = await SqlRunner(database).runReadOnly(
+      DomainFlagshipExportBundle.referenceQueries['bank']!,
+    );
+    expect(replay.isSuccess, isTrue);
+    expect(SqlResultGrader.grade(
+      actualRows: replay.rows,
+      expectedRows: const [
+        {'risk_band': 'High', 'exposure': 500000},
+        {'risk_band': 'Low', 'exposure': 2420000},
+        {'risk_band': 'Medium', 'exposure': 45000},
+      ],
+    ).isCorrect, isTrue);
+  });
+
 }
