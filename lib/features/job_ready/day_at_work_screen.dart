@@ -10,6 +10,7 @@ import '../../models/job_ready_v15.dart';
 import '../../services/analyst_mistake_diagnostics.dart';
 import '../../services/ecommerce_flagship_case_service.dart';
 import '../../services/company_followup_service.dart';
+import '../../services/domain_flagship_export_bundle.dart';
 import '../../services/flagship_workday_scoring_service.dart';
 import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
@@ -835,11 +836,20 @@ class _FlagshipWorkdayScreenState
         expectedRows: item.sqlExpectedRows,
         truncated: run.truncated,
       );
-      final changedData = grade.isCorrect && item.companyKey == 'ecommerce'
-          ? await EcommerceFlagshipCaseService(
-              ref.read(appDatabaseProvider),
-            ).verifyChangedData(_analysisController.text)
-          : null;
+      final changedData = !grade.isCorrect
+          ? null
+          : item.companyKey == 'ecommerce'
+              ? await EcommerceFlagshipCaseService(
+                  ref.read(appDatabaseProvider),
+                ).verifyChangedData(_analysisController.text)
+              : DomainFlagshipExportBundle.tables.containsKey(item.companyKey)
+                  ? await DomainFlagshipExportBundle(
+                      ref.read(appDatabaseProvider),
+                    ).verifyChangedData(
+                      company: item.companyKey,
+                      sql: _analysisController.text,
+                    )
+                  : null;
       final accepted = grade.isCorrect && (changedData?.isCorrect ?? true);
       score = accepted ? 100 : 0;
       feedback = accepted
