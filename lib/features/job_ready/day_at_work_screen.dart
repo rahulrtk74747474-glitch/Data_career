@@ -523,7 +523,18 @@ class _FlagshipWorkdayScreenState
       ].every(_done);
 
   Future<void> _save(FlagshipAttempt next) async {
+    final newStages = next.completedStages.difference(
+      _attempt?.completedStages ?? const <String>{},
+    );
     await ref.read(flagshipAttemptRepositoryProvider).save(next);
+    for (final stage in newStages) {
+      await ref.read(learningTelemetryServiceProvider).recordEvent(
+            'stage_${stage}_complete',
+          );
+    }
+    if (newStages.isNotEmpty) {
+      ref.invalidate(learningHealthProvider);
+    }
     if (!mounted) return;
     setState(() => _attempt = next);
     ref.invalidate(flagshipAttemptsProvider);
@@ -808,7 +819,7 @@ class _FlagshipWorkdayScreenState
         title: const Text('GitHub-ready project created'),
         content: SelectableText(
           '${result.fileCount} files created:\n\n${result.directoryPath}\n\n'
-          'README.md, analysis file, data_quality.md, executive_summary.md and sample_data.csv.',
+          'README, analysis, data quality, statistics, dashboard plan, executive summary, sample CSV and limitations.',
         ),
         actions: [
           FilledButton(
