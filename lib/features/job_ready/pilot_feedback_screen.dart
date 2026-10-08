@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../game/game_providers.dart';
+import '../../services/anonymous_beta_summary.dart';
+import '../../services/independent_sql_exam_service.dart';
 
 class PilotFeedbackScreen extends ConsumerStatefulWidget {
   const PilotFeedbackScreen({super.key});
@@ -20,6 +23,7 @@ class _PilotFeedbackScreenState extends ConsumerState<PilotFeedbackScreen> {
   int _usefulness = 4;
   String _wouldPay = 'Maybe';
   bool _saving = false;
+  bool _exportConsent = false;
 
   @override
   void dispose() {
@@ -163,6 +167,24 @@ class _PilotFeedbackScreenState extends ConsumerState<PilotFeedbackScreen> {
                 icon: const Icon(Icons.data_object),
                 label: const Text('Preview local beta JSON'),
               ),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                value: _exportConsent,
+                onChanged: (checked) => setState(
+                  () => _exportConsent = checked ?? false,
+                ),
+                title: const Text('I consent to copying anonymous beta metrics'),
+                subtitle: const Text(
+                  'Only counts, aggregate ratings and the independent '
+                  'SQL pass flag are copied. Raw dates, feedback text and '
+                  'personal identifiers are excluded.',
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: _exportConsent ? _copyAnonymousSummary : null,
+                icon: const Icon(Icons.copy_all_outlined),
+                label: const Text('Copy privacy-minimized beta summary'),
+              ),
             ],
           ),
         ),
@@ -185,6 +207,32 @@ class _PilotFeedbackScreenState extends ConsumerState<PilotFeedbackScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Feedback saved on this device.')),
     );
+  }
+
+  Future<void> _copyAnonymousSummary() async {
+    try {
+      final raw = await ref.read(learningTelemetryServiceProvider).exportJson();
+      final passed = await IndependentSqlExamService(
+        ref.read(appDatabaseProvider),
+      ).hasPassed();
+      final result = AnonymousBetaSummary.fromTelemetry(
+        raw, consent: _exportConsent, independentSqlPassed: passed,
+      );
+      await Clipboard.setData(
+        ClipboardData(text: const JsonEncoder.withIndent('  ').convert(result)),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text(
+          'Anonymous summary copied; you decide whether to share it.',
+        )),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not export anonymized metrics: $error')),
+      );
+    }
   }
 
   Future<void> _showExport(BuildContext context) async {
