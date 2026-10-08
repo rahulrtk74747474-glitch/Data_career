@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/flagship_attempt.dart';
+import '../../data/app_database.dart';
 import '../../models/job_ready_v15.dart';
 import '../../services/analyst_mistake_diagnostics.dart';
 import '../../services/ecommerce_flagship_case_service.dart';
+import '../../services/company_followup_service.dart';
 import '../../services/flagship_workday_scoring_service.dart';
 import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
@@ -700,6 +702,11 @@ class _FlagshipWorkdayScreenState
                 attempt: _attempt!,
                 onExport: _exportProject,
               ),
+            if (_attempt!.isComplete)
+              _CompanyFollowupPreview(
+                database: ref.read(appDatabaseProvider),
+                workdayId: item.id,
+              ),
           ],
         ),
       ),
@@ -1026,6 +1033,18 @@ class _FlagshipWorkdayScreenState
           dataQualityDelta: total >= 85 ? 3 : 1,
           riskDelta: total >= 85 ? -3 : total >= 70 ? -1 : 0,
         );
+
+    try {
+      await CompanyFollowupService(ref.read(appDatabaseProvider)).record(
+        workdayId: item.id,
+        company: item.companyKey,
+        score: total,
+        hintsUsed: current.hintsUsed,
+        managerRecommendation: current.managerText,
+      );
+    } catch (_) {
+      // The completed assessment survives if later scenario creation fails.
+    }
 
     final mastery = ref.read(masteryRepositoryProvider);
     await mastery.recordAttempt('cleaning', current.issueScore);
@@ -1493,6 +1512,65 @@ class _CompletedProject extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// Modeled business results are fictional educational scenarios.
+class _CompanyFollowupPreview extends StatelessWidget {
+  const _CompanyFollowupPreview({
+    required this.database,
+    required this.workdayId,
+  });
+
+  final AppDatabase database;
+  final String workdayId;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<CompanyFollowupDay>>(
+      future: CompanyFollowupService(database).load(workdayId),
+      builder: (context, snapshot) {
+        final days = snapshot.data ?? const <CompanyFollowupDay>[];
+        if (days.isEmpty) return const SizedBox.shrink();
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Next-day company consequences (simulated)',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'This is a hypothetical scenario from your recommendation '
+                  'and task score. Outside events also affect the result; '
+                  'the outcome is not evidence of causation.',
+                ),
+                const SizedBox(height: 10),
+                for (final day in days) ...[
+                  Text(
+                    'Day ' + day.day.toString() + ': ' +
+                    day.metricName + ' ' + day.metricValue.toStringAsFixed(2),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Text('Incremental cost: ' + day.extraCost.toStringAsFixed(0)
+                       + ' | Risk: ' + day.risk.toStringAsFixed(1)),
+                  Text(day.managerMessage),
+                  const SizedBox(height: 8),
+                ],
+                const Text(
+                  'Analyze the modeled daily data in SQL Workstation using '
+                  'dq_company_followup_daily.',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
