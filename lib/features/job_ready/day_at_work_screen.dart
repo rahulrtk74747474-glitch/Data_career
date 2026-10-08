@@ -1553,12 +1553,10 @@ class _CompanyFollowupPreview extends StatelessWidget {
                 const SizedBox(height: 10),
                 for (final day in days) ...[
                   Text(
-                    'Day ' + day.day.toString() + ': ' +
-                    day.metricName + ' ' + day.metricValue.toStringAsFixed(2),
+                    'Day ${day.day}: ${day.metricName} ${day.metricValue.toStringAsFixed(2)}',
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  Text('Incremental cost: ' + day.extraCost.toStringAsFixed(0)
-                       + ' | Risk: ' + day.risk.toStringAsFixed(1)),
+                  Text('Incremental cost: ${day.extraCost.toStringAsFixed(0)} | Risk: ${day.risk.toStringAsFixed(1)}'),
                   Text(day.managerMessage),
                   const SizedBox(height: 8),
                 ],
