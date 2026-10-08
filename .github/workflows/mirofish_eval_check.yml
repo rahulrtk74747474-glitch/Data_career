@@ -1,0 +1,53 @@
+name: MiroFish research-pack checks (offline)
+
+on:
+  push:
+    paths:
+      - 'experiments/mirofish/**'
+      - 'tool/mirofish_viability.py'
+      - 'test_mirofish_viability.py'
+      - '.github/workflows/mirofish_eval_check.yml'
+  pull_request:
+    paths:
+      - 'experiments/mirofish/**'
+      - 'tool/mirofish_viability.py'
+      - 'test_mirofish_viability.py'
+      - '.github/workflows/mirofish_eval_check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-mirofish-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify scenario evidence, pack and no-live-run status
+        run: |
+          python tool/mirofish_viability.py check
+          python -m unittest -v test_mirofish_viability.py
+      - name: Export synthetic research seed without contacting MiroFish
+        run: |
+          python tool/mirofish_viability.py prepare --scenario baseline
+          python tool/mirofish_viability.py prepare --scenario evidence_first --output mirofish_local_outputs/evidence_first
+          python tool/mirofish_viability.py prepare --scenario growth_first --output mirofish_local_outputs/growth_first
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path('experiments/mirofish/RESULT_STATUS.json').read_text())
+          assert status['mirofish_execution'] == 'NOT_RUN'
+          paths = list(Path('mirofish_local_outputs').rglob('*_mirofish_seed.md'))
+          assert len(paths) == 3, paths
+          for path in paths:
+              assert 'Synthetic actor map' in path.read_text()
+          print('PASS: 3 portable seed packs prepared; no live simulation or cloud API used.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dataquest-mirofish-scenario-packs
+          path: mirofish_local_outputs/
+          retention-days: 7
