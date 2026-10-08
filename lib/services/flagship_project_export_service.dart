@@ -7,6 +7,8 @@ import '../data/app_database.dart';
 import '../models/flagship_attempt.dart';
 import '../models/job_ready_v15.dart';
 import 'ecommerce_flagship_export_bundle.dart';
+import 'company_flagship_export_bundle.dart';
+import 'company_flagship_case_service.dart';
 
 class FlagshipProjectExportResult {
   const FlagshipProjectExportResult({
@@ -48,6 +50,14 @@ class FlagshipProjectExportService {
     if (workday.companyKey == 'ecommerce') {
       files.addAll(
         await EcommerceFlagshipExportBundle(_database).build(
+          workday: workday,
+          attempt: attempt,
+        ),
+      );
+    }
+    if (CompanyFlagshipCaseService.validCases.contains(workday.companyKey)) {
+      files.addAll(
+        await CompanyFlagshipExportBundle(_database).build(
           workday: workday,
           attempt: attempt,
         ),
