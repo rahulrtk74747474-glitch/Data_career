@@ -445,8 +445,11 @@ class _FlagshipWorkdayScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'No tool is prescribed. Choose the approach you would defend in a real job.',
+                  Text(
+                    item.companyKey == 'ecommerce' ||
+                            CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                        ? 'Executable SQL is required for verified flagship project evidence.'
+                        : 'Choose the approach you would defend in a real job.',
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -501,7 +504,12 @@ class _FlagshipWorkdayScreenState
                   Text(
                     _tool.isEmpty
                         ? 'Choose your tool first.'
-                        : _toolHint(_tool),
+                        : _tool == 'SQL' &&
+                                CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                            ? 'Query dq_case_latest and filter case_id = the '
+                                'company key. Deduplicate events using the view; '
+                                'derive ratios from total numerator / total denominator.'
+                            : _toolHint(_tool),
                   ),
                   const SizedBox(height: 8),
                   TextField(
