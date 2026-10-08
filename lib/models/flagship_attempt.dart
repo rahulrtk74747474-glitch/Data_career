@@ -8,6 +8,7 @@ class FlagshipAttempt {
     this.statisticsAnswer = '',
     this.chartAnswer = '',
     this.managerText = '',
+    this.hintsUsed = 0,
     this.issueScore = 0,
     this.toolScore = 0,
     this.analysisScore = 0,
@@ -26,6 +27,7 @@ class FlagshipAttempt {
   final String statisticsAnswer;
   final String chartAnswer;
   final String managerText;
+  final int hintsUsed;
   final int issueScore;
   final int toolScore;
   final int analysisScore;
@@ -46,6 +48,7 @@ class FlagshipAttempt {
     String? statisticsAnswer,
     String? chartAnswer,
     String? managerText,
+    int? hintsUsed,
     int? issueScore,
     int? toolScore,
     int? analysisScore,
@@ -64,6 +67,7 @@ class FlagshipAttempt {
       statisticsAnswer: statisticsAnswer ?? this.statisticsAnswer,
       chartAnswer: chartAnswer ?? this.chartAnswer,
       managerText: managerText ?? this.managerText,
+      hintsUsed: hintsUsed ?? this.hintsUsed,
       issueScore: issueScore ?? this.issueScore,
       toolScore: toolScore ?? this.toolScore,
       analysisScore: analysisScore ?? this.analysisScore,
@@ -84,6 +88,7 @@ class FlagshipAttempt {
         'statisticsAnswer': statisticsAnswer,
         'chartAnswer': chartAnswer,
         'managerText': managerText,
+        'hintsUsed': hintsUsed,
         'issueScore': issueScore,
         'toolScore': toolScore,
         'analysisScore': analysisScore,
@@ -108,6 +113,7 @@ class FlagshipAttempt {
         statisticsAnswer: (json['statisticsAnswer'] as String?) ?? '',
         chartAnswer: (json['chartAnswer'] as String?) ?? '',
         managerText: (json['managerText'] as String?) ?? '',
+        hintsUsed: (json['hintsUsed'] as num?)?.toInt() ?? 0,
         issueScore: (json['issueScore'] as num?)?.toInt() ?? 0,
         toolScore: (json['toolScore'] as num?)?.toInt() ?? 0,
         analysisScore: (json['analysisScore'] as num?)?.toInt() ?? 0,
