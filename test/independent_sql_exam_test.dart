@@ -28,9 +28,6 @@ void main() {
 
   test('independent exam passes a data-derived answer and saves credit', () async {
     expect(await exam.hasPassed(), isFalse);
-    final before = await SqlRunner(database).runReadOnly(
-      IndependentSqlExamService.referenceQuery,
-    );
     // The exam owns its own source and creates it before SQL runs.
     await exam.ensureReady();
     final result = await exam.assess(IndependentSqlExamService.referenceQuery);
