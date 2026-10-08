@@ -16,6 +16,7 @@ import '../../services/sql_result_grader.dart';
 import '../campaign/career_campaign_screen.dart';
 import '../game/game_providers.dart';
 import 'job_ready_providers.dart';
+import 'next_day_consequence_screen.dart';
 
 class DayAtWorkHubScreen extends ConsumerWidget {
   const DayAtWorkHubScreen({super.key});
@@ -722,6 +723,14 @@ class _FlagshipWorkdayScreenState
                 workday: item,
                 attempt: _attempt!,
                 onExport: _exportProject,
+                onConsequences: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => NextDayConsequenceScreen(
+                      caseKey: item.companyKey,
+                      companyName: item.companyName,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
@@ -1490,11 +1499,13 @@ class _CompletedProject extends StatelessWidget {
     required this.workday,
     required this.attempt,
     required this.onExport,
+    required this.onConsequences,
   });
 
   final FlagshipWorkday workday;
   final FlagshipAttempt attempt;
   final VoidCallback onExport;
+  final VoidCallback onConsequences;
 
   @override
   Widget build(BuildContext context) {
@@ -1525,6 +1536,12 @@ class _CompletedProject extends StatelessWidget {
               onPressed: onExport,
               icon: const Icon(Icons.folder_zip_outlined),
               label: const Text('Create GitHub-ready project folder'),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: onConsequences,
+              icon: const Icon(Icons.trending_up_outlined),
+              label: const Text('Next morning: see your decision consequences'),
             ),
           ],
         ),
