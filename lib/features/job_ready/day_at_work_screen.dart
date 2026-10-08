@@ -964,28 +964,57 @@ class _FlagshipWorkdayScreenState
   }
 
   Future<void> _exportProject() async {
-    final result =
-        await ref.read(flagshipProjectExportServiceProvider).export(
-              workday: item,
-              attempt: _attempt!,
-            );
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('GitHub-ready project created'),
-        content: SelectableText(
-          '${result.fileCount} files created:\n\n${result.directoryPath}\n\n'
-          'README, analysis, data quality, statistics, dashboard plan, executive summary, sample CSV and limitations.',
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Done'),
+    setState(() => _busy = true);
+    try {
+      final result = await ref.read(flagshipProjectExportServiceProvider)
+          .export(workday: item, attempt: _attempt!);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('GitHub-ready project created'),
+          content: SelectableText(
+            '${result.fileCount} project files packaged into a shareable ZIP:\n\n'
+            '${result.archivePath}\n\n'
+            'Includes your analysis, datasets, review, verification '
+            'and reproduction instructions.',
           ),
-        ],
-      ),
-    );
+          actions: [
+            OutlinedButton.icon(
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                try {
+                  await ref.read(portfolioDeliveryServiceProvider).share(
+                    result.archivePath,
+                    title: 'DataQuest Synthetic Analyst Project',
+                    text: 'Reproducible synthetic analytics project '
+                        'with source data, SQL and a verification report.',
+                  );
+                } catch (error) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Could not share ZIP: $error')),
+                  );
+                }
+              },
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Share ZIP'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not export project: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _showRawCaseData() async {
