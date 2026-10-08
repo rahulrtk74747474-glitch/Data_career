@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("mirofish_bridge",
                                                ROOT / "tool" / "mirofish_viability.py")
 bridge = importlib.util.module_from_spec(spec)
