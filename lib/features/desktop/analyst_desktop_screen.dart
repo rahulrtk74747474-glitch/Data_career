@@ -5,6 +5,9 @@ import '../../models/career_mission.dart';
 import '../../models/workday_content.dart';
 import '../campaign/career_campaign_screen.dart';
 import '../job_ready/day_at_work_screen.dart';
+import '../job_ready/domain_playbooks_screen.dart';
+import '../job_ready/leadership_desk_screen.dart';
+import '../job_ready/adaptive_manager_screen.dart';
 import '../interview/interview_mode_screen.dart';
 import '../insight/insight_coach_screen.dart';
 import '../portfolio/portfolio_screen.dart';
@@ -236,6 +239,24 @@ class AnalystDesktopScreen extends ConsumerWidget {
                   label: 'Stories',
                   onTap: () =>
                       _open(context, const AnalystStoriesScreen()),
+                ),
+                _DesktopApp(
+                  icon: Icons.business_center_outlined,
+                  label: 'Playbooks',
+                  onTap: () =>
+                      _open(context, const DomainPlaybooksScreen()),
+                ),
+                _DesktopApp(
+                  icon: Icons.groups_2_outlined,
+                  label: 'Leadership',
+                  onTap: () =>
+                      _open(context, const LeadershipDeskScreen()),
+                ),
+                _DesktopApp(
+                  icon: Icons.psychology_alt_outlined,
+                  label: 'Adaptive Coach',
+                  onTap: () =>
+                      _open(context, const AdaptiveManagerScreen()),
                 ),
                 _DesktopApp(
                   icon: Icons.folder_special_outlined,
