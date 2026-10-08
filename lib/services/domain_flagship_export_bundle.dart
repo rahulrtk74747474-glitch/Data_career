@@ -107,7 +107,8 @@ class DomainFlagshipExportBundle {
       'warning': 'Passing an example dataset does not prove skill transfer. '
           'Non-SQL methods are still simulated.',
     });
-    files['REPRODUCE.md'] = '# Replay synthetic ${workday.companyName}' + '''
+    files['REPRODUCE.md'] = '''
+# Replay synthetic ${workday.companyName}
 
 Run these commands from the exported project folder in an empty database:
 
