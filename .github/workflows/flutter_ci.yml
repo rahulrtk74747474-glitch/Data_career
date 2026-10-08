@@ -7,6 +7,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: flutter-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -49,7 +53,12 @@ jobs:
         run: flutter test
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: |
+          flutter build apk --debug || {
+            echo 'Retrying Android build after a transient Gradle dependency failure'
+            sleep 12
+            flutter build apk --debug
+          }
 
       - name: Build release AAB
         run: flutter build appbundle --release
