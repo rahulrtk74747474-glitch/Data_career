@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:archive/archive_io.dart';
 
 import '../data/app_database.dart';
 import '../models/flagship_attempt.dart';
@@ -11,10 +12,12 @@ class FlagshipProjectExportResult {
   const FlagshipProjectExportResult({
     required this.directoryPath,
     required this.fileCount,
+    required this.archivePath,
   });
 
   final String directoryPath;
   final int fileCount;
+  final String archivePath;
 }
 
 class FlagshipProjectExportService {
@@ -60,9 +63,19 @@ class FlagshipProjectExportService {
       );
     }
 
+    final archivePath = p.join(base, 'exports', 'github_$safeId.zip');
+    final zip = ZipFileEncoder();
+    zip.create(archivePath);
+    try {
+      await zip.addDirectory(dir, includeDirName: true, followLinks: false);
+    } finally {
+      await zip.close();
+    }
+
     return FlagshipProjectExportResult(
       directoryPath: dir.path,
       fileCount: files.length,
+      archivePath: archivePath,
     );
   }
 
