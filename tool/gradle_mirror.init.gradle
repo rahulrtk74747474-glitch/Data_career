@@ -1,0 +1,27 @@
+// CI-only Gradle fallback: use a public Maven Central mirror if the usual
+// Maven repository returns HTTP 403/5xx. Keep the standard repositories
+// afterwards for artifacts not replicated by the mirror.
+// Never use this file to change app signing or dependency coordinates.
+def alternateMaven = 'https://maven-central.storage-download.googleapis.com/maven2/'
+
+gradle.beforeSettings { settings ->
+    settings.pluginManagement.repositories {
+        maven { url = uri(alternateMaven) }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+gradle.beforeProject { project ->
+    project.buildscript.repositories {
+        maven { url = uri(alternateMaven) }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    project.repositories {
+        maven { url = uri(alternateMaven) }
+        google()
+        mavenCentral()
+    }
+}
