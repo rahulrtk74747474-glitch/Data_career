@@ -84,9 +84,8 @@ class MiroFishClient:
     def __init__(self, base_url: str):
         # Avoid accidentally sending product material to an arbitrary cloud host.
         u = urllib.parse.urlsplit(base_url)
-        assert u.scheme == "http" and u.hostname in ("localhost", "127.0.0.1"), (
-            "Only localhost HTTP is supported; run MiroFish locally."
-        )
+        if u.scheme != "http" or u.hostname not in ("localhost", "127.0.0.1"):
+            raise ValueError("Only localhost HTTP is supported; run MiroFish locally.")
         self.base = base_url.rstrip("/")
 
     def _request(self, method: str, path: str, data=None, content_type=None):
