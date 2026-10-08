@@ -178,35 +178,47 @@
       "startTime": "09:10",
       "endTime": "16:20",
       "briefing": "Leadership sees rising MRR but customer success reports churn. Determine what the active revenue base looks like and avoid hiding churn through survivorship bias.",
-      "datasetName": "saas_account_monthly",
+      "datasetName": "dq_case_events + dq_case_latest (versioned saas event dataset)",
       "previewRows": [
         {
-          "account_id": "S001",
-          "month": "2026-09",
-          "segment": "SMB",
-          "mrr": 1200,
-          "active": 1
+          "case_id": "saas",
+          "event_id": "S01",
+          "business_id": "A01",
+          "group_name": "Starter",
+          "status": "active",
+          "metric_value": 400,
+          "denominator_value": 5,
+          "ingested_at": "2026-10-04T10:00:00Z"
         },
         {
-          "account_id": "S002",
-          "month": "2026-09",
-          "segment": "Enterprise",
-          "mrr": 5300,
-          "active": 1
+          "case_id": "saas",
+          "event_id": "S02",
+          "business_id": "A02",
+          "group_name": "Starter",
+          "status": "churned",
+          "metric_value": 600,
+          "denominator_value": 6,
+          "ingested_at": "2026-10-04T10:01:00Z"
         },
         {
-          "account_id": "S003",
-          "month": "2026-09",
-          "segment": "SMB",
-          "mrr": 0,
-          "active": 0
+          "case_id": "saas",
+          "event_id": "S03",
+          "business_id": "A03",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 1200,
+          "denominator_value": 10,
+          "ingested_at": "2026-10-04T10:02:00Z"
         },
         {
-          "account_id": "S005",
-          "month": "2026-09",
-          "segment": "Enterprise",
-          "mrr": 4500,
-          "active": 1
+          "case_id": "saas",
+          "event_id": "S04",
+          "business_id": "A04",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 1500,
+          "denominator_value": 12,
+          "ingested_at": "2026-10-04T10:03:00Z"
         }
       ],
       "issueOptions": [
@@ -227,30 +239,30 @@
         "Power BI": 100,
         "Excel": 75
       },
-      "analysisPrompt": "Calculate September active MRR by segment. Keep the inactive/churned account visible in your reasoning even though active MRR excludes it. If you choose SQL, return exactly segment and SUM(mrr) AS active_mrr.",
+      "analysisPrompt": "Using the real versioned SQLite dq_case_latest view, filter case_id = 'saas' AND status = 'active'. Calculate SUM(metric_value) AS mrr by group_name; alias group_name AS plan. Use deduplicated latest events, not raw rows.",
       "sqlExpectedRows": [
         {
-          "segment": "Enterprise",
-          "active_mrr": 9800
+          "plan": "Enterprise",
+          "mrr": 9500
         },
         {
-          "segment": "MidMarket",
-          "active_mrr": 2800
+          "plan": "Pro",
+          "mrr": 3800
         },
         {
-          "segment": "SMB",
-          "active_mrr": 1200
+          "plan": "Starter",
+          "mrr": 700
         }
       ],
       "tokenRules": {
         "SQL": [
-          "saas_account_monthly",
-          "2026-09",
-          "active",
-          "group by",
-          "segment",
-          "sum",
-          "mrr"
+          "dq_case_latest",
+          "group_name",
+          "SUM",
+          "metric_value",
+          "GROUP BY",
+          "case_id",
+          "saas"
         ],
         "Pandas": [
           "2026-09",
@@ -274,23 +286,23 @@
           "segment"
         ]
       },
-      "statisticsPrompt": "If you report only active September accounts, what is the main analytical risk?",
+      "statisticsPrompt": "The latest active subscription snapshot gives plan-level MRR. Why can it not establish retention, expansion or churn trends?",
       "statisticsOptions": [
-        "Survivorship bias: churned/inactive accounts disappear from the retained sample and can make retention look healthier.",
-        "There is no risk because inactive accounts are irrelevant.",
-        "The only issue is chart color.",
-        "The sample becomes randomized automatically."
+        "Active MRR by plan describes a snapshot. To assess retention, include inactive accounts and follow cohorts across multiple periods; active-only reporting creates survivorship bias.",
+        "Active customers alone prove retention increased.",
+        "MRR is always equal to net profit.",
+        "One month tells us exactly which plan caused churn."
       ],
-      "statisticsExpected": "Survivorship bias: churned/inactive accounts disappear from the retained sample and can make retention look healthier.",
-      "chartPrompt": "Which view best supports a retention decision?",
+      "statisticsExpected": "Active MRR by plan describes a snapshot. To assess retention, include inactive accounts and follow cohorts across multiple periods; active-only reporting creates survivorship bias.",
+      "chartPrompt": "Which reporting view best reveals plan mix while protecting against active-only survivorship bias?",
       "chartOptions": [
-        "Cohort retention heatmap plus segment MRR/NRR context.",
-        "A single total-MRR KPI card only.",
-        "A pie chart for every month.",
-        "A gauge for number of support tickets."
+        "Plan-level active MRR bar chart alongside churned accounts and multi-period cohort retention when historical data exists.",
+        "A single grand-total MRR KPI without churn or plan context.",
+        "A chart showing only active customers proves retention.",
+        "A scatterplot with random axes."
       ],
-      "chartExpected": "Cohort retention heatmap plus segment MRR/NRR context.",
-      "managerPrompt": "Explain to the Head of Product whether MRR growth proves retention health. Use evidence, a limitation and a next step.",
+      "chartExpected": "Plan-level active MRR bar chart alongside churned accounts and multi-period cohort retention when historical data exists.",
+      "managerPrompt": "Present the saas results to your manager. Explain the observed monthly recurring revenue in INR, missing data/uncertainty, a defensible next action, and why one current snapshot cannot prove a causal outcome.",
       "evidenceTerms": [
         "9800",
         "2800",
@@ -338,28 +350,47 @@
       "startTime": "09:00",
       "endTime": "16:15",
       "briefing": "Risk committee sees the delinquency ratio move while the loan book grows. Quantify exposure and challenge a proposal to use a convenient proxy as a hard decision rule.",
-      "datasetName": "loan_portfolio + bank_accounts",
+      "datasetName": "dq_case_events + dq_case_latest (versioned bank event dataset)",
       "previewRows": [
         {
-          "loan_id": "L002",
-          "account_id": "A002",
-          "outstanding": 45000,
-          "dpd": 18,
-          "risk_band": "Medium"
+          "case_id": "bank",
+          "event_id": "B01",
+          "business_id": "L01",
+          "group_name": "Low",
+          "status": "open",
+          "metric_value": 2500000,
+          "denominator_value": 3500000,
+          "ingested_at": "2026-10-04T10:00:00Z"
         },
         {
-          "loan_id": "L004",
-          "account_id": "A004",
-          "outstanding": 420000,
-          "dpd": 42,
-          "risk_band": "High"
+          "case_id": "bank",
+          "event_id": "B02",
+          "business_id": "L02",
+          "group_name": "Low",
+          "status": "open",
+          "metric_value": 1000000,
+          "denominator_value": 1500000,
+          "ingested_at": "2026-10-04T10:01:00Z"
         },
         {
-          "loan_id": "L006",
-          "account_id": "A006",
-          "outstanding": 80000,
-          "dpd": 65,
-          "risk_band": "High"
+          "case_id": "bank",
+          "event_id": "B03",
+          "business_id": "L03",
+          "group_name": "Medium",
+          "status": "open",
+          "metric_value": 2000000,
+          "denominator_value": 2800000,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B04",
+          "business_id": "L04",
+          "group_name": "Medium",
+          "status": "open",
+          "metric_value": 1700000,
+          "denominator_value": 2500000,
+          "ingested_at": "2026-10-04T10:03:00Z"
         }
       ],
       "issueOptions": [
@@ -380,28 +411,30 @@
         "Power BI": 95,
         "Excel": 70
       },
-      "analysisPrompt": "Calculate total outstanding exposure by risk_band. If you choose SQL, return exactly risk_band and SUM(outstanding) AS exposure.",
+      "analysisPrompt": "Using the real versioned SQLite dq_case_latest view, filter case_id = 'bank' AND status = 'open'. Calculate SUM(metric_value) AS outstanding by group_name; alias group_name AS risk_band. Use deduplicated latest events, not raw rows.",
       "sqlExpectedRows": [
         {
           "risk_band": "High",
-          "exposure": 500000
+          "outstanding": 5000000
         },
         {
           "risk_band": "Low",
-          "exposure": 2420000
+          "outstanding": 3500000
         },
         {
           "risk_band": "Medium",
-          "exposure": 45000
+          "outstanding": 3700000
         }
       ],
       "tokenRules": {
         "SQL": [
-          "loan_portfolio",
-          "risk_band",
-          "group by",
-          "sum",
-          "outstanding"
+          "dq_case_latest",
+          "group_name",
+          "SUM",
+          "metric_value",
+          "GROUP BY",
+          "case_id",
+          "bank"
         ],
         "Pandas": [
           "risk_band",
@@ -420,7 +453,7 @@
           "risk_band"
         ]
       },
-      "statisticsPrompt": "The High-risk share falls after the total loan book expands, but High-risk rupees rise. What should committee hear?",
+      "statisticsPrompt": "The loan events contain latest records for each account. Why must the portfolio committee compare absolute outstanding with risk-band shares and approved limits?",
       "statisticsOptions": [
         "The ratio improved partly because the denominator grew; evaluate both absolute exposure and the ratio before declaring lower risk.",
         "The portfolio is definitely safer because the ratio fell.",
@@ -428,7 +461,7 @@
         "Delete all High-risk loans from the analysis."
       ],
       "statisticsExpected": "The ratio improved partly because the denominator grew; evaluate both absolute exposure and the ratio before declaring lower risk.",
-      "chartPrompt": "Which executive visual is strongest?",
+      "chartPrompt": "Show exposure by risk band in absolute rupees, share of total and denominators; never imply falling share proves falling risk.",
       "chartOptions": [
         "Exposure by risk band with both amount and share, plus delinquency trend.",
         "One pie chart showing only current share.",
@@ -436,7 +469,7 @@
         "A gauge with no denominator definition."
       ],
       "chartExpected": "Exposure by risk band with both amount and share, plus delinquency trend.",
-      "managerPrompt": "Write a risk-committee note that quantifies exposure, explains the denominator issue, avoids treating risk flags as guilt, and recommends a governed next step.",
+      "managerPrompt": "Present the bank results to your manager. Explain the observed outstanding principal in INR, missing data/uncertainty, a defensible next action, and why one current snapshot cannot prove a causal outcome.",
       "evidenceTerms": [
         "500000",
         "2420000",
@@ -485,31 +518,47 @@
       "startTime": "08:45",
       "endTime": "16:00",
       "briefing": "Leadership says overall wait time improved, but weekend complaints remain high. Determine whether mix effects are hiding unit-level performance and prepare an operational capacity recommendation.",
-      "datasetName": "hospital_daily_ops + hospital_capacity_forecast",
+      "datasetName": "dq_case_events + dq_case_latest (versioned hospital event dataset)",
       "previewRows": [
         {
-          "date": "2026-10-01",
-          "unit": "Emergency",
-          "arrivals": 120,
-          "avg_wait": 52
+          "case_id": "hospital",
+          "event_id": "H01",
+          "business_id": "D01",
+          "group_name": "OPD",
+          "status": "reported",
+          "metric_value": 900,
+          "denominator_value": 30,
+          "ingested_at": "2026-10-04T10:00:00Z"
         },
         {
-          "date": "2026-10-01",
-          "unit": "Outpatient",
-          "arrivals": 180,
-          "avg_wait": 31
+          "case_id": "hospital",
+          "event_id": "H02",
+          "business_id": "D02",
+          "group_name": "OPD",
+          "status": "reported",
+          "metric_value": 720,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:01:00Z"
         },
         {
-          "date": "2026-10-04",
-          "unit": "Emergency",
-          "arrivals": 145,
-          "avg_wait": 72
+          "case_id": "hospital",
+          "event_id": "H03",
+          "business_id": "D03",
+          "group_name": "ER",
+          "status": "reported",
+          "metric_value": 1200,
+          "denominator_value": 15,
+          "ingested_at": "2026-10-04T10:02:00Z"
         },
         {
-          "date": "2026-10-04",
-          "unit": "Outpatient",
-          "arrivals": 160,
-          "avg_wait": 26
+          "case_id": "hospital",
+          "event_id": "H04",
+          "business_id": "D04",
+          "group_name": "ER",
+          "status": "reported",
+          "metric_value": 1600,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:03:00Z"
         }
       ],
       "issueOptions": [
@@ -530,24 +579,30 @@
         "Power BI": 90,
         "Excel": 90
       },
-      "analysisPrompt": "Calculate average wait minutes by unit across the observed hospital_daily_ops rows. If you choose SQL, return exactly unit and ROUND(AVG(avg_wait_minutes), 1) AS avg_wait.",
+      "analysisPrompt": "Using the real versioned SQLite dq_case_latest view, filter case_id = 'hospital' AND status = 'reported'. Calculate avg_wait_minutes by group_name, using ROUND(SUM(metric_value) * 1.0 / SUM(denominator_value), 2). Alias group_name AS unit and the result AS avg_wait_minutes. The denominator matters; do not average individual ratios.",
       "sqlExpectedRows": [
         {
-          "unit": "Emergency",
-          "avg_wait": 59
+          "unit": "ER",
+          "avg_wait_minutes": 80
         },
         {
-          "unit": "Outpatient",
-          "avg_wait": 30
+          "unit": "ICU",
+          "avg_wait_minutes": 55.5
+        },
+        {
+          "unit": "OPD",
+          "avg_wait_minutes": 34
         }
       ],
       "tokenRules": {
         "SQL": [
-          "hospital_daily_ops",
-          "unit",
-          "group by",
-          "avg",
-          "avg_wait_minutes"
+          "dq_case_latest",
+          "group_name",
+          "SUM",
+          "metric_value",
+          "GROUP BY",
+          "case_id",
+          "hospital"
         ],
         "Pandas": [
           "unit",
@@ -566,7 +621,7 @@
           "avg_wait_minutes"
         ]
       },
-      "statisticsPrompt": "Overall wait falls while one unit worsens and its share of visits shrinks. What phenomenon should you check?",
+      "statisticsPrompt": "The dataset contains total wait-minutes and visits for each unit/day. Explain weighted average waits and why a shift in unit mix can mask worsening units.",
       "statisticsOptions": [
         "Simpson's paradox / composition effect: the aggregate can move differently from subgroup trends.",
         "The central limit theorem proves staffing worked.",
@@ -574,7 +629,7 @@
         "A lower overall average means every unit improved."
       ],
       "statisticsExpected": "Simpson's paradox / composition effect: the aggregate can move differently from subgroup trends.",
-      "chartPrompt": "Which operations view is strongest?",
+      "chartPrompt": "Show visit-weighted wait by unit and total visit counts; add unit-level trend, median/P90 when raw visit data becomes available.",
       "chartOptions": [
         "Unit-level wait trends with median/P90 and a capacity-gap view by day.",
         "One overall average KPI only.",
@@ -582,7 +637,7 @@
         "A scatter plot with unit names as numeric values."
       ],
       "chartExpected": "Unit-level wait trends with median/P90 and a capacity-gap view by day.",
-      "managerPrompt": "Write the operations lead a concise note separating aggregate and unit-level evidence, mentioning composition/causal limits, and recommending a capacity action.",
+      "managerPrompt": "Present the hospital results to your manager. Explain the observed total wait-minutes, missing data/uncertainty, a defensible next action, and why one current snapshot cannot prove a causal outcome.",
       "evidenceTerms": [
         "59",
         "30",
@@ -630,31 +685,47 @@
       "startTime": "08:30",
       "endTime": "16:10",
       "briefing": "Average shipment cost rose and late deliveries are concentrated on a few routes. Determine whether cost efficiency truly worsened after accounting for shipment weight and route mix.",
-      "datasetName": "logistics_shipments",
+      "datasetName": "dq_case_events + dq_case_latest (versioned logistics event dataset)",
       "previewRows": [
         {
-          "shipment_id": "S001",
-          "route": "NW-1",
-          "weight_kg": 120,
-          "cost": 4200,
-          "promised_h": 24,
-          "actual_h": 21
+          "case_id": "logistics",
+          "event_id": "T01",
+          "business_id": "SH01",
+          "group_name": "North",
+          "status": "delivered",
+          "metric_value": 1000,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:00:00Z"
         },
         {
-          "shipment_id": "S002",
-          "route": "NS-1",
-          "weight_kg": 180,
-          "cost": 6100,
-          "promised_h": 30,
-          "actual_h": 37
+          "case_id": "logistics",
+          "event_id": "T02",
+          "business_id": "SH02",
+          "group_name": "North",
+          "status": "delivered",
+          "metric_value": 600,
+          "denominator_value": 50,
+          "ingested_at": "2026-10-04T10:01:00Z"
         },
         {
-          "shipment_id": "S008",
-          "route": "NS-1",
-          "weight_kg": 170,
-          "cost": 6300,
-          "promised_h": 30,
-          "actual_h": 42
+          "case_id": "logistics",
+          "event_id": "T03",
+          "business_id": "SH03",
+          "group_name": "South",
+          "status": "delivered",
+          "metric_value": 1500,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T04",
+          "business_id": "SH04",
+          "group_name": "South",
+          "status": "delivered",
+          "metric_value": 700,
+          "denominator_value": 50,
+          "ingested_at": "2026-10-04T10:03:00Z"
         }
       ],
       "issueOptions": [
@@ -675,33 +746,30 @@
         "Power BI": 100,
         "Excel": 80
       },
-      "analysisPrompt": "Calculate shipping cost per kilogram by route using total cost / total weight. If you choose SQL, return exactly route_code and ROUND(SUM(shipping_cost) / SUM(weight_kg), 2) AS cost_per_kg.",
+      "analysisPrompt": "Using the real versioned SQLite dq_case_latest view, filter case_id = 'logistics' AND status = 'delivered'. Calculate cost_per_kg by group_name, using ROUND(SUM(metric_value) * 1.0 / SUM(denominator_value), 2). Alias group_name AS route and the result AS cost_per_kg. The denominator matters; do not average individual ratios.",
       "sqlExpectedRows": [
         {
-          "route_code": "NS-1",
-          "cost_per_kg": 35.43
+          "route": "North",
+          "cost_per_kg": 10.67
         },
         {
-          "route_code": "NW-1",
-          "cost_per_kg": 35.07
+          "route": "South",
+          "cost_per_kg": 14.67
         },
         {
-          "route_code": "SN-1",
-          "cost_per_kg": 32.2
-        },
-        {
-          "route_code": "WE-1",
-          "cost_per_kg": 35.7
+          "route": "West",
+          "cost_per_kg": 18
         }
       ],
       "tokenRules": {
         "SQL": [
-          "logistics_shipments",
-          "route_code",
-          "group by",
-          "sum",
-          "shipping_cost",
-          "weight_kg"
+          "dq_case_latest",
+          "group_name",
+          "SUM",
+          "metric_value",
+          "GROUP BY",
+          "case_id",
+          "logistics"
         ],
         "Pandas": [
           "route_code",
@@ -724,7 +792,7 @@
           "route"
         ]
       },
-      "statisticsPrompt": "Average cost rises while average shipment weight rises faster and cost/kg falls. What is the strongest interpretation?",
+      "statisticsPrompt": "Explain why total delivery cost divided by total kg is more reliable than the unweighted average of shipment-level cost per kg.",
       "statisticsOptions": [
         "Absolute cost increased, but normalized shipping efficiency improved; investigate weight and route mix before cutting spend.",
         "Efficiency definitely worsened because average cost rose.",
@@ -732,7 +800,7 @@
         "Weight should be ignored because it is not revenue."
       ],
       "statisticsExpected": "Absolute cost increased, but normalized shipping efficiency improved; investigate weight and route mix before cutting spend.",
-      "chartPrompt": "Which network view best supports action?",
+      "chartPrompt": "Show weight-normalized cost/kg by route with shipment weight and SLA trends when additional periods are available.",
       "chartOptions": [
         "Route-level cost/kg and SLA bars plus a time trend for late-rate/P90 transit time.",
         "One total shipping-cost gauge.",
@@ -740,7 +808,7 @@
         "A map with no metrics or labels."
       ],
       "chartExpected": "Route-level cost/kg and SLA bars plus a time trend for late-rate/P90 transit time.",
-      "managerPrompt": "Write the Network Director a note explaining absolute vs normalized cost, route/SLA context, uncertainty, and the next operational investigation.",
+      "managerPrompt": "Present the logistics results to your manager. Explain the observed delivery cost in INR, missing data/uncertainty, a defensible next action, and why one current snapshot cannot prove a causal outcome.",
       "evidenceTerms": [
         "35.43",
         "35.07",
