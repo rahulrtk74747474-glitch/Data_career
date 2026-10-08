@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 2,
+  "caseId": "flagship-ecommerce-revenue",
+  "datasetVersion": "2.0.0",
+  "scenario": "A synthetic e-commerce order-events export with late-arriving updates, duplicate ingestions, cancellation/refund status changes and duplicated refund-event ingestions.",
+  "businessDefinitions": [
+    "Order grain: one latest ingested event per order_id (ties resolved by event_id).",
+    "Refund grain: one latest ingested event per refund_id; do not SUM raw refund events without deduplication.",
+    "Recognized net revenue: only completed orders, gross_amount less the sum of unique refund records; fully refunded and cancelled orders contribute zero.",
+    "Revenue is a snapshot metric. No valid period-over-period growth claim is possible from this single export."
+  ],
+  "customers": [
+    {
+      "customer_id": "C101",
+      "segment": "Consumer",
+      "region": "North"
+    },
+    {
+      "customer_id": "C102",
+      "segment": "Consumer",
+      "region": "South"
+    },
+    {
+      "customer_id": "C201",
+      "segment": "SMB",
+      "region": "North"
+    },
+    {
+      "customer_id": "C202",
+      "segment": "SMB",
+      "region": "West"
+    },
+    {
+      "customer_id": "C301",
+      "segment": "Enterprise",
+      "region": "West"
+    },
+    {
+      "customer_id": "C302",
+      "segment": "Enterprise",
+      "region": "East"
+    }
+  ],
+  "orderEvents": [
+    {
+      "event_id": "EV001",
+      "order_id": "O1001",
+      "customer_id": "C101",
+      "status": "completed",
+      "gross_amount": 1200,
+      "cogs_amount": 700,
+      "ordered_at": "2026-09-20T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:02:00Z"
+    },
+    {
+      "event_id": "EV002",
+      "order_id": "O1002",
+      "customer_id": "C101",
+      "status": "completed",
+      "gross_amount": 900,
+      "cogs_amount": 400,
+      "ordered_at": "2026-09-21T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:03:00Z"
+    },
+    {
+      "event_id": "EV003",
+      "order_id": "O1003",
+      "customer_id": "C102",
+      "status": "completed",
+      "gross_amount": 1400,
+      "cogs_amount": 800,
+      "ordered_at": "2026-09-22T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:04:00Z"
+    },
+    {
+      "event_id": "EV004",
+      "order_id": "O1004",
+      "customer_id": "C102",
+      "status": "refunded",
+      "gross_amount": 1100,
+      "cogs_amount": 500,
+      "ordered_at": "2026-09-23T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:05:00Z"
+    },
+    {
+      "event_id": "EV005",
+      "order_id": "O2001",
+      "customer_id": "C201",
+      "status": "completed",
+      "gross_amount": 2100,
+      "cogs_amount": 1300,
+      "ordered_at": "2026-09-21T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:06:00Z"
+    },
+    {
+      "event_id": "EV006",
+      "order_id": "O2002",
+      "customer_id": "C202",
+      "status": "cancelled",
+      "gross_amount": 1500,
+      "cogs_amount": 900,
+      "ordered_at": "2026-09-22T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:07:00Z"
+    },
+    {
+      "event_id": "EV007",
+      "order_id": "O2003",
+      "customer_id": "C201",
+      "status": "cancelled",
+      "gross_amount": 600,
+      "cogs_amount": 350,
+      "ordered_at": "2026-09-23T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:08:00Z"
+    },
+    {
+      "event_id": "EV008",
+      "order_id": "O3001",
+      "customer_id": "C301",
+      "status": "completed",
+      "gross_amount": 4000,
+      "cogs_amount": 2200,
+      "ordered_at": "2026-09-20T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:09:00Z"
+    },
+    {
+      "event_id": "EV009",
+      "order_id": "O3002",
+      "customer_id": "C301",
+      "status": "completed",
+      "gross_amount": 2400,
+      "cogs_amount": 1300,
+      "ordered_at": "2026-09-21T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:10:00Z"
+    },
+    {
+      "event_id": "EV010",
+      "order_id": "O3003",
+      "customer_id": "C302",
+      "status": "completed",
+      "gross_amount": 3000,
+      "cogs_amount": 1700,
+      "ordered_at": "2026-09-22T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:11:00Z"
+    },
+    {
+      "event_id": "EV011",
+      "order_id": "O3004",
+      "customer_id": "C302",
+      "status": "completed",
+      "gross_amount": 1200,
+      "cogs_amount": 600,
+      "ordered_at": "2026-09-24T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:12:00Z"
+    },
+    {
+      "event_id": "EV012",
+      "order_id": "O3005",
+      "customer_id": "C301",
+      "status": "completed",
+      "gross_amount": 600,
+      "cogs_amount": 350,
+      "ordered_at": "2026-09-26T09:15:00+05:30",
+      "ingested_at": "2026-10-04T09:13:00Z"
+    },
+    {
+      "event_id": "EV013",
+      "order_id": "O1002",
+      "customer_id": "C101",
+      "status": "completed",
+      "gross_amount": 900,
+      "cogs_amount": 400,
+      "ordered_at": "2026-09-21T09:15:00+05:30",
+      "ingested_at": "2026-10-05T10:01:00Z"
+    },
+    {
+      "event_id": "EV014",
+      "order_id": "O2002",
+      "customer_id": "C202",
+      "status": "completed",
+      "gross_amount": 1500,
+      "cogs_amount": 900,
+      "ordered_at": "2026-09-22T09:15:00+05:30",
+      "ingested_at": "2026-10-05T10:02:00Z"
+    },
+    {
+      "event_id": "EV015",
+      "order_id": "O3003",
+      "customer_id": "C302",
+      "status": "completed",
+      "gross_amount": 3300,
+      "cogs_amount": 1700,
+      "ordered_at": "2026-09-22T09:15:00+05:30",
+      "ingested_at": "2026-10-05T10:03:00Z"
+    },
+    {
+      "event_id": "EV016",
+      "order_id": "O3004",
+      "customer_id": "C302",
+      "status": "refunded",
+      "gross_amount": 1200,
+      "cogs_amount": 600,
+      "ordered_at": "2026-09-24T09:15:00+05:30",
+      "ingested_at": "2026-10-05T10:04:00Z"
+    }
+  ],
+  "refundEvents": [
+    {
+      "event_id": "RE001",
+      "refund_id": "R001",
+      "order_id": "O1002",
+      "refund_amount": 100,
+      "ingested_at": "2026-10-05T11:01:00Z"
+    },
+    {
+      "event_id": "RE002",
+      "refund_id": "R002",
+      "order_id": "O2002",
+      "refund_amount": 200,
+      "ingested_at": "2026-10-05T11:02:00Z"
+    },
+    {
+      "event_id": "RE003",
+      "refund_id": "R003",
+      "order_id": "O3002",
+      "refund_amount": 400,
+      "ingested_at": "2026-10-05T11:03:00Z"
+    },
+    {
+      "event_id": "RE004",
+      "refund_id": "R004",
+      "order_id": "O3003",
+      "refund_amount": 300,
+      "ingested_at": "2026-10-05T11:04:00Z"
+    },
+    {
+      "event_id": "RE005",
+      "refund_id": "R005",
+      "order_id": "O3005",
+      "refund_amount": 50,
+      "ingested_at": "2026-10-05T11:05:00Z"
+    },
+    {
+      "event_id": "RE006",
+      "refund_id": "R006",
+      "order_id": "O1004",
+      "refund_amount": 1100,
+      "ingested_at": "2026-10-05T11:06:00Z"
+    },
+    {
+      "event_id": "RE007",
+      "refund_id": "R007",
+      "order_id": "O3004",
+      "refund_amount": 1200,
+      "ingested_at": "2026-10-05T11:07:00Z"
+    },
+    {
+      "event_id": "RE008",
+      "refund_id": "R001",
+      "order_id": "O1002",
+      "refund_amount": 100,
+      "ingested_at": "2026-10-05T12:01:00Z"
+    },
+    {
+      "event_id": "RE009",
+      "refund_id": "R003",
+      "order_id": "O3002",
+      "refund_amount": 400,
+      "ingested_at": "2026-10-05T12:02:00Z"
+    }
+  ],
+  "expectedSegmentRevenue": [
+    {
+      "segment": "Consumer",
+      "revenue": 3400
+    },
+    {
+      "segment": "Enterprise",
+      "revenue": 9550
+    },
+    {
+      "segment": "SMB",
+      "revenue": 3400
+    }
+  ],
+  "referenceSql": "SELECT c.segment, SUM(o.net_revenue) AS revenue FROM ec_case_clean_orders o JOIN ec_case_customers c ON c.customer_id = o.customer_id WHERE o.status = 'completed' GROUP BY c.segment ORDER BY c.segment;",
+  "expectedTotals": {
+    "raw_order_event_rows": 16,
+    "unique_orders": 12,
+    "raw_refund_event_rows": 9,
+    "unique_refunds": 7,
+    "completed_revenue": 16350,
+    "partial_refunds_on_completed_orders": 1050
+  }
+}
