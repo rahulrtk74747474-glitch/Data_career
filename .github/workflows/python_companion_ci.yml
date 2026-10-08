@@ -1,0 +1,33 @@
+name: Genuine Pandas Companion Checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tool/python_companion/**'
+      - '.github/workflows/python_companion_ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tool/python_companion/**'
+      - '.github/workflows/python_companion_ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-companion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install genuine Pandas runtime
+        run: python -m pip install 'pandas>=2.2,<3'
+      - name: Compile trusted worker and server
+        run: python -m py_compile tool/python_companion/worker.py tool/python_companion/server.py
+      - name: Verify actual Pandas results and Docker flags
+        run: python -m unittest -v tool/python_companion/test_companion.py
