@@ -8,6 +8,7 @@ class LearningHealthReport {
     required this.activeDates,
     required this.appOpens,
     required this.workdayStarts,
+    required this.stageCompletions,
     required this.workdayCompletions,
     required this.firstFlagshipCompletedAt,
     required this.feedbackCount,
@@ -18,6 +19,8 @@ class LearningHealthReport {
   final List<String> activeDates;
   final int appOpens;
   final int workdayStarts;
+  /// Counts of completed steps, used to find where learners abandon workdays.
+  final Map<String, int> stageCompletions;
   final int workdayCompletions;
   final DateTime? firstFlagshipCompletedAt;
   final int feedbackCount;
@@ -121,6 +124,10 @@ class LearningTelemetryService {
       ),
       appOpens: (state['appOpens'] as num?)?.toInt() ?? 0,
       workdayStarts: (state['workdayStarts'] as num?)?.toInt() ?? 0,
+      stageCompletions: {
+        for (final stage in const ['quality', 'tool', 'analysis', 'statistics', 'chart', 'manager'])
+          stage: (state['event_stage_${stage}_complete'] as num?)?.toInt() ?? 0,
+      },
       workdayCompletions:
           (state['workdayCompletions'] as num?)?.toInt() ?? 0,
       firstFlagshipCompletedAt: state['firstFlagshipCompletedAt'] == null

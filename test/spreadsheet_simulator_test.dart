@@ -1,5 +1,6 @@
 import 'package:dataquest_analyst_career/models/spreadsheet_challenge.dart';
 import 'package:dataquest_analyst_career/services/spreadsheet_simulator.dart';
+import 'package:dataquest_analyst_career/services/workbook_formula_evaluator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -7,11 +8,51 @@ void main() {
     final result = SpreadsheetSimulator.run(
       _challenge(
         expectedCommand: 'FORMULA =B2*(1-C2)',
+        rows: const [{'row': 2, 'gross': 1000, 'discount_rate': 0.1}],
         expectedRows: const [],
       ),
       r'formula = $B2 * (1 - C2)',
     );
     expect(result.isCorrect, isTrue);
+  });
+
+
+  test('mathematically equivalent formulas earn credit', () {
+    final challenge = _challenge(
+      expectedCommand: 'FORMULA =B2*(1-C2)',
+      rows: const [{'row': 2, 'gross': 1000, 'discount_rate': 0.1}],
+    );
+    final good = SpreadsheetSimulator.run(challenge, 'FORMULA =B2-B2*C2');
+    final wrong = SpreadsheetSimulator.run(challenge, 'FORMULA =900');
+    final wrongColumn = SpreadsheetSimulator.run(challenge, 'FORMULA =B2*(1-0.1)');
+    expect(good.isCorrect, isTrue);
+    expect(good.rows.first['calculated_value'], 900);
+    expect(wrong.isCorrect, isFalse);
+    expect(wrongColumn.isCorrect, isFalse);
+  });
+
+  test('formula functions calculate ranges and reject invalid references', () {
+    final rows = [
+      {'id': 1, 'sales': 100},
+      {'id': 2, 'sales': 200},
+      {'id': 3, 'sales': 300},
+    ];
+    expect(
+      WorkbookFormulaEvaluator.evaluate('=SUM(B2:B4)', rows),
+      600,
+    );
+    expect(
+      WorkbookFormulaEvaluator.evaluate('=AVERAGE(B2:B4)', rows),
+      200,
+    );
+    expect(
+      WorkbookFormulaEvaluator.evaluate('=MAX(B2:B4)-MIN(B2:B4)', rows),
+      200,
+    );
+    expect(
+      () => WorkbookFormulaEvaluator.evaluate('=B5', rows),
+      throwsFormatException,
+    );
   });
 
   test('sort task requires requested row order and valid direction', () {

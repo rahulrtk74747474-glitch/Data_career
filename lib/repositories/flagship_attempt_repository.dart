@@ -8,6 +8,8 @@ class FlagshipAttemptRepository {
   const FlagshipAttemptRepository();
 
   static const _key = 'dataquest_flagship_attempts_v1';
+  // Keep concurrent autosave/completion writes from overwriting each other.
+  static Future<void> _saveQueue = Future<void>.value();
 
   Future<Map<String, FlagshipAttempt>> loadAll() async {
     final prefs = await SharedPreferences.getInstance();
@@ -27,15 +29,22 @@ class FlagshipAttemptRepository {
     return all[workdayId] ?? FlagshipAttempt(workdayId: workdayId);
   }
 
-  Future<void> save(FlagshipAttempt attempt) async {
-    final prefs = await SharedPreferences.getInstance();
-    final all = await loadAll();
-    all[attempt.workdayId] = attempt;
-    await prefs.setString(
-      _key,
-      jsonEncode({
-        for (final entry in all.entries) entry.key: entry.value.toJson(),
-      }),
+  Future<void> save(FlagshipAttempt attempt) {
+    final work = _saveQueue.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final all = await loadAll();
+      all[attempt.workdayId] = attempt;
+      final ok = await prefs.setString(
+        _key,
+        jsonEncode({
+          for (final entry in all.entries) entry.key: entry.value.toJson(),
+        }),
+      );
+      if (!ok) throw StateError('The local workday draft was not saved.');
+    });
+    _saveQueue = work.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace trace) {},
     );
-  }
-}
+    return work;
+  }}

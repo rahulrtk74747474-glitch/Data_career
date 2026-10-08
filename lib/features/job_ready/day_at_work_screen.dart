@@ -1,14 +1,22 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/flagship_attempt.dart';
 import '../../models/job_ready_v15.dart';
+import '../../services/analyst_mistake_diagnostics.dart';
+import '../../services/ecommerce_flagship_case_service.dart';
+import '../../services/company_flagship_case_service.dart';
 import '../../services/flagship_workday_scoring_service.dart';
+import '../../services/open_ended_decision_service.dart';
 import '../../services/manager_explanation_service.dart';
 import '../../services/sql_result_grader.dart';
 import '../campaign/career_campaign_screen.dart';
 import '../game/game_providers.dart';
 import 'job_ready_providers.dart';
+import 'next_day_consequence_screen.dart';
 
 class DayAtWorkHubScreen extends ConsumerWidget {
   const DayAtWorkHubScreen({super.key});
@@ -162,16 +170,23 @@ class FlagshipWorkdayScreen extends ConsumerStatefulWidget {
 }
 
 class _FlagshipWorkdayScreenState
-    extends ConsumerState<FlagshipWorkdayScreen> {
+    extends ConsumerState<FlagshipWorkdayScreen> with WidgetsBindingObserver {
   final _analysisController = TextEditingController();
   final _managerController = TextEditingController();
+  final _statisticsController = TextEditingController();
+  final _chartController = TextEditingController();
   final _selectedIssues = <String>{};
   String _tool = '';
+  int _hintLevel = 0;
   String _statistics = '';
   String _chart = '';
   FlagshipAttempt? _attempt;
+  EcommerceCaseAudit? _caseAudit;
+  Map<String, List<Map<String, Object?>>>? _rawCaseTables;
+  String? _caseError;
   bool _loading = true;
   bool _busy = false;
+  Timer? _draftTimer;
   String? _feedback;
   ManagerExplanationScore? _managerRubric;
 
@@ -189,13 +204,24 @@ class _FlagshipWorkdayScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     Future<void>.microtask(_load);
   }
 
   @override
   void dispose() {
+    _draftTimer?.cancel();
+    // Save the latest text once more if the learner navigates back quickly.
+    // Already-completed answers remain unchanged.
+    if (_attempt != null && !_busy) {
+      unawaited(ref.read(flagshipAttemptRepositoryProvider)
+          .save(_withUnfinishedDrafts(_attempt!)));
+    }
+    WidgetsBinding.instance.removeObserver(this);
     _analysisController.dispose();
     _managerController.dispose();
+    _statisticsController.dispose();
+    _chartController.dispose();
     super.dispose();
   }
 
@@ -204,28 +230,115 @@ class _FlagshipWorkdayScreenState
           'workday_start',
         );
     ref.invalidate(learningHealthProvider);
+    EcommerceCaseAudit? audit;
+    Map<String, List<Map<String, Object?>>>? tables;
+    try {
+      if (item.companyKey == 'ecommerce') {
+        final workspace = EcommerceFlagshipCaseService(
+          ref.read(appDatabaseProvider),
+        );
+        audit = await workspace.audit();
+        tables = await workspace.exportTables();
+      } else if (CompanyFlagshipCaseService.validCases.contains(item.companyKey)) {
+        final workspace = CompanyFlagshipCaseService(
+          ref.read(appDatabaseProvider),
+        );
+        tables = {
+          'raw_events': await workspace.rows(item.companyKey),
+          'clean_latest_events': await workspace.cleanedRows(item.companyKey),
+        };
+      }
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _caseError = 'Cannot load the versioned local case data: $error';
+        _loading = false;
+      });
+      return;
+    }
     final attempt = await ref
         .read(flagshipAttemptRepositoryProvider)
         .load(item.id);
     if (!mounted) return;
     setState(() {
+      _caseAudit = audit;
+      _rawCaseTables = tables;
       _attempt = attempt;
       _selectedIssues
         ..clear()
         ..addAll(attempt.selectedIssues);
       _tool = attempt.tool;
+      _hintLevel = attempt.hintsUsed.clamp(0, 3).toInt();
       _analysisController.text = attempt.analysisText;
       _statistics = attempt.statisticsAnswer;
       _chart = attempt.chartAnswer;
+      _statisticsController.text = attempt.statisticsAnswer;
+      _chartController.text = attempt.chartAnswer;
       _managerController.text = attempt.managerText;
       _loading = false;
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _draftTimer?.cancel();
+      if (_attempt != null && !_busy) {
+        unawaited(_saveUnfinishedDrafts());
+      }
+    }
+  }
+
+  /// Every field persists without awarding any XP or completing any stage.
+  FlagshipAttempt _withUnfinishedDrafts(FlagshipAttempt value) =>
+      value.copyWith(
+        selectedIssues: value.stageDone('quality') ? null : {..._selectedIssues},
+        tool: value.stageDone('tool') ? null : _tool,
+        analysisText: value.stageDone('analysis') ? null : _analysisController.text,
+        statisticsAnswer: value.stageDone('statistics')
+            ? null
+            : item.order >= 3 ? _statisticsController.text : _statistics,
+        chartAnswer: value.stageDone('chart')
+            ? null
+            : item.order >= 3 ? _chartController.text : _chart,
+        managerText: value.stageDone('manager') ? null : _managerController.text,
+      );
+
+  void _scheduleDraftSave() {
+    _draftTimer?.cancel();
+    _draftTimer = Timer(const Duration(milliseconds: 850), () {
+      if (mounted && !_busy) unawaited(_saveUnfinishedDrafts());
+    });
+  }
+
+  Future<void> _saveUnfinishedDrafts() async {
+    final current = _attempt;
+    if (current == null) return;
+    try {
+      await _save(_withUnfinishedDrafts(current));
+    } catch (error) {
+      if (mounted) {
+        setState(() => _feedback = 'Draft could not be saved locally: $error');
+      }
+    }
   }
 
   bool _done(String stage) => _attempt?.stageDone(stage) ?? false;
 
   @override
   Widget build(BuildContext context) {
+    if (_caseError != null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(item.title)),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: SelectableText(_caseError!),
+          ),
+        ),
+      );
+    }
     if (_loading || _attempt == null) {
       return Scaffold(
         appBar: AppBar(title: Text(item.title)),
@@ -260,6 +373,39 @@ class _FlagshipWorkdayScreenState
                   ),
                   const SizedBox(height: 8),
                   _PreviewTable(rows: item.previewRows),
+                  if (_caseAudit != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      'Full SQLite source: ${_caseAudit!.rawOrderEvents} order events / '
+                      '${_caseAudit!.uniqueOrders} unique orders, '
+                      '${_caseAudit!.rawRefundEvents} refund events / '
+                      '${_caseAudit!.uniqueRefunds} unique refunds.',
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Raw duplicate events are intentional. Review all source tables; '
+                      'a real SQL view deduplicates order_id and refund_id by latest ingestion.',
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _showRawCaseData,
+                      icon: const Icon(Icons.table_view_outlined),
+                      label: const Text('Inspect all raw data and schema'),
+                    ),
+                  ],
+                  if (_rawCaseTables != null && _caseAudit == null) ...[
+                    const SizedBox(height: 8),
+                    const Text(
+                      'A complete source dataset is available. Event updates '
+                      'and duplicates require the deduplicated latest-event view.',
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _showRawCaseData,
+                      icon: const Icon(Icons.table_view_outlined),
+                      label: const Text('Inspect full company case dataset'),
+                    ),
+                  ],
                   const SizedBox(height: 10),
                   const Text(
                     'Select every issue/control that matters before analysis.',
@@ -271,13 +417,16 @@ class _FlagshipWorkdayScreenState
                       title: Text(option),
                       onChanged: _done('quality')
                           ? null
-                          : (value) => setState(() {
+                          : (value) {
+                              setState(() {
                                 if (value == true) {
                                   _selectedIssues.add(option);
                                 } else {
                                   _selectedIssues.remove(option);
                                 }
-                              }),
+                              });
+                              _scheduleDraftSave();
+                            },
                     ),
                   FilledButton(
                     onPressed: _done('quality') || _busy
@@ -290,13 +439,17 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['tool']!,
+              available: _done('quality'),
               title: 'Choose your tool',
               done: _done('tool'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'No tool is prescribed. Choose the approach you would defend in a real job.',
+                  Text(
+                    item.companyKey == 'ecommerce' ||
+                            CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                        ? 'Executable SQL is required for verified flagship project evidence.'
+                        : 'Choose the approach you would defend in a real job.',
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -307,12 +460,26 @@ class _FlagshipWorkdayScreenState
                         ChoiceChip(
                           label: Text(tool),
                           selected: _tool == tool,
-                          onSelected: _done('tool')
+                          onSelected: _done('tool') ||
+                                  (CompanyFlagshipCaseService.validCases.contains(item.companyKey) && tool != 'SQL') || (item.companyKey == 'ecommerce' && tool != 'SQL')
                               ? null
-                              : (_) => setState(() => _tool = tool),
+                              : (_) {
+                                  setState(() => _tool = tool);
+                                  _scheduleDraftSave();
+                                },
                         ),
                     ],
                   ),
+                  if (item.companyKey == 'ecommerce' ||
+                      CompanyFlagshipCaseService.validCases.contains(item.companyKey))
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Verified flagship cases use executable SQL. '
+                        'Other tools remain available in their practice labs; '
+                        'the SQL path earns verified project evidence.',
+                      ),
+                    ),
                   const SizedBox(height: 10),
                   FilledButton(
                     onPressed:
@@ -326,6 +493,7 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['analysis']!,
+              available: _done('tool'),
               title: 'Do the analysis',
               done: _done('analysis'),
               child: Column(
@@ -336,7 +504,12 @@ class _FlagshipWorkdayScreenState
                   Text(
                     _tool.isEmpty
                         ? 'Choose your tool first.'
-                        : _toolHint(_tool),
+                        : _tool == 'SQL' &&
+                                CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                            ? 'Query dq_case_latest and filter case_id = the '
+                                'company key. Deduplicate events using the view; '
+                                'derive ratios from total numerator / total denominator.'
+                            : _toolHint(_tool),
                   ),
                   const SizedBox(height: 8),
                   TextField(
@@ -346,6 +519,10 @@ class _FlagshipWorkdayScreenState
                     maxLines: 14,
                     autocorrect: false,
                     enableSuggestions: false,
+                    onChanged: (_) {
+                      setState(() {});
+                      _scheduleDraftSave();
+                    },
                     decoration: InputDecoration(
                       labelText: _tool.isEmpty
                           ? 'Analysis work'
@@ -354,6 +531,37 @@ class _FlagshipWorkdayScreenState
                       alignLabelWithHint: true,
                       border: const OutlineInputBorder(),
                     ),
+                  ),
+                  if (item.companyKey == 'ecommerce' && !_done('analysis')) ...[
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _hintLevel >= 3 || _busy
+                          ? null
+                          : _showNextHint,
+                      icon: const Icon(Icons.lightbulb_outline),
+                      label: Text('Reveal SQL hint ($_hintLevel/3 used)'),
+                    ),
+                    if (_hintLevel > 0)
+                      Text(
+                        const [
+                          'Hint 1: Raw order/refund event rows are intentionally duplicated. Use ec_case_clean_orders rather than summing ec_case_order_events.',
+                          'Hint 2: Join ec_case_clean_orders to ec_case_customers using customer_id; filter only completed orders.',
+                          'Hint 3: SELECT c.segment, SUM(o.net_revenue) AS revenue FROM ec_case_clean_orders o JOIN ec_case_customers c ON c.customer_id = o.customer_id WHERE o.status = completed (use quotes around completed) GROUP BY c.segment.',
+                        ][_hintLevel - 1],
+                      ),
+                    const Text(
+                      'Hint use is saved and caps independent analysis score: 95 / 85 / 75.',
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _done('analysis') ||
+                            _analysisController.text.trim().isEmpty ||
+                            _busy
+                        ? null
+                        : () => _saveDraft(analysis: true),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save analysis draft'),
                   ),
                   const SizedBox(height: 10),
                   FilledButton.icon(
@@ -375,35 +583,75 @@ class _FlagshipWorkdayScreenState
             ),
             _TimelineStep(
               time: _timeline['statistics']!,
+              available: _done('analysis'),
               title: 'Challenge the interpretation',
               done: _done('statistics'),
-              child: _SingleChoiceStage(
-                prompt: item.statisticsPrompt,
-                options: item.statisticsOptions,
-                value: _statistics,
-                enabled: !_done('statistics'),
-                onChanged: (value) => setState(() => _statistics = value),
-                onSubmit: _done('statistics') || _statistics.isEmpty
-                    ? null
-                    : _submitStatistics,
-              ),
+              child: item.order >= 3
+                  ? _OpenEndedDecisionStage(
+                      prompt: item.statisticsPrompt,
+                      controller: _statisticsController,
+                      enabled: !_done('statistics'),
+                      stageName: 'Statistical reasoning',
+                      onChanged: () {
+                        setState(() {});
+                        _scheduleDraftSave();
+                      },
+                      onSubmit: _statisticsController.text.trim().isEmpty ||
+                              _done('statistics') || _busy
+                          ? null
+                          : _submitStatistics,
+                    )
+                  : _SingleChoiceStage(
+                      prompt: item.statisticsPrompt,
+                      options: item.statisticsOptions,
+                      value: _statistics,
+                      enabled: !_done('statistics'),
+                      onChanged: (value) {
+                        setState(() => _statistics = value);
+                        _scheduleDraftSave();
+                      },
+                      onSubmit: _done('statistics') || _statistics.isEmpty || _busy
+                          ? null
+                          : _submitStatistics,
+                    ),
             ),
             _TimelineStep(
               time: _timeline['chart']!,
+              available: _done('statistics'),
               title: 'Design the decision view',
               done: _done('chart'),
-              child: _SingleChoiceStage(
-                prompt: item.chartPrompt,
-                options: item.chartOptions,
-                value: _chart,
-                enabled: !_done('chart'),
-                onChanged: (value) => setState(() => _chart = value),
-                onSubmit:
-                    _done('chart') || _chart.isEmpty ? null : _submitChart,
-              ),
+              child: item.order >= 3
+                  ? _OpenEndedDecisionStage(
+                      prompt: item.chartPrompt,
+                      controller: _chartController,
+                      enabled: !_done('chart'),
+                      stageName: 'Dashboard/metric justification',
+                      onChanged: () {
+                        setState(() {});
+                        _scheduleDraftSave();
+                      },
+                      onSubmit: _chartController.text.trim().isEmpty ||
+                              _done('chart') || _busy
+                          ? null
+                          : _submitChart,
+                    )
+                  : _SingleChoiceStage(
+                      prompt: item.chartPrompt,
+                      options: item.chartOptions,
+                      value: _chart,
+                      enabled: !_done('chart'),
+                      onChanged: (value) {
+                        setState(() => _chart = value);
+                        _scheduleDraftSave();
+                      },
+                      onSubmit: _done('chart') || _chart.isEmpty || _busy
+                          ? null
+                          : _submitChart,
+                    ),
             ),
             _TimelineStep(
               time: _timeline['manager']!,
+              available: _done('chart'),
               title: 'Explain it to the manager',
               done: _done('manager'),
               child: Column(
@@ -416,6 +664,10 @@ class _FlagshipWorkdayScreenState
                     enabled: !_done('manager'),
                     minLines: 5,
                     maxLines: 9,
+                    onChanged: (_) {
+                      setState(() {});
+                      _scheduleDraftSave();
+                    },
                     decoration: const InputDecoration(
                       labelText: 'Your 2–4 sentence manager update',
                       hintText:
@@ -434,6 +686,15 @@ class _FlagshipWorkdayScreenState
                       Text('• $line'),
                   ],
                   const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: _done('manager') ||
+                            _managerController.text.trim().isEmpty || _busy
+                        ? null
+                        : () => _saveDraft(analysis: false),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save manager-update draft'),
+                  ),
+                  const SizedBox(height: 10),
                   FilledButton(
                     onPressed: _done('manager') ||
                             _managerController.text.trim().isEmpty ||
@@ -444,6 +705,10 @@ class _FlagshipWorkdayScreenState
                   ),
                 ],
               ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 6),
+              child: Text('Unfinished work saves automatically on this device.'),
             ),
             if (_feedback != null) ...[
               const SizedBox(height: 10),
@@ -466,6 +731,14 @@ class _FlagshipWorkdayScreenState
                 workday: item,
                 attempt: _attempt!,
                 onExport: _exportProject,
+                onConsequences: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => NextDayConsequenceScreen(
+                      caseKey: item.companyKey,
+                      companyName: item.companyName,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
@@ -483,11 +756,48 @@ class _FlagshipWorkdayScreenState
       ].every(_done);
 
   Future<void> _save(FlagshipAttempt next) async {
-    await ref.read(flagshipAttemptRepositoryProvider).save(next);
+    final newStages = next.completedStages.difference(
+      _attempt?.completedStages ?? const <String>{},
+    );
+    _draftTimer?.cancel();
+    final stored = _withUnfinishedDrafts(next);
+    await ref.read(flagshipAttemptRepositoryProvider).save(stored);
+    for (final stage in newStages) {
+      await ref.read(learningTelemetryServiceProvider).recordEvent(
+            'stage_${stage}_complete',
+          );
+    }
+    if (newStages.isNotEmpty) {
+      ref.invalidate(learningHealthProvider);
+    }
     if (!mounted) return;
-    setState(() => _attempt = next);
+    setState(() => _attempt = stored);
     ref.invalidate(flagshipAttemptsProvider);
     ref.invalidate(flagshipAttemptProvider(item.id));
+  }
+
+  Future<void> _showNextHint() async {
+    if (_hintLevel >= 3 || _done('analysis')) return;
+    final next = _hintLevel + 1;
+    await _save(_attempt!.copyWith(hintsUsed: next));
+    if (!mounted) return;
+    setState(() => _hintLevel = next);
+  }
+
+  Future<void> _saveDraft({required bool analysis}) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    await _save(_attempt!.copyWith(
+      analysisText: analysis ? _analysisController.text : null,
+      managerText: analysis ? null : _managerController.text,
+    ));
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _feedback = analysis
+          ? 'Analysis draft saved locally. No assessment score awarded yet.'
+          : 'Manager update saved locally as a draft.';
+    });
   }
 
   Future<void> _submitQuality() async {
@@ -531,6 +841,23 @@ class _FlagshipWorkdayScreenState
     int score;
     String feedback;
     if (_tool == 'SQL') {
+      if (item.companyKey == 'ecommerce' ||
+          CompanyFlagshipCaseService.validCases.contains(item.companyKey)) {
+        final warning = item.companyKey == 'ecommerce'
+            ? EcommerceFlagshipCaseService.queryIntegrityWarning(
+                _analysisController.text,
+              )
+            : CompanyFlagshipCaseService.integrityWarning(
+                _analysisController.text, item.companyKey,
+              );
+        if (warning != null) {
+          setState(() {
+            _busy = false;
+            _feedback = warning;
+          });
+          return;
+        }
+      }
       final run =
           await ref.read(sqlRunnerProvider).runReadOnly(_analysisController.text);
       if (!run.isSuccess) {
@@ -544,9 +871,34 @@ class _FlagshipWorkdayScreenState
       final grade = SqlResultGrader.grade(
         actualRows: run.rows,
         expectedRows: item.sqlExpectedRows,
+        truncated: run.truncated,
       );
-      score = grade.isCorrect ? 100 : 0;
-      feedback = grade.feedback;
+      final changedData = !grade.isCorrect
+          ? null
+          : item.companyKey == 'ecommerce'
+              ? await EcommerceFlagshipCaseService(
+                  ref.read(appDatabaseProvider),
+                ).verifyChangedData(_analysisController.text)
+              : CompanyFlagshipCaseService.validCases.contains(item.companyKey)
+                  ? await CompanyFlagshipCaseService(
+                      ref.read(appDatabaseProvider),
+                    ).verifyChangedData(
+                      item.companyKey, _analysisController.text,
+                    )
+                  : null;
+      final accepted = grade.isCorrect && (changedData?.isCorrect ?? true);
+      score = accepted ? 100 : 0;
+      feedback = accepted
+          ? 'Correct. The query also works after case data changes.'
+          : changedData != null && !changedData.isCorrect
+              ? 'The example numbers match, but the SQL fails on changed data. '
+                  'Compute totals from the rows instead of fixed values.'
+              : AnalystMistakeDiagnostics.sql(
+                  query: _analysisController.text,
+                  graderFeedback: grade.feedback,
+                  actualRowCount: run.rows.length,
+                  expectedRowCount: item.sqlExpectedRows.length,
+                );
     } else {
       score = FlagshipWorkdayScoringService.tokenAnalysisScore(
         item,
@@ -573,6 +925,18 @@ class _FlagshipWorkdayScreenState
       });
       return;
     }
+    if (item.companyKey == 'ecommerce') {
+      final cap = switch (_hintLevel) {
+        1 => 95,
+        2 => 85,
+        3 => 75,
+        _ => 100,
+      };
+      score = score.clamp(0, cap).toInt();
+      if (_hintLevel > 0) {
+        feedback = '$feedback\n$_hintLevel hint(s) used; independent score capped at $cap.';
+      }
+    }
 
     await _save(
       _attempt!.copyWith(
@@ -589,39 +953,59 @@ class _FlagshipWorkdayScreenState
   }
 
   Future<void> _submitStatistics() async {
-    if (_statistics != item.statisticsExpected) {
+    final advanced = item.order >= 3;
+    final answer = advanced ? _statisticsController.text.trim() : _statistics;
+    final grade = advanced
+        ? OpenEndedDecisionService.grade(
+            workdayId: item.id,
+            stage: 'statistics',
+            answer: answer,
+          )
+        : null;
+    if (advanced ? !grade!.passed : answer != item.statisticsExpected) {
       setState(() {
-        _feedback =
-            'Not yet. Separate association from causation, check denominators/mix, and ask what the aggregate may be hiding.';
+        _feedback = advanced
+            ? 'Statistical review: ${grade!.score}/100. ${grade.feedback}'
+            : 'Not yet. Check denominators, subgroup mix and whether the data justifies a causal claim.';
       });
       return;
     }
-    await _save(
-      _attempt!.copyWith(
-        statisticsAnswer: _statistics,
-        statisticsScore: 100,
-        completedStages: {..._attempt!.completedStages, 'statistics'},
-      ),
-    );
-    setState(() => _feedback = 'Statistical interpretation: 100/100.');
+    await _save(_attempt!.copyWith(
+      statisticsAnswer: answer,
+      statisticsScore: grade?.score ?? 100,
+      completedStages: {..._attempt!.completedStages, 'statistics'},
+    ));
+    if (!mounted) return;
+    setState(() => _feedback =
+        'Statistical interpretation accepted: ${grade?.score ?? 100}/100.');
   }
 
   Future<void> _submitChart() async {
-    if (_chart != item.chartExpected) {
+    final advanced = item.order >= 3;
+    final answer = advanced ? _chartController.text.trim() : _chart;
+    final grade = advanced
+        ? OpenEndedDecisionService.grade(
+            workdayId: item.id,
+            stage: 'chart',
+            answer: answer,
+          )
+        : null;
+    if (advanced ? !grade!.passed : answer != item.chartExpected) {
       setState(() {
-        _feedback =
-            'That visual does not support the decision strongly enough. Match chart type to the comparison, time structure and diagnostic question.';
+        _feedback = advanced
+            ? 'Dashboard review: ${grade!.score}/100. ${grade.feedback}'
+            : 'Match the visual to the comparison, time grain, metric definition and business decision.';
       });
       return;
     }
-    await _save(
-      _attempt!.copyWith(
-        chartAnswer: _chart,
-        chartScore: 100,
-        completedStages: {..._attempt!.completedStages, 'chart'},
-      ),
-    );
-    setState(() => _feedback = 'Dashboard decision: 100/100.');
+    await _save(_attempt!.copyWith(
+      chartAnswer: answer,
+      chartScore: grade?.score ?? 100,
+      completedStages: {..._attempt!.completedStages, 'chart'},
+    ));
+    if (!mounted) return;
+    setState(() => _feedback =
+        'Dashboard decision accepted: ${grade?.score ?? 100}/100.');
   }
 
   Future<void> _submitManager() async {
@@ -633,6 +1017,13 @@ class _FlagshipWorkdayScreenState
       recommendationTerms: item.recommendationTerms,
     );
     setState(() => _managerRubric = score);
+    final overclaim = AnalystMistakeDiagnostics.managerOverclaim(
+      _managerController.text,
+    );
+    if (overclaim != null) {
+      setState(() => _feedback = overclaim);
+      return;
+    }
     if (score.total < 60) {
       setState(() {
         _feedback =
@@ -722,24 +1113,128 @@ class _FlagshipWorkdayScreenState
   }
 
   Future<void> _exportProject() async {
-    final result =
-        await ref.read(flagshipProjectExportServiceProvider).export(
-              workday: item,
-              attempt: _attempt!,
-            );
-    if (!mounted) return;
+    setState(() => _busy = true);
+    try {
+      final result = await ref.read(flagshipProjectExportServiceProvider)
+          .export(workday: item, attempt: _attempt!);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('GitHub-ready project created'),
+          content: SelectableText(
+            '${result.fileCount} project files packaged into a shareable ZIP:\n\n'
+            '${result.archivePath}\n\n'
+            'Includes your analysis, datasets, review, verification '
+            'and reproduction instructions.',
+          ),
+          actions: [
+            OutlinedButton.icon(
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                try {
+                  await ref.read(portfolioDeliveryServiceProvider).share(
+                    result.archivePath,
+                    title: 'DataQuest Synthetic Analyst Project',
+                    text: 'Reproducible synthetic analytics project '
+                        'with source data, SQL and a verification report.',
+                  );
+                } catch (error) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Could not share ZIP: $error')),
+                  );
+                }
+              },
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Share ZIP'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Done'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not export project: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _showRawCaseData() async {
+    final tables = _rawCaseTables;
+    if (tables == null || !mounted) return;
+    final ecommerce = item.companyKey == 'ecommerce';
+    final displayKeys = ecommerce
+        ? const ['customers', 'order_events', 'refund_events', 'clean_orders']
+        : const ['raw_events', 'clean_latest_events'];
+    final schema = ecommerce
+        ? {
+            'source_tables': [
+              'ec_case_customers', 'ec_case_order_events',
+              'ec_case_refund_events',
+            ],
+            'clean_view': 'ec_case_clean_orders',
+          }
+        : {
+            'source_tables': ['dq_case_events'],
+            'clean_view': 'dq_case_latest',
+            'required_case_id': item.companyKey,
+          };
     await showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('GitHub-ready project created'),
-        content: SelectableText(
-          '${result.fileCount} files created:\n\n${result.directoryPath}\n\n'
-          'README.md, analysis file, data_quality.md, executive_summary.md and sample_data.csv.',
+        title: Text('Full ${item.companyName} source data'),
+        content: SizedBox(
+          width: 640,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(ecommerce
+                    ? 'These are all the synthetic e-commerce source records. '
+                        'Order and refund events include duplicate and late updates.'
+                    : 'These are all synthetic ${item.companyKey} event records. '
+                        'The latest-event view deduplicates business records '
+                        'by company case and event ingestion time.'),
+                const SizedBox(height: 10),
+                for (final key in displayKeys) ...[
+                  Text(
+                    key,
+                    style: Theme.of(dialogContext).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 6),
+                  _PreviewTable(
+                    rows: [
+                      for (final row in tables[key] ?? const <Map<String, Object?>>[])
+                        Map<String, dynamic>.from(row),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                ],
+                Text(ecommerce
+                    ? 'Revenue definition: completed orders minus distinct '
+                        'partial refunds; a snapshot does not establish growth.'
+                    : 'Use dq_case_latest filtered to case_id = '
+                        '${item.companyKey}. Aggregate only eligible status '
+                        'records. Single-period metrics do not establish causality.'),
+                const SizedBox(height: 8),
+                SelectableText(
+                  const JsonEncoder.withIndent('  ').convert(schema),
+                ),
+              ],
+            ),
+          ),
         ),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Done'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -764,7 +1259,9 @@ class _FlagshipWorkdayScreenState
   static String _toolHint(String tool) {
     switch (tool) {
       case 'SQL':
-        return 'Write a complete read-only SQL query. It will run against the local SQLite company database.';
+        return 'Write a complete read-only SQL query. It runs against real local SQLite tables. '
+            'For the e-commerce flagship join ec_case_clean_orders to ec_case_customers '
+            'and aggregate net_revenue by segment.';
       case 'Pandas':
         return 'Write a realistic Pandas expression/pipeline using dataframe operations.';
       case 'Power BI':
@@ -839,12 +1336,14 @@ class _TimelineStep extends StatelessWidget {
     required this.time,
     required this.title,
     required this.done,
+    this.available = true,
     required this.child,
   });
 
   final String time;
   final String title;
   final bool done;
+  final bool available;
   final Widget child;
 
   @override
@@ -876,12 +1375,65 @@ class _TimelineStep extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            child,
+            if (available || done)
+              child
+            else
+              const Text(
+                'This stage is locked. Complete the previous work stage first so your decision uses the evidence already produced.',
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+class _OpenEndedDecisionStage extends StatelessWidget {
+  const _OpenEndedDecisionStage({
+    required this.prompt,
+    required this.controller,
+    required this.enabled,
+    required this.stageName,
+    required this.onChanged,
+    required this.onSubmit,
+  });
+
+  final String prompt;
+  final TextEditingController controller;
+  final bool enabled;
+  final String stageName;
+  final VoidCallback onChanged;
+  final VoidCallback? onSubmit;
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(prompt),
+          const SizedBox(height: 8),
+          const Text(
+            'Independent assessment: explain your decision instead of guessing from options. The offline rubric checks essential concepts, but you must still defend your reasoning.',
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            enabled: enabled,
+            minLines: 4,
+            maxLines: 8,
+            onChanged: (_) => onChanged(),
+            decoration: InputDecoration(
+              labelText: stageName,
+              hintText: 'State the metric or comparison, your reasoning and any limitation.',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: onSubmit,
+            child: const Text('Submit independent decision'),
+          ),
+        ],
+      );
 }
 
 class _SingleChoiceStage extends StatelessWidget {
@@ -965,11 +1517,13 @@ class _CompletedProject extends StatelessWidget {
     required this.workday,
     required this.attempt,
     required this.onExport,
+    required this.onConsequences,
   });
 
   final FlagshipWorkday workday;
   final FlagshipAttempt attempt;
   final VoidCallback onExport;
+  final VoidCallback onConsequences;
 
   @override
   Widget build(BuildContext context) {
@@ -1000,6 +1554,12 @@ class _CompletedProject extends StatelessWidget {
               onPressed: onExport,
               icon: const Icon(Icons.folder_zip_outlined),
               label: const Text('Create GitHub-ready project folder'),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: onConsequences,
+              icon: const Icon(Icons.trending_up_outlined),
+              label: const Text('Next morning: see your decision consequences'),
             ),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/pandas_challenge.dart';
 import '../../services/pandas_simulator.dart';
+import '../../services/native_pandas_companion.dart';
 import '../../widgets/solution_reveal_card.dart';
 import '../game/game_providers.dart';
 
@@ -91,6 +92,8 @@ class _PandasChallengeScreenState
   int _hints = 0;
   int _failed = 0;
   PandasRunResult? _result;
+  NativePandasResult? _nativeResult;
+  bool _nativeRunning = false;
   bool _completed = false;
   bool _solutionViewed = false;
 
@@ -149,6 +152,24 @@ class _PandasChallengeScreenState
               icon: const Icon(Icons.play_arrow),
               label: const Text('Run simulated dataframe'),
             ),
+            if (NativePandasCompanion.available) ...[
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: _nativeRunning || _controller.text.trim().isEmpty
+                    ? null : _runNative,
+                icon: const Icon(Icons.terminal_outlined),
+                label: const Text('Run actual Pandas (local companion)'),
+              ),
+              const Text(
+                'Opt-in local Docker service. Real code execution is '
+                'separate from simulated practice XP. No automatic upload.',
+              ),
+              if (_nativeResult != null) ...[
+                Text(_nativeResult!.feedback),
+                if (_nativeResult!.rows.isNotEmpty)
+                  _RowsTable(rows: _nativeResult!.rows),
+              ],
+            ],
             if (_result != null) ...[
               const SizedBox(height: 12),
               Card(
@@ -224,6 +245,18 @@ class _PandasChallengeScreenState
         ),
       ),
     );
+  }
+
+  Future<void> _runNative() async {
+    setState(() => _nativeRunning = true);
+    final result = await NativePandasCompanion.run(
+      challenge, _controller.text,
+    );
+    if (!mounted) return;
+    setState(() {
+      _nativeResult = result;
+      _nativeRunning = false;
+    });
   }
 
   Future<void> _run() async {
