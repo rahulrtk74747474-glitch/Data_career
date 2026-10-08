@@ -17,3 +17,9 @@ android/local.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# MiroFish opt-in local/cloud research outputs and credentials
+mirofish_local_outputs/
+.env
+.env.*
+!.env.example
