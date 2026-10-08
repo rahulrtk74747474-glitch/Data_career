@@ -8,6 +8,7 @@ import '../interview/interview_session_screen.dart';
 import '../portfolio/portfolio_screen.dart';
 import 'certificate_screen.dart';
 import 'final_capstone_screen.dart';
+import 'independent_sql_exam_screen.dart';
 import 'resume_builder_screen.dart';
 
 class JobReadinessScreen extends ConsumerWidget {
@@ -50,6 +51,17 @@ class JobReadinessScreen extends ConsumerWidget {
                 const SizedBox(height: 14),
                 _FormulaCard(report: readiness),
                 const SizedBox(height: 14),
+                const Card(
+                  child: ListTile(
+                    leading: Icon(Icons.info_outline),
+                    title: Text('Scores show in-app training progress'),
+                    subtitle: Text(
+                      'They do not independently predict job offers or prove '
+                      'competence in Microsoft Excel, Power BI or native Pandas. '
+                      'Use practical examinations and externally replayed projects.',
+                    ),
+                  ),
+                ),
                 Text(
                   'Final hiring preparation',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -111,6 +123,21 @@ class JobReadinessScreen extends ConsumerWidget {
                                 ),
                               )
                           : null,
+                    ),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.fact_check_outlined),
+                    title: const Text('Unseen independent SQL practical exam'),
+                    subtitle: const Text(
+                      'Execute your own SQL, without hints, on an unfamiliar '
+                      'dataset and survive a changed-data verification.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _open(
+                      context,
+                      const IndependentSqlExamScreen(),
                     ),
                   ),
                 ),
