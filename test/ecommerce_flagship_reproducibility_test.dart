@@ -100,6 +100,7 @@ void main() {
     final attempt = FlagshipAttempt(
       workdayId: workday.id,
       tool: 'SQL',
+      hintsUsed: 2,
       analysisText: EcommerceFlagshipCaseService.referenceQuery,
       managerText: 'Segment net revenue is 3400 / 9550 / 3400.',
       totalScore: 94,
@@ -123,6 +124,7 @@ void main() {
       await File(p.join(dir.path, 'verification.json')).readAsString(),
     ) as Map<String, dynamic>;
     expect(verification['real_sql_executed'], isTrue);
+    expect(verification['hints_used'], 2);
     expect(verification['output_matches_expected'], isTrue);
     expect(verification['net_revenue'], 16350);
     expect(
