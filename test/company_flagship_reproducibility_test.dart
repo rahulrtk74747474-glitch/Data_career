@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,7 @@ void main() {
   late List<FlagshipWorkday> workdays;
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     sqfliteFfiInit();
     temp = await Directory.systemTemp.createTemp('dataquest_company_');
     database = AppDatabase(
