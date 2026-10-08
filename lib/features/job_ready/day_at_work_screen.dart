@@ -174,6 +174,7 @@ class _FlagshipWorkdayScreenState
   final _chartController = TextEditingController();
   final _selectedIssues = <String>{};
   String _tool = '';
+  int _hintLevel = 0;
   String _statistics = '';
   String _chart = '';
   FlagshipAttempt? _attempt;
@@ -246,6 +247,7 @@ class _FlagshipWorkdayScreenState
         ..clear()
         ..addAll(attempt.selectedIssues);
       _tool = attempt.tool;
+      _hintLevel = attempt.hintsUsed.clamp(0, 3).toInt();
       _analysisController.text = attempt.analysisText;
       _statistics = attempt.statisticsAnswer;
       _chart = attempt.chartAnswer;
@@ -433,6 +435,37 @@ class _FlagshipWorkdayScreenState
                       border: const OutlineInputBorder(),
                     ),
                   ),
+                  if (item.companyKey == 'ecommerce' && !_done('analysis')) ...[
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _hintLevel >= 3 || _busy
+                          ? null
+                          : _showNextHint,
+                      icon: const Icon(Icons.lightbulb_outline),
+                      label: Text('Reveal SQL hint ($_hintLevel/3 used)'),
+                    ),
+                    if (_hintLevel > 0)
+                      Text(
+                        const [
+                          'Hint 1: Raw order/refund event rows are intentionally duplicated. Use ec_case_clean_orders rather than summing ec_case_order_events.',
+                          'Hint 2: Join ec_case_clean_orders to ec_case_customers using customer_id; filter only completed orders.',
+                          'Hint 3: SELECT c.segment, SUM(o.net_revenue) AS revenue FROM ec_case_clean_orders o JOIN ec_case_customers c ON c.customer_id = o.customer_id WHERE o.status = completed (use quotes around completed) GROUP BY c.segment.',
+                        ][_hintLevel - 1],
+                      ),
+                    const Text(
+                      'Hint use is saved and caps independent analysis score: 95 / 85 / 75.',
+                    ),
+                  ],
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _done('analysis') ||
+                            _analysisController.text.trim().isEmpty ||
+                            _busy
+                        ? null
+                        : () => _saveDraft(analysis: true),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save analysis draft'),
+                  ),
                   const SizedBox(height: 10),
                   FilledButton.icon(
                     onPressed: _done('analysis') ||
@@ -541,6 +574,15 @@ class _FlagshipWorkdayScreenState
                       Text('• $line'),
                   ],
                   const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: _done('manager') ||
+                            _managerController.text.trim().isEmpty || _busy
+                        ? null
+                        : () => _saveDraft(analysis: false),
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Save manager-update draft'),
+                  ),
+                  const SizedBox(height: 10),
                   FilledButton(
                     onPressed: _done('manager') ||
                             _managerController.text.trim().isEmpty ||
@@ -606,6 +648,30 @@ class _FlagshipWorkdayScreenState
     setState(() => _attempt = next);
     ref.invalidate(flagshipAttemptsProvider);
     ref.invalidate(flagshipAttemptProvider(item.id));
+  }
+
+  Future<void> _showNextHint() async {
+    if (_hintLevel >= 3 || _done('analysis')) return;
+    final next = _hintLevel + 1;
+    await _save(_attempt!.copyWith(hintsUsed: next));
+    if (!mounted) return;
+    setState(() => _hintLevel = next);
+  }
+
+  Future<void> _saveDraft({required bool analysis}) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    await _save(_attempt!.copyWith(
+      analysisText: analysis ? _analysisController.text : null,
+      managerText: analysis ? null : _managerController.text,
+    ));
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _feedback = analysis
+          ? 'Analysis draft saved locally. No assessment score awarded yet.'
+          : 'Manager update saved locally as a draft.';
+    });
   }
 
   Future<void> _submitQuality() async {
@@ -709,6 +775,18 @@ class _FlagshipWorkdayScreenState
         _feedback = '$feedback\nAnalysis score: $score/100.';
       });
       return;
+    }
+    if (item.companyKey == 'ecommerce') {
+      final cap = switch (_hintLevel) {
+        1 => 95,
+        2 => 85,
+        3 => 75,
+        _ => 100,
+      };
+      score = score.clamp(0, cap).toInt();
+      if (_hintLevel > 0) {
+        feedback = '$feedback\n$_hintLevel hint(s) used; independent score capped at $cap.';
+      }
     }
 
     await _save(
