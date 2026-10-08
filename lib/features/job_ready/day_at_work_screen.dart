@@ -808,6 +808,7 @@ class _FlagshipWorkdayScreenState
     setState(() => _busy = true);
     int score;
     String feedback;
+    var passedChangedData = false;
     if (_tool == 'SQL') {
       if (item.companyKey == 'ecommerce') {
         final warning = EcommerceFlagshipCaseService.queryIntegrityWarning(
@@ -851,6 +852,7 @@ class _FlagshipWorkdayScreenState
                     )
                   : null;
       final accepted = grade.isCorrect && (changedData?.isCorrect ?? true);
+      passedChangedData = changedData?.isCorrect == true;
       score = accepted ? 100 : 0;
       feedback = accepted
           ? 'Correct. The query also works after case data changes.'
@@ -906,7 +908,7 @@ class _FlagshipWorkdayScreenState
       _attempt!.copyWith(
         analysisText: _analysisController.text.trim(),
         analysisScore: score,
-        changedDataPassed: _tool == 'SQL' && changedData?.isCorrect == true,
+        changedDataPassed: _tool == 'SQL' && passedChangedData,
         completedStages: {..._attempt!.completedStages, 'analysis'},
       ),
     );
