@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "external_engine": {
+    "repository": "https://github.com/666ghj/MiroFish",
+    "commit": "7657031ac01184afe2cb220f5ee3545573b5e843",
+    "license": "AGPL-3.0",
+    "api_requirements": [
+      "LLM_API_KEY",
+      "ZEP_API_KEY"
+    ],
+    "setup_mode": "separate local service, never embedded in Flutter"
+  },
+  "caveat": "All agents, posts, responses and sentiment are synthetic. MiroFish cannot validate app code, independently establish market demand, predict conversion or replace learner testing.",
+  "evidence_sources": [
+    "docs/JOB_READY_DEPTH_POLISH_AUDIT.md",
+    "docs/BETA_VALIDATION_PLAN_v1_5.md",
+    "assets/content/job_ready_v1_5.json",
+    "assets/content/flagship_ecommerce_case_v2.json",
+    ".github/workflows/flutter_ci.yml"
+  ],
+  "scenarios": [
+    {
+      "id": "baseline",
+      "name": "Current beta positioning: skeptical learner community",
+      "recommended_rounds": 8,
+      "requirement": "Simulate a mixed Indian learner and hiring discussion on Reddit and X after an early beta of DataQuest, an offline Android-first analyst career game. The present state has strong workday framing and one verifiable SQLite e-commerce flagship, but simulated advanced tool engines and zero independently measured retention or employment outcomes. Randomize critical vs positive views; avoid unanimous praise. What contradictions and objections dominate, who influences whom, what proof would change minds, and which real experiments should be run? Explicitly state no observed actual learners or conversion data. Treat all social activity as fictional.",
+      "hypotheses": [
+        "Beginners may value offline scaffolded workday learning.",
+        "Intermediate learners may reject pattern-graded Pandas and Power BI exercises.",
+        "Hiring managers might require independent, unseen, runnable projects.",
+        "Name confusion and exaggerated job-ready claims may harm trust."
+      ],
+      "falsifiers": [
+        "Observed beginners fail to complete workday even with hints.",
+        "Real interviewers cannot reproduce the portfolio SQL.",
+        "Recruiters reject synthetic exercise evidence despite transparency."
+      ],
+      "real_test": "Observe at least 10 beginners and 10 experienced learners completing the first workday without facilitator help; inspect actual error types and task completion."
+    },
+    {
+      "id": "evidence_first",
+      "name": "Evidence-first improvement alternative",
+      "recommended_rounds": 8,
+      "requirement": "Simulate the same stakeholder groups, but show a transparent free fully-reproducible e-commerce workday with complete synthetic source data, executable SQLite, multiple SQL solutions judged by output, hints clearly labeled, a downloadable ZIP and evidence of honest scoring. Also be explicit that Pandas/Excel/Power BI are NOT yet native execution and human studies are pending. Debate if this reduces skepticism and what still blocks adoption, including coding on phones and too much learning friction. Compare narratives qualitatively with the baseline, not fabricated percentages.",
+      "hypotheses": [
+        "A full shareable reproducible project may improve perceived credibility.",
+        "Transparent limitations may earn trust but reduce perceived breadth.",
+        "Independent assessments may be more valuable than XP badges."
+      ],
+      "falsifiers": [
+        "Recruiters still find the sample work too guided.",
+        "Learners still cannot reproduce work after two weeks.",
+        "Repeat-use patterns are unchanged in a real A/B comparison."
+      ],
+      "real_test": "Randomly assign consenting testers to baseline versus evidence-first onboarding; compare real first-workday completion, delayed retest and recruiter portfolio review."
+    },
+    {
+      "id": "growth_first",
+      "name": "Aggressive marketing and early paywall stress test",
+      "recommended_rounds": 8,
+      "requirement": "Simulate a counterfactual launch where DataQuest markets 'become job-ready quickly', highlights badges and simulated managers, and asks for payment before learners finish a meaningful free project. App technical fidelity is unchanged: SQLite is real but other advanced tools are simulated, employment outcome is unverified. Show credible criticism from cost-sensitive learners, educators, recruiters and moderators, alongside plausible supporters. Examine trust, backlash, accessibility, perceived value and reputation, without pretending posts predict actual public reaction.",
+      "hypotheses": [
+        "An early paywall may frustrate beginners before value is demonstrated.",
+        "Strong outcome claims without audited outcomes may create trust risk.",
+        "Gamification may still drive sampling and peer recommendations."
+      ],
+      "falsifiers": [
+        "In a real experiment early-paywall cohorts retain and learn better.",
+        "Qualified user interviews show claims are understood as clearly fictional."
+      ],
+      "real_test": "Test pricing willingness only after participants try a real workday; track opt-in qualitative feedback, 7-day return and independent task success."
+    }
+  ],
+  "real_go_no_go": {
+    "technical": "CI analyzer/tests/release builds green on exact commit; on-device Android smoke test; offline flow and exported ZIP replay verified.",
+    "learning": "Expert review of analytical content plus blind unseen assessments showing independent correct solutions and retained skill.",
+    "usability": "Moderated Android tests across lower-end devices with accessibility and interrupted-session recovery.",
+    "market": "50–100 recruited beta learners, consented event data, observed D1/D7 retention, project completion and reliable willingness-to-pay interviews.",
+    "claims": "No simulation-generated numbers stated as market forecasts; no placement promises without supporting evidence."
+  }
+}
