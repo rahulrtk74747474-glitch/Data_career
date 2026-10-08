@@ -1,0 +1,1540 @@
+{
+  "schemaVersion": 1,
+  "packId": "job-ready-v1-5",
+  "workdays": [
+    {
+      "id": "flagship-ecommerce-revenue",
+      "order": 1,
+      "companyKey": "ecommerce",
+      "companyName": "E-commerce Co.",
+      "title": "Revenue & Refund Investigation",
+      "role": "Commercial Data Analyst",
+      "startTime": "09:15",
+      "endTime": "16:30",
+      "briefing": "Revenue is up, refund complaints are up faster, and the CEO wants to know whether growth quality is deteriorating before the afternoon review.",
+      "datasetName": "orders + customers",
+      "previewRows": [
+        {
+          "order_id": "O2001",
+          "customer_id": "C001",
+          "status": "completed",
+          "revenue": 1200,
+          "timestamp": "2026-09-20T09:15:00+05:30"
+        },
+        {
+          "order_id": "O2002",
+          "customer_id": "C001",
+          "status": "completed",
+          "revenue": 800,
+          "timestamp": "2026-09-21T03:45:00Z"
+        },
+        {
+          "order_id": "O2002",
+          "customer_id": "C001",
+          "status": "completed",
+          "revenue": 800,
+          "timestamp": "2026-09-21T03:45:00Z"
+        },
+        {
+          "order_id": "O2006",
+          "customer_id": "C004",
+          "status": "refunded",
+          "revenue": 1400,
+          "timestamp": "2026-09-23T17:20:00+05:30"
+        }
+      ],
+      "issueOptions": [
+        "A duplicate order_id can inflate revenue if the raw export is summed blindly.",
+        "Refunded/cancelled rows must be handled according to the metric definition.",
+        "Mixed timezone timestamps must be normalized before daily comparisons.",
+        "Every high-value order should be deleted as an outlier.",
+        "Revenue growth alone proves growth quality improved."
+      ],
+      "correctIssues": [
+        "A duplicate order_id can inflate revenue if the raw export is summed blindly.",
+        "Refunded/cancelled rows must be handled according to the metric definition.",
+        "Mixed timezone timestamps must be normalized before daily comparisons."
+      ],
+      "toolScores": {
+        "SQL": 100,
+        "Pandas": 100,
+        "Power BI": 90,
+        "Excel": 80
+      },
+      "analysisPrompt": "Calculate completed revenue by customer segment from the trusted orders and customers tables. Do not count refunded/cancelled revenue.",
+      "sqlExpectedRows": [
+        {
+          "segment": "Consumer",
+          "revenue": 3100
+        },
+        {
+          "segment": "Enterprise",
+          "revenue": 8000
+        },
+        {
+          "segment": "SMB",
+          "revenue": 2300
+        }
+      ],
+      "tokenRules": {
+        "SQL": [
+          "join",
+          "customer_id",
+          "status",
+          "completed",
+          "group by",
+          "segment",
+          "sum"
+        ],
+        "Pandas": [
+          "merge",
+          "customer_id",
+          "status",
+          "completed",
+          "groupby",
+          "segment",
+          "sum"
+        ],
+        "Power BI": [
+          "calculate",
+          "sum",
+          "completed",
+          "segment"
+        ],
+        "Excel": [
+          "sumifs",
+          "completed",
+          "segment"
+        ]
+      },
+      "statisticsPrompt": "Enterprise contributes the largest completed revenue in this small snapshot. What can you conclude?",
+      "statisticsOptions": [
+        "Enterprise is the largest observed contributor here; investigate margin, refunds and mix before claiming the segment causes better growth quality.",
+        "Enterprise customers definitely cause profitable growth.",
+        "Delete other segments because they are smaller.",
+        "The segment mix can never matter for revenue analysis."
+      ],
+      "statisticsExpected": "Enterprise is the largest observed contributor here; investigate margin, refunds and mix before claiming the segment causes better growth quality.",
+      "chartPrompt": "Which management view best connects growth quality to segment performance?",
+      "chartOptions": [
+        "Segment bars for completed revenue paired with refund/margin context and a time trend.",
+        "A 3D pie chart without labels.",
+        "A gauge showing only total revenue.",
+        "A scatter plot with segment names as numeric time."
+      ],
+      "chartExpected": "Segment bars for completed revenue paired with refund/margin context and a time trend.",
+      "managerPrompt": "Write 2–4 sentences to the CEO: state the finding, cite evidence, mention uncertainty/limitations, and recommend the next action.",
+      "evidenceTerms": [
+        "consumer",
+        "enterprise",
+        "smb",
+        "revenue",
+        "8000",
+        "3100",
+        "2300"
+      ],
+      "impactTerms": [
+        "margin",
+        "refund",
+        "growth",
+        "profit",
+        "customer"
+      ],
+      "uncertaintyTerms": [
+        "small",
+        "snapshot",
+        "does not prove",
+        "may",
+        "mix",
+        "need more"
+      ],
+      "recommendationTerms": [
+        "investigate",
+        "recommend",
+        "segment",
+        "monitor",
+        "compare",
+        "next"
+      ],
+      "managerReference": "Enterprise is the largest completed-revenue segment in this snapshot at about ₹8,000 versus ₹3,100 Consumer and ₹2,300 SMB. That does not prove Enterprise growth is more profitable because refund and margin mix are not yet reconciled. I recommend segmenting refunds and gross margin next, then monitoring contribution margin alongside revenue.",
+      "reviewFeedback": "You finished an end-to-end revenue investigation: quality checks, tool choice, real analysis, statistical restraint, dashboard design and an executive recommendation.",
+      "resumeBullet": "Investigated e-commerce revenue quality using data validation, segmented analysis, statistical restraint and an executive recommendation.",
+      "bonusXp": 220
+    },
+    {
+      "id": "flagship-saas-retention",
+      "order": 2,
+      "companyKey": "saas",
+      "companyName": "SaaS Growth Co.",
+      "title": "Retention & MRR Investigation",
+      "role": "Product / Growth Analyst",
+      "startTime": "09:10",
+      "endTime": "16:20",
+      "briefing": "Leadership sees rising MRR but customer success reports churn. Determine what the active revenue base looks like and avoid hiding churn through survivorship bias.",
+      "datasetName": "saas_account_monthly",
+      "previewRows": [
+        {
+          "account_id": "S001",
+          "month": "2026-09",
+          "segment": "SMB",
+          "mrr": 1200,
+          "active": 1
+        },
+        {
+          "account_id": "S002",
+          "month": "2026-09",
+          "segment": "Enterprise",
+          "mrr": 5300,
+          "active": 1
+        },
+        {
+          "account_id": "S003",
+          "month": "2026-09",
+          "segment": "SMB",
+          "mrr": 0,
+          "active": 0
+        },
+        {
+          "account_id": "S005",
+          "month": "2026-09",
+          "segment": "Enterprise",
+          "mrr": 4500,
+          "active": 1
+        }
+      ],
+      "issueOptions": [
+        "Looking only at currently active accounts creates survivorship bias for churn analysis.",
+        "MRR and logo retention answer different questions and should both be tracked.",
+        "Cohort/segment mix can change the aggregate retention story.",
+        "Inactive accounts should be deleted before any retention analysis.",
+        "NRR above 100% means no customer churn occurred."
+      ],
+      "correctIssues": [
+        "Looking only at currently active accounts creates survivorship bias for churn analysis.",
+        "MRR and logo retention answer different questions and should both be tracked.",
+        "Cohort/segment mix can change the aggregate retention story."
+      ],
+      "toolScores": {
+        "SQL": 100,
+        "Pandas": 100,
+        "Power BI": 100,
+        "Excel": 75
+      },
+      "analysisPrompt": "Calculate September active MRR by segment. Keep the inactive/churned account visible in your reasoning even though active MRR excludes it.",
+      "sqlExpectedRows": [
+        {
+          "segment": "Enterprise",
+          "active_mrr": 9800
+        },
+        {
+          "segment": "MidMarket",
+          "active_mrr": 2800
+        },
+        {
+          "segment": "SMB",
+          "active_mrr": 1200
+        }
+      ],
+      "tokenRules": {
+        "SQL": [
+          "saas_account_monthly",
+          "2026-09",
+          "active",
+          "group by",
+          "segment",
+          "sum",
+          "mrr"
+        ],
+        "Pandas": [
+          "2026-09",
+          "active",
+          "groupby",
+          "segment",
+          "mrr",
+          "sum"
+        ],
+        "Power BI": [
+          "calculate",
+          "sum",
+          "mrr",
+          "active",
+          "segment"
+        ],
+        "Excel": [
+          "sumifs",
+          "mrr",
+          "active",
+          "segment"
+        ]
+      },
+      "statisticsPrompt": "If you report only active September accounts, what is the main analytical risk?",
+      "statisticsOptions": [
+        "Survivorship bias: churned/inactive accounts disappear from the retained sample and can make retention look healthier.",
+        "There is no risk because inactive accounts are irrelevant.",
+        "The only issue is chart color.",
+        "The sample becomes randomized automatically."
+      ],
+      "statisticsExpected": "Survivorship bias: churned/inactive accounts disappear from the retained sample and can make retention look healthier.",
+      "chartPrompt": "Which view best supports a retention decision?",
+      "chartOptions": [
+        "Cohort retention heatmap plus segment MRR/NRR context.",
+        "A single total-MRR KPI card only.",
+        "A pie chart for every month.",
+        "A gauge for number of support tickets."
+      ],
+      "chartExpected": "Cohort retention heatmap plus segment MRR/NRR context.",
+      "managerPrompt": "Explain to the Head of Product whether MRR growth proves retention health. Use evidence, a limitation and a next step.",
+      "evidenceTerms": [
+        "9800",
+        "2800",
+        "1200",
+        "mrr",
+        "enterprise",
+        "inactive",
+        "churn"
+      ],
+      "impactTerms": [
+        "retention",
+        "growth",
+        "revenue",
+        "expansion",
+        "churn"
+      ],
+      "uncertaintyTerms": [
+        "survivorship",
+        "cohort",
+        "mix",
+        "does not",
+        "cannot",
+        "need"
+      ],
+      "recommendationTerms": [
+        "cohort",
+        "track",
+        "compare",
+        "recommend",
+        "segment",
+        "monitor"
+      ],
+      "managerReference": "September active MRR is concentrated in Enterprise at ₹9,800, with MidMarket ₹2,800 and SMB ₹1,200, while at least one SMB account is inactive. MRR growth alone does not establish healthy retention because inactive accounts and cohort mix can be hidden. I recommend tracking logo retention and cohort NRR beside active MRR and segmenting churn by plan/tenure.",
+      "reviewFeedback": "You separated recurring-revenue growth from retention health and explicitly handled survivorship bias.",
+      "resumeBullet": "Analyzed SaaS active MRR and retention risk by segment while identifying survivorship bias and cohort-mix limitations.",
+      "bonusXp": 230
+    },
+    {
+      "id": "flagship-bank-risk",
+      "order": 3,
+      "companyKey": "bank",
+      "companyName": "NorthStar Bank Analytics",
+      "title": "Credit Risk Portfolio Review",
+      "role": "Risk Data Analyst",
+      "startTime": "09:00",
+      "endTime": "16:15",
+      "briefing": "Risk committee sees the delinquency ratio move while the loan book grows. Quantify exposure and challenge a proposal to use a convenient proxy as a hard decision rule.",
+      "datasetName": "loan_portfolio + bank_accounts",
+      "previewRows": [
+        {
+          "loan_id": "L002",
+          "account_id": "A002",
+          "outstanding": 45000,
+          "dpd": 18,
+          "risk_band": "Medium"
+        },
+        {
+          "loan_id": "L004",
+          "account_id": "A004",
+          "outstanding": 420000,
+          "dpd": 42,
+          "risk_band": "High"
+        },
+        {
+          "loan_id": "L006",
+          "account_id": "A006",
+          "outstanding": 80000,
+          "dpd": 65,
+          "risk_band": "High"
+        }
+      ],
+      "issueOptions": [
+        "A falling risk ratio can coexist with rising absolute risky exposure if the denominator grows faster.",
+        "A review/risk flag is not proof of wrongdoing or default.",
+        "Sensitive customer attributes should be minimized and governed.",
+        "A correlated proxy can be used as a definitive policy without validation.",
+        "Absolute exposure never matters if the ratio improves."
+      ],
+      "correctIssues": [
+        "A falling risk ratio can coexist with rising absolute risky exposure if the denominator grows faster.",
+        "A review/risk flag is not proof of wrongdoing or default.",
+        "Sensitive customer attributes should be minimized and governed."
+      ],
+      "toolScores": {
+        "SQL": 100,
+        "Pandas": 100,
+        "Power BI": 95,
+        "Excel": 70
+      },
+      "analysisPrompt": "Calculate total outstanding exposure by risk_band.",
+      "sqlExpectedRows": [
+        {
+          "risk_band": "High",
+          "exposure": 500000
+        },
+        {
+          "risk_band": "Low",
+          "exposure": 2420000
+        },
+        {
+          "risk_band": "Medium",
+          "exposure": 45000
+        }
+      ],
+      "tokenRules": {
+        "SQL": [
+          "loan_portfolio",
+          "risk_band",
+          "group by",
+          "sum",
+          "outstanding"
+        ],
+        "Pandas": [
+          "risk_band",
+          "groupby",
+          "outstanding",
+          "sum"
+        ],
+        "Power BI": [
+          "sum",
+          "outstanding",
+          "risk_band"
+        ],
+        "Excel": [
+          "sumifs",
+          "outstanding",
+          "risk_band"
+        ]
+      },
+      "statisticsPrompt": "The High-risk share falls after the total loan book expands, but High-risk rupees rise. What should committee hear?",
+      "statisticsOptions": [
+        "The ratio improved partly because the denominator grew; evaluate both absolute exposure and the ratio before declaring lower risk.",
+        "The portfolio is definitely safer because the ratio fell.",
+        "Only absolute exposure matters and ratios are useless.",
+        "Delete all High-risk loans from the analysis."
+      ],
+      "statisticsExpected": "The ratio improved partly because the denominator grew; evaluate both absolute exposure and the ratio before declaring lower risk.",
+      "chartPrompt": "Which executive visual is strongest?",
+      "chartOptions": [
+        "Exposure by risk band with both amount and share, plus delinquency trend.",
+        "One pie chart showing only current share.",
+        "A decorative map unrelated to credit risk.",
+        "A gauge with no denominator definition."
+      ],
+      "chartExpected": "Exposure by risk band with both amount and share, plus delinquency trend.",
+      "managerPrompt": "Write a risk-committee note that quantifies exposure, explains the denominator issue, avoids treating risk flags as guilt, and recommends a governed next step.",
+      "evidenceTerms": [
+        "500000",
+        "2420000",
+        "45000",
+        "high",
+        "low",
+        "medium",
+        "exposure"
+      ],
+      "impactTerms": [
+        "risk",
+        "portfolio",
+        "loss",
+        "delinquency",
+        "capital",
+        "customer"
+      ],
+      "uncertaintyTerms": [
+        "ratio",
+        "denominator",
+        "proxy",
+        "does not",
+        "not proof",
+        "validate"
+      ],
+      "recommendationTerms": [
+        "monitor",
+        "validate",
+        "segment",
+        "recommend",
+        "review",
+        "govern"
+      ],
+      "managerReference": "High-risk exposure is ₹500k versus ₹2.42M Low and ₹45k Medium in this snapshot. A lower High-risk ratio can still reflect denominator growth rather than lower absolute risk, and review flags are not proof of default. I recommend monitoring both rupee exposure and share, validating any proposed proxy, and keeping customer-level decisions inside approved governance controls.",
+      "reviewFeedback": "You combined portfolio measurement with denominator awareness and governance judgment.",
+      "resumeBullet": "Delivered a credit-risk portfolio review combining exposure aggregation, denominator-aware interpretation and governance-safe recommendations.",
+      "bonusXp": 240
+    },
+    {
+      "id": "flagship-hospital-capacity",
+      "order": 4,
+      "companyKey": "hospital",
+      "companyName": "Harborview Hospital Analytics",
+      "title": "Wait-Time & Capacity Investigation",
+      "role": "Operations Data Analyst",
+      "startTime": "08:45",
+      "endTime": "16:00",
+      "briefing": "Leadership says overall wait time improved, but weekend complaints remain high. Determine whether mix effects are hiding unit-level performance and prepare an operational capacity recommendation.",
+      "datasetName": "hospital_daily_ops + hospital_capacity_forecast",
+      "previewRows": [
+        {
+          "date": "2026-10-01",
+          "unit": "Emergency",
+          "arrivals": 120,
+          "avg_wait": 52
+        },
+        {
+          "date": "2026-10-01",
+          "unit": "Outpatient",
+          "arrivals": 180,
+          "avg_wait": 31
+        },
+        {
+          "date": "2026-10-04",
+          "unit": "Emergency",
+          "arrivals": 145,
+          "avg_wait": 72
+        },
+        {
+          "date": "2026-10-04",
+          "unit": "Outpatient",
+          "arrivals": 160,
+          "avg_wait": 26
+        }
+      ],
+      "issueOptions": [
+        "An overall average can improve even if subgroup performance worsens when the mix of units changes.",
+        "Weekend/day mix should be checked before attributing the change to staffing.",
+        "Tail wait metrics can remain poor even if the median improves.",
+        "An overall average always tells the complete operational story.",
+        "Any association after a staffing change proves staffing caused it."
+      ],
+      "correctIssues": [
+        "An overall average can improve even if subgroup performance worsens when the mix of units changes.",
+        "Weekend/day mix should be checked before attributing the change to staffing.",
+        "Tail wait metrics can remain poor even if the median improves."
+      ],
+      "toolScores": {
+        "SQL": 100,
+        "Pandas": 100,
+        "Power BI": 90,
+        "Excel": 90
+      },
+      "analysisPrompt": "Calculate average wait minutes by unit across the observed hospital_daily_ops rows.",
+      "sqlExpectedRows": [
+        {
+          "unit": "Emergency",
+          "avg_wait": 59
+        },
+        {
+          "unit": "Outpatient",
+          "avg_wait": 30
+        }
+      ],
+      "tokenRules": {
+        "SQL": [
+          "hospital_daily_ops",
+          "unit",
+          "group by",
+          "avg",
+          "avg_wait_minutes"
+        ],
+        "Pandas": [
+          "unit",
+          "groupby",
+          "avg_wait_minutes",
+          "mean"
+        ],
+        "Power BI": [
+          "average",
+          "avg_wait_minutes",
+          "unit"
+        ],
+        "Excel": [
+          "averageifs",
+          "unit",
+          "avg_wait_minutes"
+        ]
+      },
+      "statisticsPrompt": "Overall wait falls while one unit worsens and its share of visits shrinks. What phenomenon should you check?",
+      "statisticsOptions": [
+        "Simpson's paradox / composition effect: the aggregate can move differently from subgroup trends.",
+        "The central limit theorem proves staffing worked.",
+        "Survivorship bias always explains the result.",
+        "A lower overall average means every unit improved."
+      ],
+      "statisticsExpected": "Simpson's paradox / composition effect: the aggregate can move differently from subgroup trends.",
+      "chartPrompt": "Which operations view is strongest?",
+      "chartOptions": [
+        "Unit-level wait trends with median/P90 and a capacity-gap view by day.",
+        "One overall average KPI only.",
+        "A pie chart of wait minutes.",
+        "A scatter plot with unit names as numeric values."
+      ],
+      "chartExpected": "Unit-level wait trends with median/P90 and a capacity-gap view by day.",
+      "managerPrompt": "Write the operations lead a concise note separating aggregate and unit-level evidence, mentioning composition/causal limits, and recommending a capacity action.",
+      "evidenceTerms": [
+        "59",
+        "30",
+        "emergency",
+        "outpatient",
+        "wait",
+        "capacity"
+      ],
+      "impactTerms": [
+        "wait",
+        "capacity",
+        "service",
+        "throughput",
+        "patient",
+        "operations"
+      ],
+      "uncertaintyTerms": [
+        "simpson",
+        "composition",
+        "mix",
+        "does not prove",
+        "may",
+        "causal"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "capacity",
+        "staff",
+        "monitor",
+        "recommend",
+        "weekend"
+      ],
+      "managerReference": "Emergency averages about 59 minutes versus 30 for Outpatient, so the aggregate should not be interpreted without unit mix. A change in patient mix can create a Simpson's-paradox-style aggregate improvement even if a subgroup worsens, and timing alone does not prove staffing caused the change. I recommend monitoring median/P90 by unit and adding weekend capacity where forecast demand exceeds plan.",
+      "reviewFeedback": "You diagnosed a composition effect instead of trusting one aggregate and translated it into an operational capacity decision.",
+      "resumeBullet": "Investigated hospital wait-time and capacity performance using subgroup analysis, composition-effect reasoning and operational recommendations.",
+      "bonusXp": 250
+    },
+    {
+      "id": "flagship-logistics-sla",
+      "order": 5,
+      "companyKey": "logistics",
+      "companyName": "Logistics Network Co.",
+      "title": "SLA & Cost Efficiency Investigation",
+      "role": "Network Data Analyst",
+      "startTime": "08:30",
+      "endTime": "16:10",
+      "briefing": "Average shipment cost rose and late deliveries are concentrated on a few routes. Determine whether cost efficiency truly worsened after accounting for shipment weight and route mix.",
+      "datasetName": "logistics_shipments",
+      "previewRows": [
+        {
+          "shipment_id": "S001",
+          "route": "NW-1",
+          "weight_kg": 120,
+          "cost": 4200,
+          "promised_h": 24,
+          "actual_h": 21
+        },
+        {
+          "shipment_id": "S002",
+          "route": "NS-1",
+          "weight_kg": 180,
+          "cost": 6100,
+          "promised_h": 30,
+          "actual_h": 37
+        },
+        {
+          "shipment_id": "S008",
+          "route": "NS-1",
+          "weight_kg": 170,
+          "cost": 6300,
+          "promised_h": 30,
+          "actual_h": 42
+        }
+      ],
+      "issueOptions": [
+        "Absolute shipping cost should be normalized by workload such as weight when judging efficiency.",
+        "Route mix can change network averages even if route-level efficiency is unchanged.",
+        "Promised and actual timestamps/hours must use consistent time definitions.",
+        "The most expensive route should automatically be cut.",
+        "A lower cost/kg proves total company profit increased."
+      ],
+      "correctIssues": [
+        "Absolute shipping cost should be normalized by workload such as weight when judging efficiency.",
+        "Route mix can change network averages even if route-level efficiency is unchanged.",
+        "Promised and actual timestamps/hours must use consistent time definitions."
+      ],
+      "toolScores": {
+        "SQL": 100,
+        "Pandas": 100,
+        "Power BI": 100,
+        "Excel": 80
+      },
+      "analysisPrompt": "Calculate shipping cost per kilogram by route using total cost / total weight.",
+      "sqlExpectedRows": [
+        {
+          "route_code": "NS-1",
+          "cost_per_kg": 35.43
+        },
+        {
+          "route_code": "NW-1",
+          "cost_per_kg": 35.07
+        },
+        {
+          "route_code": "SN-1",
+          "cost_per_kg": 32.2
+        },
+        {
+          "route_code": "WE-1",
+          "cost_per_kg": 35.7
+        }
+      ],
+      "tokenRules": {
+        "SQL": [
+          "logistics_shipments",
+          "route_code",
+          "group by",
+          "sum",
+          "shipping_cost",
+          "weight_kg"
+        ],
+        "Pandas": [
+          "route_code",
+          "groupby",
+          "shipping_cost",
+          "weight_kg",
+          "sum"
+        ],
+        "Power BI": [
+          "divide",
+          "sum",
+          "shipping_cost",
+          "weight_kg",
+          "route"
+        ],
+        "Excel": [
+          "sumifs",
+          "shipping_cost",
+          "weight_kg",
+          "route"
+        ]
+      },
+      "statisticsPrompt": "Average cost rises while average shipment weight rises faster and cost/kg falls. What is the strongest interpretation?",
+      "statisticsOptions": [
+        "Absolute cost increased, but normalized shipping efficiency improved; investigate weight and route mix before cutting spend.",
+        "Efficiency definitely worsened because average cost rose.",
+        "Cost/kg falling proves total profit increased.",
+        "Weight should be ignored because it is not revenue."
+      ],
+      "statisticsExpected": "Absolute cost increased, but normalized shipping efficiency improved; investigate weight and route mix before cutting spend.",
+      "chartPrompt": "Which network view best supports action?",
+      "chartOptions": [
+        "Route-level cost/kg and SLA bars plus a time trend for late-rate/P90 transit time.",
+        "One total shipping-cost gauge.",
+        "A pie chart of route names.",
+        "A map with no metrics or labels."
+      ],
+      "chartExpected": "Route-level cost/kg and SLA bars plus a time trend for late-rate/P90 transit time.",
+      "managerPrompt": "Write the Network Director a note explaining absolute vs normalized cost, route/SLA context, uncertainty, and the next operational investigation.",
+      "evidenceTerms": [
+        "35.43",
+        "35.07",
+        "32.2",
+        "35.7",
+        "cost",
+        "kg",
+        "route"
+      ],
+      "impactTerms": [
+        "cost",
+        "sla",
+        "late",
+        "capacity",
+        "carrier",
+        "service"
+      ],
+      "uncertaintyTerms": [
+        "mix",
+        "normalize",
+        "does not prove",
+        "may",
+        "route",
+        "weight"
+      ],
+      "recommendationTerms": [
+        "investigate",
+        "carrier",
+        "capacity",
+        "monitor",
+        "route",
+        "recommend"
+      ],
+      "managerReference": "Route cost/kg ranges from about ₹32.20 on SN-1 to ₹35.70 on WE-1, so higher absolute shipment cost should not be read as lower efficiency without workload normalization. Route and weight mix can move the network average, and cost/kg alone does not explain lateness. I recommend pairing cost/kg with SLA/P90 by route and investigating capacity and carrier handoffs on the late routes.",
+      "reviewFeedback": "You normalized cost, protected against route-mix distortion and connected efficiency to SLA rather than optimizing cost alone.",
+      "resumeBullet": "Analyzed logistics SLA and normalized route cost efficiency using workload-adjusted metrics and decision-ready network recommendations.",
+      "bonusXp": 260
+    }
+  ],
+  "domainPlaybooks": [
+    {
+      "companyKey": "ecommerce",
+      "title": "E-commerce Business Playbook",
+      "operatingModel": "Traffic becomes orders through conversion; orders become revenue through basket size; revenue becomes contribution through margin, returns and fulfilment economics.",
+      "levers": [
+        "Traffic quality",
+        "Conversion rate",
+        "AOV",
+        "Discount depth",
+        "Return/refund rate",
+        "Gross margin",
+        "Fulfilment cost",
+        "Inventory availability"
+      ],
+      "metrics": [
+        {
+          "name": "GMV",
+          "formula": "Sum of merchandise value before selected deductions",
+          "use": "Scale of commerce activity",
+          "trap": "GMV is not the same as recognized/net revenue."
+        },
+        {
+          "name": "Net Revenue",
+          "formula": "Gross sales - returns/refunds/discounts according to policy",
+          "use": "Top-line revenue after defined deductions",
+          "trap": "Definition must be consistent across Finance and Product."
+        },
+        {
+          "name": "Conversion",
+          "formula": "Orders or purchasers / eligible visits or users",
+          "use": "Funnel efficiency",
+          "trap": "Wrong denominator can make a good channel look bad or vice versa."
+        },
+        {
+          "name": "AOV",
+          "formula": "Order revenue / orders",
+          "use": "Basket-value driver",
+          "trap": "Can rise because low-value customers disappeared."
+        },
+        {
+          "name": "Gross Margin %",
+          "formula": "Gross profit / revenue × 100",
+          "use": "Profitability quality",
+          "trap": "Revenue growth with falling margin can be unhealthy."
+        },
+        {
+          "name": "Return Rate",
+          "formula": "Returned orders or value / eligible orders or value",
+          "use": "Quality and margin pressure",
+          "trap": "Mix shifts can change the rate without product quality changing."
+        }
+      ]
+    },
+    {
+      "companyKey": "saas",
+      "title": "SaaS Business Playbook",
+      "operatingModel": "Acquire accounts, activate users, retain recurring revenue, expand healthy customers and manage churn/contraction.",
+      "levers": [
+        "Activation",
+        "Adoption",
+        "Retention",
+        "Pricing",
+        "Expansion",
+        "Support quality",
+        "CAC",
+        "Sales efficiency"
+      ],
+      "metrics": [
+        {
+          "name": "MRR",
+          "formula": "Recurring monthly revenue under the company's policy",
+          "use": "Recurring revenue run-rate",
+          "trap": "MRR growth can hide logo churn or concentration."
+        },
+        {
+          "name": "ARR",
+          "formula": "Usually MRR × 12 when policy is stable",
+          "use": "Annualized recurring run-rate",
+          "trap": "Not the same as GAAP/recognized annual revenue."
+        },
+        {
+          "name": "GRR",
+          "formula": "(Start - churn - contraction) / Start",
+          "use": "Base retention without expansion",
+          "trap": "Expansion cannot rescue GRR."
+        },
+        {
+          "name": "NRR",
+          "formula": "(Start - churn - contraction + expansion) / Start",
+          "use": "Revenue retention including expansion",
+          "trap": ">100% does not mean zero churn."
+        },
+        {
+          "name": "CAC",
+          "formula": "Acquisition spend / new customers",
+          "use": "Acquisition efficiency",
+          "trap": "Attribution window and included spend matter."
+        },
+        {
+          "name": "Payback",
+          "formula": "CAC / monthly gross profit per customer",
+          "use": "Cash recovery speed",
+          "trap": "Revenue-only payback overstates economics if gross margin is low."
+        }
+      ]
+    },
+    {
+      "companyKey": "bank",
+      "title": "Banking / Risk Playbook",
+      "operatingModel": "Grow deposits/loans and transaction activity while managing credit, fraud, liquidity, compliance and customer risk.",
+      "levers": [
+        "Underwriting",
+        "Pricing",
+        "Collections",
+        "Portfolio mix",
+        "Fraud controls",
+        "Deposit mix",
+        "Operational review capacity"
+      ],
+      "metrics": [
+        {
+          "name": "Outstanding Exposure",
+          "formula": "Sum of current loan balances",
+          "use": "Absolute portfolio exposure",
+          "trap": "Do not look only at ratios."
+        },
+        {
+          "name": "DPD",
+          "formula": "Days past due",
+          "use": "Delinquency severity",
+          "trap": "A single DPD cut-off can hide migration dynamics."
+        },
+        {
+          "name": "Gross NPA ratio",
+          "formula": "Gross NPA / gross advances",
+          "use": "Asset quality ratio",
+          "trap": "Ratio can fall while absolute NPA rises if denominator grows faster."
+        },
+        {
+          "name": "Review Rate",
+          "formula": "Flagged transactions / eligible transactions",
+          "use": "Fraud/ops workload",
+          "trap": "Review flag is not proof of fraud."
+        },
+        {
+          "name": "Net Interest Margin",
+          "formula": "Net interest income / average earning assets",
+          "use": "Core spread profitability",
+          "trap": "Needs funding-cost and balance-sheet context."
+        },
+        {
+          "name": "Cost-to-Income",
+          "formula": "Operating cost / operating income",
+          "use": "Operating efficiency",
+          "trap": "Aggressive cost cuts can degrade control/service."
+        }
+      ]
+    },
+    {
+      "companyKey": "hospital",
+      "title": "Hospital Operations Playbook",
+      "operatingModel": "Balance arrivals, capacity, throughput and service reliability while keeping analytics operational—not clinical—unless appropriately governed.",
+      "levers": [
+        "Staffing",
+        "Beds/rooms",
+        "Scheduling",
+        "Routing",
+        "Discharge flow",
+        "Peak capacity",
+        "No-show management"
+      ],
+      "metrics": [
+        {
+          "name": "Median Wait",
+          "formula": "50th percentile wait time",
+          "use": "Typical patient experience",
+          "trap": "Can improve while severe tail waits remain bad."
+        },
+        {
+          "name": "P90 Wait",
+          "formula": "90th percentile wait time",
+          "use": "Tail service experience",
+          "trap": "Needs sufficient sample and consistent start/end definitions."
+        },
+        {
+          "name": "Utilization",
+          "formula": "Used capacity / staffed capacity",
+          "use": "Capacity pressure",
+          "trap": "Very high utilization can reduce resilience."
+        },
+        {
+          "name": "Throughput",
+          "formula": "Completed visits / period",
+          "use": "Operational output",
+          "trap": "Volume alone does not measure quality."
+        },
+        {
+          "name": "Cancellation Rate",
+          "formula": "Cancelled appointments / scheduled appointments",
+          "use": "Access and scheduling performance",
+          "trap": "Mix and policy changes affect comparability."
+        },
+        {
+          "name": "Capacity Gap",
+          "formula": "Expected demand - planned capacity",
+          "use": "Staffing/operations planning",
+          "trap": "Forecast uncertainty should be explicit."
+        }
+      ]
+    },
+    {
+      "companyKey": "logistics",
+      "title": "Logistics Business Playbook",
+      "operatingModel": "Move shipments through a network while balancing SLA, capacity, route/carrier mix, utilization and unit cost.",
+      "levers": [
+        "Route design",
+        "Carrier mix",
+        "Hub capacity",
+        "Load consolidation",
+        "Scheduling",
+        "Inventory flow",
+        "Exception management"
+      ],
+      "metrics": [
+        {
+          "name": "On-time SLA",
+          "formula": "On-time delivered shipments / eligible delivered shipments",
+          "use": "Service reliability",
+          "trap": "Define promised threshold consistently."
+        },
+        {
+          "name": "P90 Transit",
+          "formula": "90th percentile actual transit time",
+          "use": "Tail delay visibility",
+          "trap": "Average can hide severe late shipments."
+        },
+        {
+          "name": "Cost/kg",
+          "formula": "Shipping cost / shipped weight",
+          "use": "Workload-normalized cost",
+          "trap": "May still need distance/service-level normalization."
+        },
+        {
+          "name": "Warehouse Utilization",
+          "formula": "Ending units / capacity units",
+          "use": "Capacity pressure",
+          "trap": "Near-100% can hurt flow and resilience."
+        },
+        {
+          "name": "Throughput Gap",
+          "formula": "Expected shipments - planned throughput",
+          "use": "Peak planning",
+          "trap": "Forecast error requires scenarios."
+        },
+        {
+          "name": "Exception Rate",
+          "formula": "Exception shipments / eligible shipments",
+          "use": "Network reliability",
+          "trap": "Route mix and exception definitions matter."
+        }
+      ]
+    }
+  ],
+  "leadershipCases": [
+    {
+      "id": "lead-senior-review",
+      "minCareerLevel": 3,
+      "level": "Senior",
+      "title": "Junior analyst ships a causal claim",
+      "context": "A junior writes: “Training caused retention to rise because trained accounts retained 12 pp better.” The analysis is observational and larger accounts were more likely to attend training.",
+      "choices": [
+        {
+          "text": "Approve it because the difference is large.",
+          "score": 20,
+          "feedback": "Effect size does not remove confounding.",
+          "impact": {
+            "trust": -3,
+            "dataQuality": -2,
+            "risk": 3
+          }
+        },
+        {
+          "text": "Coach them to state association, identify account-size confounding and propose adjustment or an experiment.",
+          "score": 100,
+          "feedback": "Senior-quality review: preserve useful evidence while fixing the causal overclaim.",
+          "impact": {
+            "trust": 3,
+            "dataQuality": 3,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Delete the analysis and report nothing.",
+          "score": 55,
+          "feedback": "You avoided overclaiming but failed to salvage the descriptive evidence.",
+          "impact": {
+            "trust": -1,
+            "dataQuality": 1,
+            "risk": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "lead-senior-priority",
+      "minCareerLevel": 3,
+      "level": "Senior",
+      "title": "Two analysts need your help",
+      "context": "One analyst has a cosmetic dashboard formatting issue. Another has a many-to-many join inflating board revenue by 18%. You have 30 minutes.",
+      "choices": [
+        {
+          "text": "Fix the revenue join first, document the grain issue, then delegate formatting.",
+          "score": 100,
+          "feedback": "Prioritize decision risk and materiality.",
+          "impact": {
+            "trust": 4,
+            "dataQuality": 4,
+            "risk": -4
+          }
+        },
+        {
+          "text": "Fix the dashboard formatting because executives will see it.",
+          "score": 30,
+          "feedback": "Visibility does not outrank a material metric defect.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": -3,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Split time evenly and finish neither.",
+          "score": 25,
+          "feedback": "Equal time is not the same as good prioritization.",
+          "impact": {
+            "trust": -3,
+            "dataQuality": -2,
+            "risk": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "lead-lead-roadmap",
+      "minCareerLevel": 4,
+      "level": "Lead",
+      "title": "Quarter analytics roadmap",
+      "context": "You can fund two initiatives: rebuild metric definitions, add 20 decorative dashboard pages, automate recurring data-quality checks, or build an unvalidated prediction model.",
+      "choices": [
+        {
+          "text": "Metric definitions + automated data-quality checks.",
+          "score": 100,
+          "feedback": "Strong foundational investment: trustworthy metrics and repeatable controls increase leverage across the team.",
+          "impact": {
+            "trust": 4,
+            "dataQuality": 5,
+            "risk": -4
+          }
+        },
+        {
+          "text": "20 dashboard pages + prediction model.",
+          "score": 20,
+          "feedback": "Breadth without governance increases maintenance and decision risk.",
+          "impact": {
+            "trust": -3,
+            "dataQuality": -2,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Prediction model + dashboard pages because they look innovative.",
+          "score": 25,
+          "feedback": "Innovation without reliable inputs/definitions is fragile.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": -2,
+            "risk": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "lead-lead-stakeholders",
+      "minCareerLevel": 4,
+      "level": "Lead",
+      "title": "Sales and Finance use different revenue",
+      "context": "Sales wants bookings, Finance wants recognized revenue, and leadership keeps asking why dashboards disagree.",
+      "choices": [
+        {
+          "text": "Create a metric contract that names both metrics, owners, grain, timing and intended decisions.",
+          "score": 100,
+          "feedback": "Good analytics leadership resolves semantic conflict instead of forcing one label onto different concepts.",
+          "impact": {
+            "trust": 5,
+            "dataQuality": 4,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Tell one team to adopt the other's number without documenting meaning.",
+          "score": 35,
+          "feedback": "This hides rather than resolves the semantic difference.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": -2,
+            "risk": 2
+          }
+        },
+        {
+          "text": "Average both numbers.",
+          "score": 10,
+          "feedback": "Averaging definitions creates a meaningless metric.",
+          "impact": {
+            "trust": -5,
+            "dataQuality": -4,
+            "risk": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "lead-lead-capacity",
+      "minCareerLevel": 4,
+      "level": "Lead",
+      "title": "Allocate two analysts",
+      "context": "CEO asks for an exploratory AI dashboard; Risk has a regulatory data-quality issue due tomorrow; Product has a low-impact chart request.",
+      "choices": [
+        {
+          "text": "Put one analyst on the regulatory data-quality issue, one on the CEO exploration with a tight scope; defer the low-impact chart.",
+          "score": 100,
+          "feedback": "Balanced urgency, risk and strategic value.",
+          "impact": {
+            "trust": 4,
+            "dataQuality": 4,
+            "risk": -5
+          }
+        },
+        {
+          "text": "Put both on the low-impact chart because it is easiest to finish.",
+          "score": 15,
+          "feedback": "Throughput is not impact.",
+          "impact": {
+            "trust": -4,
+            "dataQuality": -2,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Start all three with both analysts switching constantly.",
+          "score": 30,
+          "feedback": "Context switching reduces completion and leaves the highest-risk issue exposed.",
+          "impact": {
+            "trust": -3,
+            "dataQuality": -1,
+            "risk": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "head-kpi-governance",
+      "minCareerLevel": 5,
+      "level": "Head",
+      "title": "Executive KPI sprawl",
+      "context": "The board pack has 74 KPIs, many with overlapping names and conflicting definitions.",
+      "choices": [
+        {
+          "text": "Create a tiered KPI dictionary: outcomes, drivers and diagnostics with named owners and retirement rules.",
+          "score": 100,
+          "feedback": "Head-level governance: reduce noise while preserving drill-down paths.",
+          "impact": {
+            "trust": 5,
+            "dataQuality": 5,
+            "risk": -4
+          }
+        },
+        {
+          "text": "Keep all KPIs because deleting any metric loses information.",
+          "score": 30,
+          "feedback": "More metrics can reduce decision clarity and increase inconsistency.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": -2,
+            "risk": 2
+          }
+        },
+        {
+          "text": "Let each department define KPIs independently.",
+          "score": 20,
+          "feedback": "This institutionalizes semantic conflict.",
+          "impact": {
+            "trust": -4,
+            "dataQuality": -4,
+            "risk": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "head-exec-conflict",
+      "minCareerLevel": 5,
+      "level": "Head",
+      "title": "CEO wants speed, CFO wants certainty",
+      "context": "CEO wants a churn answer in 10 minutes. CFO refuses any number until every edge case is validated.",
+      "choices": [
+        {
+          "text": "Provide the approved provisional metric with denominator/window and a confidence label, then schedule the full reconciliation.",
+          "score": 100,
+          "feedback": "Good executive trade-off: preserve minimum quality while meeting decision speed.",
+          "impact": {
+            "trust": 5,
+            "dataQuality": 3,
+            "risk": -3
+          }
+        },
+        {
+          "text": "Send an unverified number immediately.",
+          "score": 15,
+          "feedback": "Speed without a quality floor creates avoidable decision risk.",
+          "impact": {
+            "trust": -5,
+            "dataQuality": -4,
+            "risk": 5
+          }
+        },
+        {
+          "text": "Refuse to provide anything for several weeks.",
+          "score": 40,
+          "feedback": "Maximum certainty can also fail the decision if timing matters.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": 2,
+            "risk": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "head-privacy-crisis",
+      "minCareerLevel": 5,
+      "level": "Head",
+      "title": "Sensitive export was shared too broadly",
+      "context": "A customer-level risk export with unnecessary contact fields was sent to a wide internal list.",
+      "choices": [
+        {
+          "text": "Contain access, notify governance/security per policy, preserve audit evidence, minimize future fields and redesign distribution.",
+          "score": 100,
+          "feedback": "Strong incident response and prevention.",
+          "impact": {
+            "trust": 4,
+            "dataQuality": 2,
+            "risk": -6
+          }
+        },
+        {
+          "text": "Delete the email from your own inbox and say nothing.",
+          "score": 10,
+          "feedback": "That does not contain the incident or create governance evidence.",
+          "impact": {
+            "trust": -5,
+            "dataQuality": -2,
+            "risk": 7
+          }
+        },
+        {
+          "text": "Rename future files CONFIDENTIAL but keep broad email distribution.",
+          "score": 20,
+          "feedback": "A filename is not an access control.",
+          "impact": {
+            "trust": -4,
+            "dataQuality": -1,
+            "risk": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "head-team-quality",
+      "minCareerLevel": 5,
+      "level": "Head",
+      "title": "Team hits deadlines but errors recur",
+      "context": "Delivery speed is high, but metric-definition, join and validation errors keep reappearing.",
+      "choices": [
+        {
+          "text": "Invest in review checklists, reusable tests, metric contracts and post-mortems; measure escaped defects as well as speed.",
+          "score": 100,
+          "feedback": "Build a learning system rather than blaming individuals.",
+          "impact": {
+            "trust": 4,
+            "dataQuality": 6,
+            "risk": -5
+          }
+        },
+        {
+          "text": "Add more deadlines so the team becomes faster.",
+          "score": 15,
+          "feedback": "More pressure can increase error escape rate.",
+          "impact": {
+            "trust": -4,
+            "dataQuality": -3,
+            "risk": 4
+          }
+        },
+        {
+          "text": "Ban all junior analysts from publishing anything.",
+          "score": 35,
+          "feedback": "Review is necessary, but blocking development does not build team capability.",
+          "impact": {
+            "trust": -2,
+            "dataQuality": 1,
+            "risk": 1
+          }
+        }
+      ]
+    }
+  ],
+  "coachScenarios": [
+    {
+      "id": "coach-causality",
+      "title": "Defend a causal claim",
+      "companyKey": "ecommerce",
+      "prompt": "You found conversion is higher for users who saw a new banner. Explain what you can conclude and what you would do next.",
+      "evidenceTerms": [
+        "conversion",
+        "difference",
+        "rate",
+        "data"
+      ],
+      "uncertaintyTerms": [
+        "association",
+        "confound",
+        "not prove",
+        "may",
+        "random"
+      ],
+      "recommendationTerms": [
+        "experiment",
+        "test",
+        "segment",
+        "validate"
+      ]
+    },
+    {
+      "id": "coach-median",
+      "title": "Defend median vs mean",
+      "companyKey": "ecommerce",
+      "prompt": "Your manager asks why you used median order value instead of mean. Answer in 2–4 sentences.",
+      "evidenceTerms": [
+        "outlier",
+        "skew",
+        "extreme",
+        "median"
+      ],
+      "uncertaintyTerms": [
+        "distribution",
+        "context",
+        "does not",
+        "may"
+      ],
+      "recommendationTerms": [
+        "report",
+        "compare",
+        "percentile",
+        "monitor"
+      ]
+    },
+    {
+      "id": "coach-retention",
+      "title": "Explain retention health",
+      "companyKey": "saas",
+      "prompt": "NRR is 104% but logo churn rose. Explain why both can be true and what you would investigate.",
+      "evidenceTerms": [
+        "nrr",
+        "churn",
+        "expansion",
+        "logo"
+      ],
+      "uncertaintyTerms": [
+        "concentration",
+        "mix",
+        "may",
+        "does not"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "cohort",
+        "monitor",
+        "investigate"
+      ]
+    },
+    {
+      "id": "coach-risk",
+      "title": "Challenge a risk proxy",
+      "companyKey": "bank",
+      "prompt": "A stakeholder wants to deny service using a feature correlated with review flags. Explain your response.",
+      "evidenceTerms": [
+        "proxy",
+        "review",
+        "correlation",
+        "risk"
+      ],
+      "uncertaintyTerms": [
+        "fairness",
+        "not proof",
+        "validate",
+        "bias"
+      ],
+      "recommendationTerms": [
+        "govern",
+        "test",
+        "review",
+        "approved"
+      ]
+    },
+    {
+      "id": "coach-capacity",
+      "title": "Explain a capacity forecast",
+      "companyKey": "hospital",
+      "prompt": "Expected Saturday demand is above planned capacity. Explain the recommendation without presenting the forecast as certain.",
+      "evidenceTerms": [
+        "demand",
+        "capacity",
+        "gap",
+        "saturday"
+      ],
+      "uncertaintyTerms": [
+        "forecast",
+        "uncertain",
+        "range",
+        "scenario"
+      ],
+      "recommendationTerms": [
+        "staff",
+        "capacity",
+        "trigger",
+        "monitor"
+      ]
+    },
+    {
+      "id": "coach-cost",
+      "title": "Explain normalized logistics cost",
+      "companyKey": "logistics",
+      "prompt": "Average shipping cost rose but cost/kg fell. Explain the difference and what you would check next.",
+      "evidenceTerms": [
+        "cost",
+        "kg",
+        "weight",
+        "average"
+      ],
+      "uncertaintyTerms": [
+        "mix",
+        "route",
+        "does not",
+        "may"
+      ],
+      "recommendationTerms": [
+        "segment",
+        "route",
+        "monitor",
+        "carrier"
+      ]
+    }
+  ]
+}
