@@ -34,7 +34,7 @@ class EcommerceFlagshipExportBundle {
         ? SqlResultGrader.grade(
             actualRows: execution.rows,
             expectedRows: workday.sqlExpectedRows,
-            truncated: execution!.truncated,
+            truncated: execution.truncated,
           )
         : null;
     final changedData = (grade?.isCorrect ?? false) && attempt.tool == 'SQL'
