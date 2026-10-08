@@ -58,7 +58,7 @@ class DomainFlagshipExportBundle {
       if (definitions.length != 1 || definitions.first['sql'] == null) {
         throw StateError('Missing synthetic source: $table');
       }
-      dump.writeln((definitions.single['sql'] as String) + ';');
+      dump.writeln("${definitions.single['sql']};");
       final rows = await db.query(table);
       counts[table] = rows.length;
       for (final row in rows) {
@@ -74,7 +74,7 @@ class DomainFlagshipExportBundle {
 
     final known = await SqlRunner(_database).runReadOnly(reference);
     if (!known.isSuccess || known.truncated) {
-      throw StateError('Domain reference query failed for ' + workday.companyKey);
+      throw StateError('Domain reference query failed for ${workday.companyKey}');
     }
     final audit = SqlResultGrader.grade(
       actualRows: known.rows,
@@ -82,7 +82,7 @@ class DomainFlagshipExportBundle {
       truncated: known.truncated,
     );
     if (!audit.isCorrect) {
-      throw StateError('Reference results mismatch: ' + audit.feedback);
+      throw StateError('Reference results mismatch: ${audit.feedback}');
     }
     final submitted = attempt.analysisText.trim();
     final run = attempt.tool == 'SQL' && submitted.isNotEmpty
@@ -107,7 +107,7 @@ class DomainFlagshipExportBundle {
       'warning': 'Passing an example dataset does not prove skill transfer. '
           'Non-SQL methods are still simulated.',
     });
-    files['REPRODUCE.md'] = '# Replay synthetic ' + workday.companyName + '''
+    files['REPRODUCE.md'] = '# Replay synthetic ${workday.companyName}' + '''
 
 Run these commands from the exported project folder in an empty database:
 
@@ -126,14 +126,15 @@ These cases are not yet assessed on changed/unseen data.
   static String _sqlLiteral(Object? value) {
     if (value == null) return 'NULL';
     if (value is num) return value.toString();
-    return "'" + value.toString().replaceAll("'", "''") + "'";
+    final escaped = value.toString().replaceAll("'", "''");
+    return "'$escaped'";
   }
 
   static String _csv(List<Map<String, Object?>> rows) {
     if (rows.isEmpty) return '';
     final cols = rows.first.keys.toList();
     String encode(Object? value) =>
-        '"' + (value?.toString() ?? '').replaceAll('"', '""') + '"';
+        '"${(value?.toString() ?? '').replaceAll('"', '""')}"';
     return [
       cols.map(encode).join(','),
       for (final row in rows) cols.map((name) => encode(row[name])).join(','),
