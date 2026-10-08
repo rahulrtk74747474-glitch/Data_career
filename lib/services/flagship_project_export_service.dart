@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import '../data/app_database.dart';
 import '../models/flagship_attempt.dart';
 import '../models/job_ready_v15.dart';
+import 'ecommerce_flagship_export_bundle.dart';
 
 class FlagshipProjectExportResult {
   const FlagshipProjectExportResult({
@@ -41,7 +42,18 @@ class FlagshipProjectExportService {
       'limitations.md': _limitations(workday),
     };
 
+    if (workday.companyKey == 'ecommerce') {
+      files.addAll(
+        await EcommerceFlagshipExportBundle(_database).build(
+          workday: workday,
+          attempt: attempt,
+        ),
+      );
+    }
+
     for (final entry in files.entries) {
+      await Directory(p.dirname(p.join(dir.path, entry.key)))
+          .create(recursive: true);
       await File(p.join(dir.path, entry.key)).writeAsString(
         entry.value.endsWith('\n') ? entry.value : '${entry.value}\n',
         flush: true,
@@ -125,8 +137,9 @@ ${workday.correctIssues.map((item) => '- $item').join('\n')}
 
   static String _limitations(FlagshipWorkday workday) => '''
 # Dataset and assessment limitations
+${workday.companyKey == 'ecommerce' ? '- The e-commerce flagship additionally exports the complete synthetic source dataset under data/ and the executable SQLite schema. Refer to REPRODUCE.md for verified execution status.' : ''}
 
-- The CSV supplied here contains only the ${workday.previewRows.length} preview rows embedded in the learning case. It is **not** a complete export of the underlying SQLite company tables.
+- The sample_data.csv file supplied here contains only the ${workday.previewRows.length} preview rows embedded in the learning case. It is **not** a complete export of the underlying SQLite company tables.
 - SQL work is executed against the local synthetic SQLite company database when SQL is chosen.
 - Pandas, Excel and Power BI answers are assessed with deterministic offline patterns/rubrics. They are **not** executed by CPython, Microsoft Excel or the Power BI engine.
 - Reproduce conclusions using the complete company dataset and real tools before publishing outside a training portfolio.
