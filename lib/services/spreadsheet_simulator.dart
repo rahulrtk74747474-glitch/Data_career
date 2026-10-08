@@ -1,5 +1,6 @@
 import '../models/spreadsheet_challenge.dart';
 import 'sql_result_grader.dart';
+import 'workbook_formula_evaluator.dart';
 
 class SpreadsheetRunResult {
   const SpreadsheetRunResult({
@@ -58,15 +59,27 @@ class SpreadsheetSimulator {
     }
 
     if (challenge.isFormula) {
-      final correct = _normalize(command) ==
-          _normalize(challenge.expectedCommand);
-      return SpreadsheetRunResult(
-        isCorrect: correct,
-        feedback: correct
-            ? 'Correct. The formula matches the requested calculation.'
-            : 'Not yet. Check cell references, operators and formula order.',
-        rows: const [],
-      );
+      try {
+        final actual = WorkbookFormulaEvaluator.evaluate(command, challenge.rows);
+        final correct = WorkbookFormulaEvaluator.equivalent(
+          command, challenge.expectedCommand, challenge.rows,
+        );
+        return SpreadsheetRunResult(
+          isCorrect: correct,
+          feedback: correct
+              ? 'Correct. Formula computes the expected output on the workbook '
+                  'and three changed-data checks.'
+              : 'Formula calculated a value but it does not match the required '
+                  'calculation across changed inputs. Check cell references.',
+          rows: <Map<String, Object?>>[{'calculated_value': actual}],
+        );
+      } on FormatException catch (error) {
+        return SpreadsheetRunResult(
+          isCorrect: false,
+          feedback: 'Formula error: ${error.message}',
+          rows: const [],
+        );
+      }
     }
 
     try {
