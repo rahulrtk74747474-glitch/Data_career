@@ -1,0 +1,488 @@
+{
+  "schemaVersion": 1,
+  "packId": "dataquest-company-flagships-v1",
+  "cases": [
+    {
+      "key": "saas",
+      "title": "Subscription MRR by plan",
+      "groupMeaning": "plan",
+      "metricMeaning": "monthly recurring revenue in INR",
+      "denominatorMeaning": "paid seats",
+      "eligibleStatus": "active",
+      "resultColumn": "mrr",
+      "ratio": false,
+      "referenceQuery": "SELECT group_name AS plan, SUM(metric_value) AS mrr FROM dq_case_latest WHERE case_id = 'saas' AND status = 'active' GROUP BY group_name ORDER BY group_name",
+      "expectedRows": [
+        {
+          "plan": "Enterprise",
+          "mrr": 9500
+        },
+        {
+          "plan": "Pro",
+          "mrr": 3800
+        },
+        {
+          "plan": "Starter",
+          "mrr": 700
+        }
+      ],
+      "events": [
+        {
+          "case_id": "saas",
+          "event_id": "S01",
+          "business_id": "A01",
+          "group_name": "Starter",
+          "status": "active",
+          "metric_value": 400,
+          "denominator_value": 5,
+          "ingested_at": "2026-10-04T10:00:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S02",
+          "business_id": "A02",
+          "group_name": "Starter",
+          "status": "churned",
+          "metric_value": 600,
+          "denominator_value": 6,
+          "ingested_at": "2026-10-04T10:01:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S03",
+          "business_id": "A03",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 1200,
+          "denominator_value": 10,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S04",
+          "business_id": "A04",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 1500,
+          "denominator_value": 12,
+          "ingested_at": "2026-10-04T10:03:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S05",
+          "business_id": "A05",
+          "group_name": "Enterprise",
+          "status": "active",
+          "metric_value": 5000,
+          "denominator_value": 25,
+          "ingested_at": "2026-10-04T10:04:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S06",
+          "business_id": "A06",
+          "group_name": "Enterprise",
+          "status": "active",
+          "metric_value": 4500,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:05:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S07",
+          "business_id": "A07",
+          "group_name": "Starter",
+          "status": "active",
+          "metric_value": 300,
+          "denominator_value": 4,
+          "ingested_at": "2026-10-04T10:06:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S08",
+          "business_id": "A08",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 800,
+          "denominator_value": 8,
+          "ingested_at": "2026-10-05T10:07:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S09",
+          "business_id": "A04",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 1800,
+          "denominator_value": 12,
+          "ingested_at": "2026-10-05T10:08:00Z"
+        },
+        {
+          "case_id": "saas",
+          "event_id": "S10",
+          "business_id": "A08",
+          "group_name": "Pro",
+          "status": "active",
+          "metric_value": 800,
+          "denominator_value": 8,
+          "ingested_at": "2026-10-05T10:09:00Z"
+        }
+      ],
+      "holdoutEventId": "S01"
+    },
+    {
+      "key": "bank",
+      "title": "Open loan outstanding by risk band",
+      "groupMeaning": "risk_band",
+      "metricMeaning": "outstanding principal in INR",
+      "denominatorMeaning": "approved loan limit in INR",
+      "eligibleStatus": "open",
+      "resultColumn": "outstanding",
+      "ratio": false,
+      "referenceQuery": "SELECT group_name AS risk_band, SUM(metric_value) AS outstanding FROM dq_case_latest WHERE case_id = 'bank' AND status = 'open' GROUP BY group_name ORDER BY group_name",
+      "expectedRows": [
+        {
+          "risk_band": "High",
+          "outstanding": 5000000
+        },
+        {
+          "risk_band": "Low",
+          "outstanding": 3500000
+        },
+        {
+          "risk_band": "Medium",
+          "outstanding": 3700000
+        }
+      ],
+      "events": [
+        {
+          "case_id": "bank",
+          "event_id": "B01",
+          "business_id": "L01",
+          "group_name": "Low",
+          "status": "open",
+          "metric_value": 2500000,
+          "denominator_value": 3500000,
+          "ingested_at": "2026-10-04T10:00:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B02",
+          "business_id": "L02",
+          "group_name": "Low",
+          "status": "open",
+          "metric_value": 1000000,
+          "denominator_value": 1500000,
+          "ingested_at": "2026-10-04T10:01:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B03",
+          "business_id": "L03",
+          "group_name": "Medium",
+          "status": "open",
+          "metric_value": 2000000,
+          "denominator_value": 2800000,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B04",
+          "business_id": "L04",
+          "group_name": "Medium",
+          "status": "open",
+          "metric_value": 1700000,
+          "denominator_value": 2500000,
+          "ingested_at": "2026-10-04T10:03:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B05",
+          "business_id": "L05",
+          "group_name": "High",
+          "status": "open",
+          "metric_value": 3000000,
+          "denominator_value": 3500000,
+          "ingested_at": "2026-10-04T10:04:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B06",
+          "business_id": "L06",
+          "group_name": "High",
+          "status": "open",
+          "metric_value": 1400000,
+          "denominator_value": 2200000,
+          "ingested_at": "2026-10-04T10:05:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B07",
+          "business_id": "L07",
+          "group_name": "High",
+          "status": "closed",
+          "metric_value": 400000,
+          "denominator_value": 700000,
+          "ingested_at": "2026-10-04T10:06:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B08",
+          "business_id": "L06",
+          "group_name": "High",
+          "status": "open",
+          "metric_value": 2000000,
+          "denominator_value": 2200000,
+          "ingested_at": "2026-10-05T10:07:00Z"
+        },
+        {
+          "case_id": "bank",
+          "event_id": "B09",
+          "business_id": "L02",
+          "group_name": "Low",
+          "status": "open",
+          "metric_value": 1000000,
+          "denominator_value": 1500000,
+          "ingested_at": "2026-10-05T10:08:00Z"
+        }
+      ],
+      "holdoutEventId": "B01"
+    },
+    {
+      "key": "hospital",
+      "title": "Weighted average waiting time per hospital unit",
+      "groupMeaning": "unit",
+      "metricMeaning": "total wait-minutes",
+      "denominatorMeaning": "completed patient visits",
+      "eligibleStatus": "reported",
+      "resultColumn": "avg_wait_minutes",
+      "ratio": true,
+      "referenceQuery": "SELECT group_name AS unit, ROUND(SUM(metric_value) * 1.0 / SUM(denominator_value), 2) AS avg_wait_minutes FROM dq_case_latest WHERE case_id = 'hospital' AND status = 'reported' GROUP BY group_name ORDER BY group_name",
+      "expectedRows": [
+        {
+          "unit": "ER",
+          "avg_wait_minutes": 80
+        },
+        {
+          "unit": "ICU",
+          "avg_wait_minutes": 55.5
+        },
+        {
+          "unit": "OPD",
+          "avg_wait_minutes": 34
+        }
+      ],
+      "events": [
+        {
+          "case_id": "hospital",
+          "event_id": "H01",
+          "business_id": "D01",
+          "group_name": "OPD",
+          "status": "reported",
+          "metric_value": 900,
+          "denominator_value": 30,
+          "ingested_at": "2026-10-04T10:00:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H02",
+          "business_id": "D02",
+          "group_name": "OPD",
+          "status": "reported",
+          "metric_value": 720,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:01:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H03",
+          "business_id": "D03",
+          "group_name": "ER",
+          "status": "reported",
+          "metric_value": 1200,
+          "denominator_value": 15,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H04",
+          "business_id": "D04",
+          "group_name": "ER",
+          "status": "reported",
+          "metric_value": 1600,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:03:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H05",
+          "business_id": "D05",
+          "group_name": "ICU",
+          "status": "reported",
+          "metric_value": 450,
+          "denominator_value": 9,
+          "ingested_at": "2026-10-04T10:04:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H06",
+          "business_id": "D06",
+          "group_name": "ICU",
+          "status": "reported",
+          "metric_value": 660,
+          "denominator_value": 11,
+          "ingested_at": "2026-10-04T10:05:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H07",
+          "business_id": "D07",
+          "group_name": "OPD",
+          "status": "invalid",
+          "metric_value": 7000,
+          "denominator_value": 10,
+          "ingested_at": "2026-10-04T10:06:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H08",
+          "business_id": "D02",
+          "group_name": "OPD",
+          "status": "reported",
+          "metric_value": 800,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-05T10:07:00Z"
+        },
+        {
+          "case_id": "hospital",
+          "event_id": "H09",
+          "business_id": "D03",
+          "group_name": "ER",
+          "status": "reported",
+          "metric_value": 1200,
+          "denominator_value": 15,
+          "ingested_at": "2026-10-05T10:08:00Z"
+        }
+      ],
+      "holdoutEventId": "H01"
+    },
+    {
+      "key": "logistics",
+      "title": "Weighted cost per kilogram by route",
+      "groupMeaning": "route",
+      "metricMeaning": "delivery cost in INR",
+      "denominatorMeaning": "delivered weight in kg",
+      "eligibleStatus": "delivered",
+      "resultColumn": "cost_per_kg",
+      "ratio": true,
+      "referenceQuery": "SELECT group_name AS route, ROUND(SUM(metric_value) * 1.0 / SUM(denominator_value), 2) AS cost_per_kg FROM dq_case_latest WHERE case_id = 'logistics' AND status = 'delivered' GROUP BY group_name ORDER BY group_name",
+      "expectedRows": [
+        {
+          "route": "North",
+          "cost_per_kg": 10.67
+        },
+        {
+          "route": "South",
+          "cost_per_kg": 14.67
+        },
+        {
+          "route": "West",
+          "cost_per_kg": 18
+        }
+      ],
+      "events": [
+        {
+          "case_id": "logistics",
+          "event_id": "T01",
+          "business_id": "SH01",
+          "group_name": "North",
+          "status": "delivered",
+          "metric_value": 1000,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:00:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T02",
+          "business_id": "SH02",
+          "group_name": "North",
+          "status": "delivered",
+          "metric_value": 600,
+          "denominator_value": 50,
+          "ingested_at": "2026-10-04T10:01:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T03",
+          "business_id": "SH03",
+          "group_name": "South",
+          "status": "delivered",
+          "metric_value": 1500,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:02:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T04",
+          "business_id": "SH04",
+          "group_name": "South",
+          "status": "delivered",
+          "metric_value": 700,
+          "denominator_value": 50,
+          "ingested_at": "2026-10-04T10:03:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T05",
+          "business_id": "SH05",
+          "group_name": "West",
+          "status": "delivered",
+          "metric_value": 2200,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:04:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T06",
+          "business_id": "SH06",
+          "group_name": "West",
+          "status": "delivered",
+          "metric_value": 1400,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-04T10:05:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T07",
+          "business_id": "SH07",
+          "group_name": "South",
+          "status": "cancelled",
+          "metric_value": 600,
+          "denominator_value": 20,
+          "ingested_at": "2026-10-04T10:06:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T08",
+          "business_id": "SH06",
+          "group_name": "West",
+          "status": "delivered",
+          "metric_value": 1400,
+          "denominator_value": 100,
+          "ingested_at": "2026-10-05T10:07:00Z"
+        },
+        {
+          "case_id": "logistics",
+          "event_id": "T09",
+          "business_id": "SH02",
+          "group_name": "North",
+          "status": "delivered",
+          "metric_value": 600,
+          "denominator_value": 50,
+          "ingested_at": "2026-10-05T10:08:00Z"
+        }
+      ],
+      "holdoutEventId": "T01"
+    }
+  ]
+}
