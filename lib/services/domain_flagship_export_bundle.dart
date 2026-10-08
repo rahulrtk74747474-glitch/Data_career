@@ -36,6 +36,65 @@ class DomainFlagshipExportBundle {
         'FROM logistics_shipments GROUP BY route_code ORDER BY route_code',
   };
 
+  /// Checks an actual submitted SELECT on a different synthetic snapshot.
+  /// The transaction is deliberately rolled back before returning.
+  Future<SqlResultGrade> verifyChangedData({
+    required String company,
+    required String sql,
+  }) async {
+    final reference = referenceQueries[company];
+    if (reference == null) {
+      return const SqlResultGrade(
+        isCorrect: false, feedback: 'Unknown domain assessment.',
+      );
+    }
+    final base = await SqlRunner(_database).runReadOnly(sql);
+    if (!base.isSuccess || base.truncated) {
+      return SqlResultGrade(
+        isCorrect: false, feedback: base.error ?? 'Query is incomplete.',
+      );
+    }
+    final db = await _database.database;
+    SqlResultGrade? checked;
+    try {
+      await db.transaction((txn) async {
+        final changed = switch (company) {
+          'saas' => await txn.rawUpdate(
+              "UPDATE saas_account_monthly SET mrr = mrr + 173 "
+              "WHERE account_id = 'S001' AND month = '2026-09'"),
+          'bank' => await txn.rawUpdate(
+              "UPDATE loan_portfolio SET outstanding = outstanding + 913 "
+              "WHERE loan_id = 'L002'"),
+          'hospital' => await txn.rawUpdate(
+              "UPDATE hospital_daily_ops SET avg_wait_minutes = "
+              "avg_wait_minutes + 12 WHERE ops_date = '2026-10-01' "
+              "AND unit = 'Emergency'"),
+          'logistics' => await txn.rawUpdate(
+              "UPDATE logistics_shipments SET shipping_cost = "
+              "shipping_cost + 131 WHERE shipment_id = 'S001'"),
+          _ => 0,
+        };
+        if (changed != 1) {
+          throw StateError('A holdout source row is missing in $company');
+        }
+        final actual = await txn.rawQuery(sql);
+        final expected = await txn.rawQuery(reference);
+        checked = actual.length > 100
+            ? const SqlResultGrade(
+                isCorrect: false, feedback: 'Query exceeds assessed row cap.',
+              )
+            : SqlResultGrader.grade(
+                actualRows: actual,
+                expectedRows: expected
+                    .map((row) => Map<String, dynamic>.from(row)).toList(),
+              );
+        throw const _UndoDomainFixture();
+      });
+    } on _UndoDomainFixture {
+      return checked!;
+    }
+  }
+
   Future<Map<String, String>> build({
     required FlagshipWorkday workday,
     required FlagshipAttempt attempt,
@@ -95,6 +154,9 @@ class DomainFlagshipExportBundle {
             truncated: run.truncated,
           )
         : null;
+    final holdout = checked?.isCorrect == true
+        ? await verifyChangedData(company: workday.companyKey, sql: submitted)
+        : null;
     files['verification.json'] = const JsonEncoder.withIndent('  ').convert({
       'company': workday.companyKey,
       'dataset_type': 'complete synthetic SQLite snapshot',
@@ -102,7 +164,8 @@ class DomainFlagshipExportBundle {
       'reference_sql_reconciled': true,
       'submitted_sql_executed': run?.isSuccess ?? false,
       'submitted_sql_matches_reference': checked?.isCorrect ?? false,
-      'changed_data_robustness_tested': false,
+      'changed_data_robustness_tested': holdout != null,
+      'changed_data_test_passed': holdout?.isCorrect ?? false,
       'external_analyst_replay_completed': false,
       'warning': 'Passing an example dataset does not prove skill transfer. '
           'Non-SQL methods are still simulated.',
@@ -119,7 +182,8 @@ The files inside data/ contain the entire synthetic source tables, not
 just preview rows. Inspect verification.json for the actual result status.
 
 This is synthetic training data, not actual company information.
-These cases are not yet assessed on changed/unseen data.
+The validation metadata distinguishes a source-data check from a changed-data
+assessment. Neither replaces an independent external analyst review.
 ''';
     return files;
   }
@@ -141,4 +205,8 @@ These cases are not yet assessed on changed/unseen data.
       for (final row in rows) cols.map((name) => encode(row[name])).join(','),
     ].join('\n');
   }
+}
+
+class _UndoDomainFixture {
+  const _UndoDomainFixture();
 }
